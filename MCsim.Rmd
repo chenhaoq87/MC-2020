@@ -1,6 +1,6 @@
 ---
 title: "MCsim"
-author: "Sarah I. Murphy"
+author: "Sarah I. Murphy, Samantha Lau, Timothy Lott, Aljosa Trmcic"
 date: "1/28/2020"
 output: pdf_document
 ---
