@@ -78,27 +78,38 @@ getPrevRow <- function(df, sim_run, half_gallon, day) {
 }
 ```
 
-+ Growth Models
++ buchanan_log10N
+    + Purpose:
+    + Params:
 ```{r}
 buchanan_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax){
-  ans <- LOG10N0 + (t >= lag) * (t <= (lag + (LOG10Nmax - LOG10N0) *     log(10)/mumax)) * mumax * (t - lag)/log(10) + (t >= lag) * (t > (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * (LOG10Nmax -     LOG10N0)
-  return(ans)
-}
-gompertz_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
-  ans <- LOG10N0 + (LOG10Nmax - LOG10N0) * exp(-exp(mumax * exp(1) * 
-                                                      (lag - t)/((LOG10Nmax - LOG10N0) * log(10)) + 1))
-  return(ans)
-}
-baranyi_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
-  ans <- LOG10Nmax + log10((-1 + exp(mumax * lag) + exp(mumax * 
-                                                          t))/(exp(mumax * t) - 1 + exp(mumax * lag) * 10^(LOG10Nmax - 
-                                                                                                             LOG10N0)))
+  ans <- LOG10N0 + (t >= lag) * (t <= (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * mumax * (t - lag)/log(10) + (t >= lag) * (t > (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * (LOG10Nmax -     LOG10N0)
   return(ans)
 }
 ```
 
-+ Function to calculate log10N; wrapper function because it calls the proper model
-    + Purpose: This implements the growth model
++ gompertz_log10N
+    + Purpose:
+    + Params:
+```{r}
+gompertz_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
+  ans <- LOG10N0 + (LOG10Nmax - LOG10N0) * exp(-exp(mumax * exp(1) * (lag - t)/((LOG10Nmax - LOG10N0) * log(10)) + 1))
+  return(ans)
+}
+```
+
++ baranyi_log10N
+    + Purpose:
+    + Params:
+```{r}
+baranyi_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
+  ans <- LOG10Nmax + log10((-1 + exp(mumax * lag) + exp(mumax * t))/(exp(mumax * t) - 1 + exp(mumax * lag) * 10^(LOG10Nmax - LOG10N0)))
+  return(ans)
+}
+```
+
++ log10N wrapper function 
+  + Purpose: calculate log10N and implements the growth model
 ```{r}
 log10N_func <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name="buchanan") {
   if (model_name == "buchanan") {
