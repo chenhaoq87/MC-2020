@@ -23,6 +23,10 @@ set.seed(42) #use a seed value for reproducibility
         + oldMu: the previous mu value to adjust
         + oldTemp: the temperature corresponding to previous mu
         + T0: parameter used to calculate new mu
+        + This uses the Ratkowsky square model which describes the effect of temperature on the growth of
+          microorganisms
+        + The paper it comes from: https://www.ncbi.nlm.nih.gov/pubmed/22417595
+        + SAM TO CHECK ON THE NEW MU EQUATION
 ```{r}
 muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) {
   numerator <- newTemp - T0
@@ -102,7 +106,15 @@ baranyi_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
 
 + Function to calculate log10N; wrapper function because it calls the proper model
     + Purpose: This implements the growth model
+    + You need to import a CSV file with the best fitting model pre-selected
+    + Your CSV file should have a column that has a column name, model_name and filled out with 
+      buchanan, baranyi, or gompertz
 ```{r}
+growth_file <- "Your Respective Growth File.csv"
+model_name<- read.csv(growth_file, stringsAsFactors = FALSE)
+colnames(model_name)[1]<-c("ST")
+model_name$modelname<-as.factor(model_name$modelname)
+
 log10N_func <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name="buchanan") {
   if (model_name == "buchanan") {
     return(buchanan_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
