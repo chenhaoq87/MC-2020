@@ -1,6 +1,6 @@
 ---
 title: "MCsim"
-author: "Sarah I. Murphy, Samantha Lau, Timothy Lott, Aljosa Trmcic"
+author: "Sarah I. Murphy, Samantha Lau, Timothy Lott, Aljosa Trmcic" 
 date: "1/28/2020"
 output: pdf_document
 ---
@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+The authors listed above are current contributors to this file. Earlier versions were the work of Ariel Buehler and Michael Phillips. Review README.md [https://github.com/FSL-MQIP/MC-2020/blob/master/README.md] for more information.
 
 ```{r}
 set.seed(42) #use a seed value for reproducibility
