@@ -79,6 +79,9 @@ getPrevRow <- function(df, sim_run, half_gallon, day) {
 ```
 
 + Growth Models
+  + All equations are copied from the Nlms package in R
+  + URL: https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R
+  
 ```{r}
 buchanan_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax){
   ans <- LOG10N0 + (t >= lag) * (t <= (lag + (LOG10Nmax - LOG10N0) *     log(10)/mumax)) * mumax * (t - lag)/log(10) + (t >= lag) * (t > (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * (LOG10Nmax -     LOG10N0)
