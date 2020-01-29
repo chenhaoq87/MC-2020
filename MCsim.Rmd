@@ -134,6 +134,7 @@ log10N_func <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name="buchanan"
 ## Data frame creation and setup
 
 + Set up data frame to store count at each day
++ SAM QUESTION: Why is day from start day to start day+nday-1, and not just from start day to nday
 ```{r}
 #Size is for n_sim bulk tanks, n_half_gal half gallon lots, n_day days
 n_sim <-100    #1000 is for testing and exploring, experiments require at least 10k
