@@ -26,7 +26,8 @@ set.seed(42) #use a seed value for reproducibility
         + This uses the Ratkowsky square model which describes the effect of temperature on the growth of
           microorganisms
         + The paper it comes from: https://www.ncbi.nlm.nih.gov/pubmed/22417595
-        + SAM TO CHECK ON THE NEW MU EQUATION
+        + Sam checked equation and it is correct
+        + The T0 is estimate dto be -3.62C based on growth curves of Paenibacillus ordorifer obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
 ```{r}
 muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) {
   numerator <- newTemp - T0
