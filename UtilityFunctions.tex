@@ -1,0 +1,381 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={UtilityFunctions},
+            pdfauthor={Sarah I. Murphy},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{UtilityFunctions}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Sarah I. Murphy}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2/1/2020}
+
+
+\begin{document}
+\maketitle
+
+\hypertarget{utility-functions}{%
+\subsection{Utility Functions}\label{utility-functions}}
+
+\begin{itemize}
+\tightlist
+\item
+  muAtNewTemp
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Purpose: Calculate the new mu parameter at new temperature.
+  \item
+    Params:
+
+    \begin{itemize}
+    \tightlist
+    \item
+      newTemp: the new temperature for which we calculate mu
+    \item
+      oldMu: the previous mu value to adjust
+    \item
+      oldTemp: the temperature corresponding to previous mu
+    \item
+      T0: parameter used to calculate new mu
+    \item
+      This uses the Ratkowsky square model which describes the effect of
+      temperature on the growth of microorganisms
+    \item
+      The paper it comes from:
+      \url{https://www.ncbi.nlm.nih.gov/pubmed/22417595}
+    \item
+      Sam checked equation and it is correct
+    \item
+      The T0 is estimate dto be -3.62C based on growth curves of
+      Paenibacillus ordorifer obtained at 4, 7, and 32C in BHI broth
+      (N.H. Martin unpublished data)
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{muAtNewTemp <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(newTemp, oldMu, }\DataTypeTok{oldTemp =} \DecValTok{6}\NormalTok{, }\DataTypeTok{T0 =} \FloatTok{-3.62}\NormalTok{) \{}
+\NormalTok{  numerator <-}\StringTok{ }\NormalTok{newTemp }\OperatorTok{-}\StringTok{ }\NormalTok{T0}
+\NormalTok{  denom <-}\StringTok{ }\NormalTok{oldTemp }\OperatorTok{-}\StringTok{ }\NormalTok{T0}
+\NormalTok{  newMu <-}\StringTok{ }\NormalTok{((numerator }\OperatorTok{/}\StringTok{ }\NormalTok{denom)}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{oldMu}
+  
+  \KeywordTok{return}\NormalTok{(newMu)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  adjustLag
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Purpose: Adjust the lag phase based on the Zwietering 1994 paper.
+  \item
+    Params:
+
+    \begin{itemize}
+    \tightlist
+    \item
+      t: the current timestep
+    \item
+      oldLag: the lag time at the previous temperature
+    \item
+      newLag: the lag time at the current temparature.
+    \item
+      restartExp: If true then lag phase restarts even if already in
+      exponential growth phase.
+    \item
+      adjustmentConstant: The amount to adjust lag, the paper recommends
+      0.25
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{adjustLag <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{ (t, oldLag, newLag, }\DataTypeTok{restartExp =}\NormalTok{ T, }\DataTypeTok{adjustmentConstant =} \FloatTok{0.25}\NormalTok{) \{}
+  \CommentTok{#determine the amount of lag phase completed}
+\NormalTok{  remainingLag <-}\StringTok{ }\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{(t }\OperatorTok{/}\StringTok{ }\NormalTok{oldLag)}
+  \ControlFlowTok{if}\NormalTok{(restartExp) \{}
+\NormalTok{  remainingLag <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(remainingLag }\OperatorTok{<}\StringTok{ }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, remainingLag)}
+\NormalTok{  \}}
+  \ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{  adjustedLag <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(remainingLag }\OperatorTok{<=}\DecValTok{0}\NormalTok{, oldLag,}
+\NormalTok{                        t }\OperatorTok{+}\StringTok{ }\NormalTok{remainingLag }\OperatorTok{*}\StringTok{ }\NormalTok{newLag }\OperatorTok{+}\StringTok{ }\NormalTok{adjustmentConstant}\OperatorTok{*}\NormalTok{newLag)}
+\NormalTok{  \}}
+  
+\NormalTok{  adjustedLag <-}\StringTok{ }\NormalTok{t }\OperatorTok{+}\StringTok{ }\NormalTok{remainingLag}\OperatorTok{*}\NormalTok{newLag }\OperatorTok{+}\StringTok{ }\NormalTok{adjustmentConstant}\OperatorTok{*}\NormalTok{newLag}
+  \KeywordTok{return}\NormalTok{(adjustedLag)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  lagAtNewTemp
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Purpose: Calculate the new lag parameter at new temperature.
+  \item
+    Params:
+
+    \begin{itemize}
+    \tightlist
+    \item
+      newTemp: the new temperature for which we calculate lag
+    \item
+      oldLag: the previous lag value to adjust
+    \item
+      oldTemp: the temperature corresponding to previous lag
+    \item
+      T0: parameter used to calculate new lag
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lagAtNewTemp <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{ (t, newTemp, oldLag, }\DataTypeTok{oldTemp =} \DecValTok{6}\NormalTok{, }\DataTypeTok{T0 =} \FloatTok{-3.62}\NormalTok{) \{}
+\NormalTok{  numerator <-}\StringTok{ }\NormalTok{oldTemp }\OperatorTok{-}\NormalTok{T0}
+\NormalTok{  denom <-}\StringTok{ }\NormalTok{newTemp }\OperatorTok{-}\StringTok{ }\NormalTok{T0}
+\NormalTok{  newLag <-}\StringTok{ }\NormalTok{( (numerator }\OperatorTok{/}\StringTok{ }\NormalTok{denom)}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{oldLag}
+  \KeywordTok{return}\NormalTok{(newLag)}
+\NormalTok{\}}
+
+\NormalTok{getPrevRow <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(df, sim_run, half_gallon, day) \{}
+\NormalTok{  old_temp <-}\StringTok{ }\NormalTok{df[df}\OperatorTok{$}\NormalTok{BT }\OperatorTok{==}\StringTok{ }\NormalTok{sim_run }\OperatorTok{&}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{half_gal }\OperatorTok{==}\StringTok{ }\NormalTok{half_gallon }\OperatorTok{&}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{day}\OperatorTok{==}\NormalTok{day}\DecValTok{-1}\NormalTok{,] }
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textless{}\textless{}\textless{}\textless{}\textless{}\textless{}\textless{}
+HEAD + buchanan\_log10N + Purpose: + Params: ======= + Growth Models +
+All equations are copied from the Nlms package in R + URL:
+\url{https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R}
+
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+\begin{quote}
+7c72935bc55f0c36b67a5d3665940ed245d85cc1
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{buchanan_log10N =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(t,lag,mumax,LOG10N0,LOG10Nmax)\{}
+\NormalTok{  ans <-}\StringTok{ }\NormalTok{LOG10N0 }\OperatorTok{+}\StringTok{ }\NormalTok{(t }\OperatorTok{>=}\StringTok{ }\NormalTok{lag) }\OperatorTok{*}\StringTok{ }\NormalTok{(t }\OperatorTok{<=}\StringTok{ }\NormalTok{(lag }\OperatorTok{+}\StringTok{ }\NormalTok{(LOG10Nmax }\OperatorTok{-}\StringTok{ }\NormalTok{LOG10N0) }\OperatorTok{*}\StringTok{ }\KeywordTok{log}\NormalTok{(}\DecValTok{10}\NormalTok{)}\OperatorTok{/}\NormalTok{mumax)) }\OperatorTok{*}\StringTok{ }\NormalTok{mumax }\OperatorTok{*}\StringTok{ }\NormalTok{(t }\OperatorTok{-}\StringTok{ }\NormalTok{lag)}\OperatorTok{/}\KeywordTok{log}\NormalTok{(}\DecValTok{10}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{(t }\OperatorTok{>=}\StringTok{ }\NormalTok{lag) }\OperatorTok{*}\StringTok{ }\NormalTok{(t }\OperatorTok{>}\StringTok{ }\NormalTok{(lag }\OperatorTok{+}\StringTok{ }\NormalTok{(LOG10Nmax }\OperatorTok{-}\StringTok{ }\NormalTok{LOG10N0) }\OperatorTok{*}\StringTok{ }\KeywordTok{log}\NormalTok{(}\DecValTok{10}\NormalTok{)}\OperatorTok{/}\NormalTok{mumax)) }\OperatorTok{*}\StringTok{ }\NormalTok{(LOG10Nmax }\OperatorTok{-}\StringTok{     }\NormalTok{LOG10N0)}
+  \KeywordTok{return}\NormalTok{(ans)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  gompertz\_log10N
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Purpose:
+  \item
+    Params:
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gompertz_log10N =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(t,lag,mumax,LOG10N0,LOG10Nmax) \{}
+\NormalTok{  ans <-}\StringTok{ }\NormalTok{LOG10N0 }\OperatorTok{+}\StringTok{ }\NormalTok{(LOG10Nmax }\OperatorTok{-}\StringTok{ }\NormalTok{LOG10N0) }\OperatorTok{*}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\KeywordTok{exp}\NormalTok{(mumax }\OperatorTok{*}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(lag }\OperatorTok{-}\StringTok{ }\NormalTok{t)}\OperatorTok{/}\NormalTok{((LOG10Nmax }\OperatorTok{-}\StringTok{ }\NormalTok{LOG10N0) }\OperatorTok{*}\StringTok{ }\KeywordTok{log}\NormalTok{(}\DecValTok{10}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+  \KeywordTok{return}\NormalTok{(ans)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  baranyi\_log10N
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Purpose:
+  \item
+    Params:
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{baranyi_log10N =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(t,lag,mumax,LOG10N0,LOG10Nmax) \{}
+\NormalTok{  ans <-}\StringTok{ }\NormalTok{LOG10Nmax }\OperatorTok{+}\StringTok{ }\KeywordTok{log10}\NormalTok{((}\OperatorTok{-}\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{exp}\NormalTok{(mumax }\OperatorTok{*}\StringTok{ }\NormalTok{lag) }\OperatorTok{+}\StringTok{ }\KeywordTok{exp}\NormalTok{(mumax }\OperatorTok{*}\StringTok{ }\NormalTok{t))}\OperatorTok{/}\NormalTok{(}\KeywordTok{exp}\NormalTok{(mumax }\OperatorTok{*}\StringTok{ }\NormalTok{t) }\OperatorTok{-}\StringTok{ }\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{exp}\NormalTok{(mumax }\OperatorTok{*}\StringTok{ }\NormalTok{lag) }\OperatorTok{*}\StringTok{ }\DecValTok{10}\OperatorTok{^}\NormalTok{(LOG10Nmax }\OperatorTok{-}\StringTok{ }\NormalTok{LOG10N0)))}
+  \KeywordTok{return}\NormalTok{(ans)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textless{}\textless{}\textless{}\textless{}\textless{}\textless{}\textless{}
+HEAD + log10N wrapper function + Purpose: calculate log10N and
+implements the growth model ======= + Function to calculate log10N;
+wrapper function because it calls the proper model + Purpose: This
+implements the growth model + You need to import a CSV file with the
+best fitting model pre-selected + Your CSV file should have a column
+that has a column name, model\_name and filled out with buchanan,
+baranyi, or gompertz
+\textgreater{}\textgreater{}\textgreater{}\textgreater{}\textgreater{}\textgreater{}\textgreater{}
+7c72935bc55f0c36b67a5d3665940ed245d85cc1
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{log10N_func <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(t, lag, mumax, LOG10N0, LOG10Nmax, }\DataTypeTok{model_name=}\StringTok{"buchanan"}\NormalTok{) \{}
+  \ControlFlowTok{if}\NormalTok{ (model_name }\OperatorTok{==}\StringTok{ "buchanan"}\NormalTok{) \{}
+    \KeywordTok{return}\NormalTok{(}\KeywordTok{buchanan_log10N}\NormalTok{(t, lag, mumax, LOG10N0, LOG10Nmax) )}
+\NormalTok{  \}}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(model_name }\OperatorTok{==}\StringTok{ 'baranyi'}\NormalTok{) \{}
+    \KeywordTok{return}\NormalTok{(}\KeywordTok{baranyi_log10N}\NormalTok{(t, lag, mumax, LOG10N0, LOG10Nmax) )}
+\NormalTok{  \}}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(model_name }\OperatorTok{==}\StringTok{ 'gompertz'}\NormalTok{) \{}
+    \KeywordTok{return}\NormalTok{(}\KeywordTok{gompertz_log10N}\NormalTok{(t, lag, mumax, LOG10N0, LOG10Nmax) )}
+\NormalTok{  \}}
+  \ControlFlowTok{else}\NormalTok{ \{}
+    \KeywordTok{stop}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(model_name, }\StringTok{" is not a valid model name. Must be one of buchanan, baranyi, gompertz"}\NormalTok{))}
+\NormalTok{  \}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

@@ -79,10 +79,11 @@ getPrevRow <- function(df, sim_run, half_gallon, day) {
 }
 ```
 
+
 + buchanan_log10N
     + Purpose:
     + Params:
-=======
+
 + Growth Models
   + All equations are copied from the Nlms package in R
   + URL: https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R
@@ -115,13 +116,9 @@ baranyi_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
 ```
 
 + log10N wrapper function 
-  + Purpose: calculate log10N and implements the growth model
-=======
-+ Function to calculate log10N; wrapper function because it calls the proper model
     + Purpose: This implements the growth model
     + You need to import a CSV file with the best fitting model pre-selected
-    + Your CSV file should have a column that has a column name, model_name and filled out with 
-      buchanan, baranyi, or gompertz
+    + Your CSV file should have a column that has a column name, model_name and filled out with buchanan, baranyi, or gompertz
 ```{r}
 log10N_func <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name="buchanan") {
   if (model_name == "buchanan") {
