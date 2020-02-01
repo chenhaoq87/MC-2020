@@ -13,36 +13,6 @@ The authors listed above are current contributors to this file. Earlier versions
 ```{r}
 set.seed(1) #set seed for reproducibility
 ```
-## Load packages & data
-```{r}
-#load packages
-library(readr)
-
-#Name the files to be read
-frequency_file <- "Frequency.csv"
-growth_file <- "GrowthParameters.csv" #make sure this contains growth parameters & growth model name
-init_file <- "InitialCountsMPN.csv"
-temp_stages_file <- "temp_stages.csv"
-
-#Import frequency data and get the rpoB allelic type
-freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
-freq_data = freq_import$rpoB.allelic.type
-
-#Import growth parameter data
-growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
-
-#Import initial count logMPN data
-initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
-#MPN Column
-initialcount_data = initialcount_import[,3]
-#LOG MPN Column
-initialcountlog_data = initialcount_import[,4]
-
-#Import temperature data
-stages <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
-
-```
-
 
 ## Utility Functions
 
@@ -176,6 +146,36 @@ log10N_func <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name="buchanan"
     stop(paste0(model_name, " is not a valid model name. Must be one of buchanan, baranyi, gompertz"))
   }
 }
+```
+
+## Load packages & data
+```{r}
+#load packages
+library(readr)
+
+#Name the files to be read
+frequency_file <- "Frequency.csv"
+growth_file <- "GrowthParameters.csv" #make sure this contains growth parameters & growth model name
+init_file <- "InitialCountsMPN.csv"
+temp_stages_file <- "temp_stages.csv"
+
+#Import frequency data and get the rpoB allelic type
+freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
+freq_data = freq_import$rpoB.allelic.type
+
+#Import growth parameter data
+growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
+
+#Import initial count logMPN data
+initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
+#MPN Column
+initialcount_data = initialcount_import[,3]
+#LOG MPN Column
+initialcountlog_data = initialcount_import[,4]
+
+#Import temperature data
+stages <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
+
 ```
 
 ## Data frame creation and setup
