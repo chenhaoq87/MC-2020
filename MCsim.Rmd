@@ -5,6 +5,7 @@ date: "1/28/2020"
 output: pdf_document
 ---
 
+sam testing lALALALAL
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -23,6 +24,11 @@ set.seed(42) #use a seed value for reproducibility
         + oldMu: the previous mu value to adjust
         + oldTemp: the temperature corresponding to previous mu
         + T0: parameter used to calculate new mu
+        + This uses the Ratkowsky square model which describes the effect of temperature on the growth of
+          microorganisms
+        + The paper it comes from: https://www.ncbi.nlm.nih.gov/pubmed/22417595
+        + Sam checked equation and it is correct
+        + The T0 is estimate dto be -3.62C based on growth curves of Paenibacillus ordorifer obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
 ```{r}
 muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) {
   numerator <- newTemp - T0
@@ -78,9 +84,16 @@ getPrevRow <- function(df, sim_run, half_gallon, day) {
 }
 ```
 
+<<<<<<< HEAD
 + buchanan_log10N
     + Purpose:
     + Params:
+=======
++ Growth Models
+  + All equations are copied from the Nlms package in R
+  + URL: https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R
+  
+>>>>>>> 7c72935bc55f0c36b67a5d3665940ed245d85cc1
 ```{r}
 buchanan_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax){
   ans <- LOG10N0 + (t >= lag) * (t <= (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * mumax * (t - lag)/log(10) + (t >= lag) * (t > (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * (LOG10Nmax -     LOG10N0)
@@ -108,9 +121,22 @@ baranyi_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
 }
 ```
 
+<<<<<<< HEAD
 + log10N wrapper function 
   + Purpose: calculate log10N and implements the growth model
+=======
++ Function to calculate log10N; wrapper function because it calls the proper model
+    + Purpose: This implements the growth model
+    + You need to import a CSV file with the best fitting model pre-selected
+    + Your CSV file should have a column that has a column name, model_name and filled out with 
+      buchanan, baranyi, or gompertz
+>>>>>>> 7c72935bc55f0c36b67a5d3665940ed245d85cc1
 ```{r}
+growth_file <- "Your Respective Growth File.csv"
+model_name<- read.csv(growth_file, stringsAsFactors = FALSE)
+colnames(model_name)[1]<-c("ST")
+model_name$modelname<-as.factor(model_name$modelname)
+
 log10N_func <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name="buchanan") {
   if (model_name == "buchanan") {
     return(buchanan_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
@@ -130,6 +156,7 @@ log10N_func <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name="buchanan"
 ## Data frame creation and setup
 
 + Set up data frame to store count at each day
++ SAM QUESTION: Why is day from start day to start day+nday-1, and not just from start day to nday
 ```{r}
 #Size is for n_sim bulk tanks, n_half_gal half gallon lots, n_day days
 n_sim <-100    #1000 is for testing and exploring, experiments require at least 10k
