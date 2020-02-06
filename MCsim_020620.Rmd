@@ -44,26 +44,33 @@ set.seed(1)
 
 # Set-up dataframe
 ```{r}
-#Define number of simulations to run (also referred to as the number of bulk tanks; i.e., 1 simulation unit = 1 bulk tank of milk)
+##Set important parameters for running the simulation:
+
+# (1) n_sim
+# Definition: Number of simulations to run (also referred to as the number of bulk tanks in earlier code; i.e., 1 simulation unit = 1 bulk tank of milk)
 n_sim <-100    #1000 is for testing and exploring, experiments require at least 10k
 
-#Define number of units per lot (currently, half gallon units) 
+#(2) n_units 
+# Definition: Number of units per lot (currently, half gallon units) 
 n_units <-10
 
-#Define number of shelf life days simulating
+# (3) start_day 
+# Definition: First time point (in days) in unit's shelf life to simulate
 start_day <- 1 
-# end_day <- 24 #aka n_day
-n_day <- 24 
 
-#prep sequences based on defined values above
-BT <- rep(seq(1, n_sim), each = n_units * n_day) #Repeat each element of the sequence 1..n_sim
+# (4) end_day 
+# Definition: Last time point (in days) in unit's shelf life to simulate
+end_day <- 24 
+n_day <- 24 # seems like this is the end_day, but keeping code below for now in case my interpretation is wrong
+
+## Prep vectors based on defined values above
+bulk_tank <- rep(seq(1, n_sim), each = n_units * n_day) #Repeat each element of the sequence 1..n_sim
 milk_unit <- rep(seq(1, n_units), times = n_day * n_sim) #Repeat the whole sequences times # of times
 AT <- vector(mode="logical", n_sim * n_units * n_day) #Make a vector of "FALSE" ATs
 day <- rep(rep(seq(start_day, start_day+n_day-1), each = n_units), times = n_sim) #Repeat the days for each simulation run
 count <- vector(mode = "logical", n_sim * n_units * n_day)
 
 #matrix with columns:
-#  BT   half_gal    AT    day   count
-data <- data.frame(BT, milk_unit, AT, day, count)
+data <- data.frame(bulk_tank, milk_unit, AT, day, count)
 ```
 
