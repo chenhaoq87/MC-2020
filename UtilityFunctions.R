@@ -8,10 +8,17 @@
 # Purpose: Calculate the new mu parameter at new temperature.
 
 # Parameters: 
+<<<<<<< HEAD
 # (i) newTemp: the new temperature for which we calculate mu
 # (ii) oldMu: the previous mu value to adjust
 # (iii) oldTemp: the temperature corresponding to previous mu
 # (iv) T0: parameter used to calculate new mu; 
+=======
+# (a) newTemp: the new temperature for which we calculate mu
+# (b) oldMu: the previous mu value to adjust
+# (c) oldTemp: the temperature corresponding to previous mu
+# (d) T0: parameter used to calculate new mu; 
+>>>>>>> 95b012a8da7b55bcf1565b3db142aab70f093fe2
 
 # Function:
 muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) { 
