@@ -10,21 +10,57 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-#load packages
+## load packages
+library(readr)
 
-#load functions
+## load functions
 source("UtilityFunctions.R")
 
-#load data
+## load data
 
+#frequency data
+frequency_file <- "Frequency.csv"
+freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
+
+#growth parameter data
+growth_file <- "GrowthParameters.csv" #make sure this contains growth parameters & growth model name
+growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
+
+#initial count logMPN data
+init_file <- "InitialCountsMPN.csv"
+initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
+
+#temperature data for each stage
+temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
+
+## set seed
+set.seed(1)
 ```
 
-## Including Plots
+# Set-up dataframe
+```{r}
+#Define number of bulk tanks (i.e., number of simulations to run)
+n_sim <-100    #1000 is for testing and exploring, experiments require at least 10k
 
-You can also embed plots, for example:
+#Define number of units per lot (currently, half gallon units) 
+n_halfgal <-10
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+#Define number of shelf life days simulating
+n_day <- 24
+start_day <- 1 
+
+#Repeat each element of the sequence 1..n_sim.Bulk tank data (MC runs)
+BT <- rep(seq(1, n_sim), each = n_halfgal * n_day)
+#Repeat the whole sequences times # of times
+half_gal <- rep(seq(1, n_halfgal), times = n_day * n_sim)
+#Vector of FALSE
+AT <- vector(mode="logical", n_sim * n_halfgal * n_day)
+#Repeat the days for each simulation run
+day <- rep(rep(seq(start_day, start_day+n_day-1), each = n_halfgal), times = n_sim)
+count <- vector(mode = "logical", n_sim * n_halfgal * n_day)
+
+#matrix with columns:
+#  BT   half_gal    AT    day   count
+data <- data.frame(BT, half_gal, AT, day, count)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
