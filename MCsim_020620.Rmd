@@ -63,14 +63,28 @@ start_day <- 1
 end_day <- 24 
 n_day <- 24 # seems like this is the end_day, but keeping code below for now in case my interpretation is wrong
 
-## Prep vectors based on defined values above
-bulk_tank <- rep(seq(1, n_sim), each = n_units * n_day) #Repeat each element of the sequence 1..n_sim
-milk_unit <- rep(seq(1, n_units), times = n_day * n_sim) #Repeat the whole sequences times # of times
-AT <- vector(mode="logical", n_sim * n_units * n_day) #Make a vector of "FALSE" ATs
-day <- rep(rep(seq(start_day, start_day+n_day-1), each = n_units), times = n_sim) #Repeat the days for each simulation run
-count <- vector(mode = "logical", n_sim * n_units * n_day)
+## Prep vectors using defined values above
+# (1) bulk_tank
+#Make a vector for "bulk tank" by repeating sequence of 1:n_sim for length of n_units * n_day
+bulk_tank <- rep(seq(1, n_sim), each = n_units * n_day)
 
-#matrix with columns:
+# (2) milk_unit
+#Make a vector for "milk_unit" by repeating the sequence of 1:n_units by n_day * n_sim
+milk_unit <- rep(seq(1, n_units), times = n_day * n_sim) 
+
+# (3) AT
+# Make an empty vector for "AT" with the length of n_sim * n_units * n_day
+AT <- vector(mode="logical", n_sim * n_units * n_day) 
+
+# (4) day
+#Make a vector repeating days in shelf life that are simulated for each simulation run (i.e., each bulk tank) 
+day <- rep(rep(seq(start_day, start_day+n_day-1), each = n_units), times = n_sim) 
+
+# (5) count
+#Make an empty vector for "count" with the length of n_sim * n_units * n_day
+count <- vector(mode = "logical", n_sim * n_units * n_day) 
+
+## Prep dataframe using vectors above (each vector becomes a column)
 data <- data.frame(bulk_tank, milk_unit, AT, day, count)
 ```
 
