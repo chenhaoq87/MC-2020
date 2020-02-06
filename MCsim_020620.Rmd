@@ -17,6 +17,8 @@ source("UtilityFunctions.R")
 
 #load data
 
+#set seed
+set.seed(1)
 ```
 
 ## Including Plots
