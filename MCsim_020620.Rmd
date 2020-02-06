@@ -88,3 +88,57 @@ count <- vector(mode = "logical", n_sim * n_units * n_day)
 data <- data.frame(bulk_tank, milk_unit, AT, day, count)
 ```
 
+## Prep distributions to sample from using input data
+```{r}
+
+```
+
+## Calculate samples used in the monte carlo
++ Now sample the MPN distributions and the temperature distribution
+```{r}
+#Sample logMPN from normal distribution
+logMPN_mean <- c(-0.7226627)
+logMPN_sd <- c(.9901429)
+logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd)
+MPN_samp = 10^logMPN_samp
+MPN_samp_halfgal = MPN_samp * 1900 #MPN per half gallon (1892.71 mL in half gallon)
+
+#Generate initial MPN for each half gallon from Poisson distribution
+#Also sample AT for each half gallon
+MPN_init<-vector()
+allele <- vector()
+temps <- vector()
+for (i in 1:n_sim){
+  MPN_init_samp <-rep(rpois(n_halfgal, MPN_samp_halfgal[i]), times = n_day)
+  MPN_init<-c(MPN_init, MPN_init_samp)
+  allele_samp <- rep(sample(freq_data, n_halfgal, replace = T), times = n_day)
+  allele <- c(allele, allele_samp)
+  #now calculate temp
+  for (j in 1:nrow(stages)){
+    stage_row <- stages[j, ]
+    n_times <- stage_row$endTime - stage_row$beginTime + 1
+    params <- as.numeric(unlist(strsplit(stage_row$parameters, " ")))
+    temp_mean <- params[[1]]
+    temp_sd <- params[[2]]
+    temp_sample <- rep(rnorm(n_halfgal, temp_mean, temp_sd), times = n_times)
+    temps <- c(temps, temp_sample)
+  }
+}
+#add in temperature
+data$temp <- temps
+
+#Convert MPN_init from half-gallon to mLs
+MPN_init_mL <- MPN_init / 1900
+#remove 0's from the data and replace with detection limit
+MPN_init_mL[MPN_init_mL == 0] <- 0.01;
+
+#Now we add in those calculations to our original dataframe
+data$logMPN_init <- log10(MPN_init_mL) #Add initial logMPN to data frame
+data$AT<-allele #Add in AT data
+
+data$newTemp <- vector(mode="logical", n_sim * n_halfgal * n_day)
+data$newMu<- vector(mode="logical", n_sim * n_halfgal * n_day)
+data$newLag <- vector(mode="logical", n_sim * n_halfgal * n_day)
+```
+
+
