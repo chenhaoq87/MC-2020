@@ -9,6 +9,11 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Set-up environment
+* load packages
+* load functions
+* load data
+* set seed for reproducibilty
 ```{r}
 ## load packages
 library(readr)
@@ -39,15 +44,16 @@ set.seed(1)
 
 # Set-up dataframe
 ```{r}
-#Define number of bulk tanks (i.e., number of simulations to run)
+#Define number of simulations to run (also referred to as the number of bulk tanks; i.e., 1 simulation unit = 1 bulk tank of milk)
+
 n_sim <-100    #1000 is for testing and exploring, experiments require at least 10k
 
 #Define number of units per lot (currently, half gallon units) 
 n_halfgal <-10
 
 #Define number of shelf life days simulating
-n_day <- 24
 start_day <- 1 
+end_day <- 24
 
 #Repeat each element of the sequence 1..n_sim.Bulk tank data (MC runs)
 BT <- rep(seq(1, n_sim), each = n_halfgal * n_day)
