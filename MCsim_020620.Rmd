@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # Set-up environment
 * load packages
 * load functions
-* load data
 * set seed for reproducibilty
 ```{r}
 ## load packages
@@ -21,28 +20,32 @@ library(readr)
 ## load functions
 source("UtilityFunctions.R")
 
-## load data
-
-#frequency data
-frequency_file <- "Frequency.csv"
-freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
-
-#growth parameter data
-growth_file <- "GrowthParameters.csv" #make sure this contains growth parameters & growth model name
-growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
-
-#initial count logMPN data
-init_file <- "InitialCountsMPN.csv"
-initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
-
-#temperature data for each stage
-temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
-
 ## set seed
 set.seed(1)
 ```
 
+# Load input files
+```{r}
+#(1) frequency data
+frequency_file <- "Frequency.csv"
+freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
+
+#(2) growth parameter data
+growth_file <- "GrowthParameters.csv" #make sure this contains growth parameters & growth model name
+growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
+
+#(3) initial count logMPN data
+init_file <- "InitialCountsMPN.csv"
+initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
+
+#(4) temperature data for each stage
+temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
+```
+
 # Set-up dataframe
+* Set important parameters for running the simulation
+* Prep vectors using the defined parameters
+* Prep dataframe using the vectors
 ```{r}
 ##Set important parameters for running the simulation:
 
@@ -90,18 +93,29 @@ data <- data.frame(bulk_tank, milk_unit, AT, day, count)
 
 ## Prep distributions to sample from using input data
 ```{r}
+## How is the initialcount_import data used? Prep distibution for logMPN??
+# initialcount_data = initialcount_import[,3]
+# initialcountlog_data = initialcount_import[,4]
+
+## Prep values needed for logMPN normal distribution
+logMPN_mean <- c(-0.7226627) #where does this come from?
+logMPN_sd <- c(.9901429) #where does this come from?
+
+## Sample from logMPN normal distribution
+logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd)
+
+## Convert logMPN_samp back to MPN
+MPN_samp = 10^logMPN_samp
+
+## Convert MPN for each sample (here, unique for each simulation aka bulk tank) to equivalent in milk unit of interest (here, unit = half gallon)
+MPN_samp_halfgal = MPN_samp * 1900 #MPN per half gallon (1892.71 mL in half gallon)
 
 ```
 
 ## Calculate samples used in the monte carlo
 + Now sample the MPN distributions and the temperature distribution
 ```{r}
-#Sample logMPN from normal distribution
-logMPN_mean <- c(-0.7226627)
-logMPN_sd <- c(.9901429)
-logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd)
-MPN_samp = 10^logMPN_samp
-MPN_samp_halfgal = MPN_samp * 1900 #MPN per half gallon (1892.71 mL in half gallon)
+
 
 #Generate initial MPN for each half gallon from Poisson distribution
 #Also sample AT for each half gallon
