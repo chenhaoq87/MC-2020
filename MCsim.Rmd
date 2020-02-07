@@ -28,19 +28,19 @@ set.seed(1)
 
 ## 2. Load input files
 ```{r}
-#(a) frequency data
+# (a) frequency data
 frequency_file <- "Frequency.csv"
 freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
 
-#(b) growth parameter data
+# (b) growth parameter data
 growth_file <- "GrowthParameters.csv" #make sure this contains growth parameters & growth model name
 growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
 
-#(c) initial count logMPN data
+# (c) initial count logMPN data
 init_file <- "InitialCountsMPN.csv"
 initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
 
-#(d) temperature data for each stage (Note for Sarah to fix temp_stages format)
+# (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
 temp_stages_file <- "temp_stages.csv"
 temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
 ```
