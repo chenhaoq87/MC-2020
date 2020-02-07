@@ -18,6 +18,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 ## load packages
 library(readr)
+library(censReg)
+library(fitdistrplus)
 
 ## load functions
 source("UtilityFunctions.R")
@@ -32,32 +34,15 @@ set.seed(1)
 frequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
 freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
 
-# prep frequency distribution 
-library(censReg)
-MPNdata <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
-MPNdata$log.adj.mpn <- log10(MPNdata$ADJ.MPN)
-
-
-### fitdistr
-library(fitdistrplus)
-MPNdata$logleft <- log10(MPNdata$left)
-MPNdata$logright <- log10(MPNdata$right)
-MPNdata$logMPN <- log10(MPNdata$MPN)
-cens_data <- MPNdata[,c("logleft","logright")]
-names(cens_data) <- c("left","right")
-fit <- fitdistcens(censdata = cens_data,distr = "norm")
-hist(MPNdata$logMPN,freq=F)
-curve(dnorm(x,mean=fit$estimate[1],sd = fit$estimate[2]),add=T)
-```
-
-```{r}
 # (b) growth parameter data
 growth_file <- "Ariel_2017MC_SporeModel/InputFiles/GrowthParameters.csv" #make sure this contains growth parameters & growth model name
 growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
 
 # (c) initial count logMPN data
-init_file <- "InitialCountsMPN.csv"
-initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
+# init_file <- "InitialCountsMPN.csv"
+# initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
+
+MPNdata <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
 
 # (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
 temp_stages_file <- "temp_stages.csv"
@@ -121,13 +106,26 @@ b. Frequency of allelic types
 c. Temperature distribution for each stage 
 ```{r}
 ## (a) Initial contamination: logMPN normal distribution (note: How is the initialcount_import data used? Where did logMPN_mean and logMPN_sd come from?)
+
+# prep frequency distribution 
+MPNdata$logleft <- log10(MPNdata$left)
+MPNdata$logright <- log10(MPNdata$right)
+MPNdata$logMPN <- log10(MPNdata$MPN)
+cens_data <- MPNdata[,c("logleft","logright")]
+names(cens_data) <- c("left","right")
+fit <- fitdistcens(censdata = cens_data,distr = "norm")
+hist(MPNdata$logMPN,freq=F)
+curve(dnorm(x,mean=fit$estimate[1],sd = fit$estimate[2]),add=T)
+
+logMPN_mean <- fit$estimate[1]
+logMPN_sd <- fit$estimate[2]
+
 # initialcount_data = initialcount_import[,3]
 # initialcountlog_data = initialcount_import[,4]
 
-#Set mean and sd to use for normal distribution
-logMPN_mean <- c(-0.7226627) 
-logMPN_sd <- c(.9901429) 
-
+# OR Set mean and sd to use for normal distribution:
+# logMPN_mean <- c(-0.7226627) 
+# logMPN_sd <- c(.9901429)
 ## (b) Frequency of allelic types
 #Here, the "distribution" of ATs are taken directly from the input file by creating a vector of the AT in each of the rows in the the column containing the AT
 
