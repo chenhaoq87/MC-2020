@@ -184,9 +184,8 @@ data$newMu<- vector(mode="logical", n_sim * n_units * n_day)
 data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 ```
 
-## 6. Calculate log10N
+## 6. Calculate log10N for each row in dataframe
 ```{r}
-##Now we will calculate the log10N for each row in the data frame
 ##Get the AT and day from the data frame, get growth parameters depending on the AT
 # Simulation   ----
 for (i in 1:(n_sim *n_units * n_day)){
