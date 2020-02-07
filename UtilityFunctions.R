@@ -72,8 +72,8 @@ lagAtNewTemp <- function (t, newTemp, oldLag, oldTemp = 6, T0 = -3.62) {
   return(newLag)
 }
 
-getPrevRow <- function(df, sim_run, half_gallon, day) {
-  old_temp <- df[df$BT == sim_run & df$half_gal == half_gallon & df$day==day-1,] 
+getPrevRow <- function(df, sim_run, milk_unit, day) {
+  old_temp <- df[df$bulk_tank == sim_run & df$milk_unit == milk_unit & df$day==day-1,] 
 }
 
 
