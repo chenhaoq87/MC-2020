@@ -1,9 +1,11 @@
 ---
-title: "MCsim_020620"
-author: "Sarah I. Murphy"
+title: "MCsim"
+author: "Sarah I. Murphy, Samantha Lau, Timothy Lott, Aljosa Trmcic"
 date: "2/6/2020"
 output: pdf_document
 ---
+
+The authors listed above are current contributors to this file. Earlier versions were the work of Ariel Buehler and Michael Phillips. Review README.md [https://github.com/FSL-MQIP/MC-2020/blob/master/README.md] for more information.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
