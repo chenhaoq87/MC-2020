@@ -32,6 +32,25 @@ set.seed(1)
 frequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
 freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
 
+# prep frequency distribution 
+library(censReg)
+MPNdata <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
+MPNdata$log.adj.mpn <- log10(MPNdata$ADJ.MPN)
+
+
+### fitdistr
+library(fitdistrplus)
+MPNdata$logleft <- log10(MPNdata$left)
+MPNdata$logright <- log10(MPNdata$right)
+MPNdata$logMPN <- log10(MPNdata$MPN)
+cens_data <- MPNdata[,c("logleft","logright")]
+names(cens_data) <- c("left","right")
+fit <- fitdistcens(censdata = cens_data,distr = "norm")
+hist(MPNdata$logMPN,freq=F)
+curve(dnorm(x,mean=fit$estimate[1],sd = fit$estimate[2]),add=T)
+```
+
+```{r}
 # (b) growth parameter data
 growth_file <- "Ariel_2017MC_SporeModel/InputFiles/GrowthParameters.csv" #make sure this contains growth parameters & growth model name
 growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
