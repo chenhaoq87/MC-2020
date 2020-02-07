@@ -3,15 +3,16 @@
 
 ## (1) muAtNewTemp
 
-# Source: this function uses the Ratkowsky square model which describes the effect of temperature on the growth of microorganisms (https://www.ncbi.nlm.nih.gov/pubmed/22417595)
+# Source: this function uses Ratkowsky's square root model which describes the effect of temperature on the growth of microorganisms (https://www.ncbi.nlm.nih.gov/pubmed/22417595)
 
 # Purpose: Calculate the new mu parameter at new temperature.
 
 # Parameters: 
-# (i) newTemp: the new temperature for which we calculate mu
-# (ii) oldMu: the previous mu value to adjust
-# (iii) oldTemp: the temperature corresponding to previous mu
-# (iv) T0: parameter used to calculate new mu; 
+# (i) newTemp: New temperature for which we calculate mu
+# (ii) oldMu: Previous mu value to adjust
+# (iii) oldTemp: Temperature corresponding to previous mu; Here, oldTemp = 6C since growth curve experiments were originally performed at 6C
+# (iv) T0: Parameter used to calculate new mu; Note: Here, T0 = -3.62C was determined using Ratkowsky's square root model 
+#and Paenibacillus ordorifer growth curves obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
 
 # Function:
 muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) { 
@@ -22,20 +23,17 @@ muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) {
   return(newMu)
 }
 
-# Note: T0 in the above function is estimated to be -3.62C based on growth curves of
-#Paenibacillus ordorifer obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
-
 
 ## (2) adjustLag
 
 # Purpose: Adjust the lag phase based on the Zwietering 1994 paper.
 
 # Parameters:  
-# (i) t: the current timestep
-# (ii) oldLag: the lag time at the previous temperature
-# (iii) newLag: the lag time at the current temparature.
-# (iv) restartExp: If true then lag phase restarts even if already in exponential growth phase.
-# (v) adjustmentConstant: The amount to adjust lag, the paper recommends 0.25
+# (i) t: Current timestep (in days)
+# (ii) oldLag: Lag time (in days) at the previous temperature 
+# (iii) newLag: Lag time (in days) at the current temparature 
+# (iv) restartExp: If true, then lag phase restarts even if already in exponential growth phase
+# (v) adjustmentConstant: Amount to adjust lag, the paper recommends 0.25
 
 # Function:
 adjustLag <- function (t, oldLag, newLag, restartExp = T, adjustmentConstant = 0.25) {
@@ -59,10 +57,12 @@ adjustLag <- function (t, oldLag, newLag, restartExp = T, adjustmentConstant = 0
 # Purpose: Calculate the new lag parameter at new temperature.
 
 # Parameters:
-# (i) newTemp: the new temperature for which we calculate lag
-# (ii) oldLag: the previous lag value to adjust
-# (iii) oldTemp: the temperature corresponding to previous lag
-# (iv) T0: parameter used to calculate new lag
+# (i) t: Current timestep (in days)
+# (ii) newTemp: New temperature for which we calculate lag
+# (iii) oldLag: Previous lag value to adjust
+# (iv) oldTemp: Temperature corresponding to previous lag
+# (v) T0: Parameter used to calculate new mu; Note: Here, T0 = -3.62C was determined using Ratkowsky's square root model 
+#and Paenibacillus ordorifer growth curves obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
 
 # Function:
 lagAtNewTemp <- function (t, newTemp, oldLag, oldTemp = 6, T0 = -3.62) {
