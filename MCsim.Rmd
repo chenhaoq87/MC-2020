@@ -29,11 +29,11 @@ set.seed(1)
 ## 2. Load input files
 ```{r}
 # (a) frequency data
-frequency_file <- "Frequency.csv"
+frequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
 freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
 
 # (b) growth parameter data
-growth_file <- "GrowthParameters.csv" #make sure this contains growth parameters & growth model name
+growth_file <- "Ariel_2017MC_SporeModel/InputFiles/GrowthParameters.csv" #make sure this contains growth parameters & growth model name
 growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
 
 # (c) initial count logMPN data
