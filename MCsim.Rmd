@@ -225,5 +225,11 @@ for (i in 1:(n_sim *n_units * n_day)){
 }
 ```
 
+## 7. Save results
+```{r}
+save(data,"MCsim_result_df.RData")
+```
+
+
 
 
