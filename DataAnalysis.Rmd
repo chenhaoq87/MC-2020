@@ -9,22 +9,127 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+#load packages
+library(readr)
+library(dplyr)
+library(splitstackshape)
+library(ggplot2)
 ```
 
-## Including Plots
+## Data Analysis   ----
+```{r}
+#We now have a data frame filled with the results of our simulation, we can use
+#this dataframe to test or visualize our results. Following are some examples.
 
-You can also embed plots, for example:
+data$LOT<- as.factor(data$LOT)
+data$day<- as.factor(data$day)
+#Calculate the mean count by day
+data %>%
+  group_by(LOT, day) %>%
+  summarise(mean = mean(count), sd = sd(count))-> mean_by_day_lot
+mean_by_day_lot
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+data %>%
+  group_by(day) %>%
+  summarise(mean = mean(count), sd = sd(count))-> mean_by_day
+mean_by_day
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+# ggplot(data=mean_by_day_lot, aes(x=day,y=mean, group=day))+
+#   geom_boxplot()+
+#   scale_y_continuous(limits = c(0, 9), breaks = seq(0, 9, by = 1))+
+#   labs(y = "Mean APC of spinach lot (log CFU/g)", x = "Day" )
+# 
+# ggplot(data=data, aes(x=day,y=count))+
+#   geom_boxplot()+
+#   scale_y_continuous(limits = c(0, 9), breaks = seq(0, 9, by = 1))+
+#   labs(y = "Spinach package APC (log CFU/g)", x = "Day" )
+# 
+# ggplot(data=data, aes(x=day,y=count))+
+#   geom_violin()+
+#   scale_y_continuous(limits = c(0, 9), breaks = seq(0, 9, by = 1))+
+#   labs(y = "Spinach package APC (log CFU/g)", x = "Day" )
+
+```
+
+
+
+```{r}
+#what percent of samples spoiled for each day in shelf life
+days <- seq(1, 14, 1)
+spoiled <- vector(mode = "logical", length(days))
+spoiled_by_day <- data.frame(days, spoiled)
+
+for (d in days) {
+  numerator <-   length(which(subset(data, data$day == d)$count>7))
+  denominator <- length(subset(data, data$day == d)$count)
+  
+  spoiled_by_day[spoiled_by_day$days==d,]$spoiled <- numerator / denominator * 100
+}
+
+spoiled_by_day$days <- factor(spoiled_by_day$days)
+
+#Plot
+pdf(file='plot_mu_low_worstcase_summary.pdf')
+fig1 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day, 
+                               aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 7 log CFU/g APC", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 14, 1), labels=seq(1, 14, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))
+fig1
+
+dev.off()
+```
+```{r}
+#What percent of samples spoiled by day 10?
+length(which(subset(data, data$day == 10)$count>7))/length(subset(data, data$day == 10)$count)
+
+#What percent of samples spoiled by day 14?
+length(which(subset(data, data$day == 14)$count>7))/length(subset(data, data$day == 14)$count)
+```
+
+```{r}
+##
+#Make df of data by day
+d0<-data[c(1:3,6)]
+d0<-unique(d0)
+d1<- data[data$day=="1",] 
+d2<- data[data$day=="2",] 
+d3<- data[data$day=="3",] 
+d4<- data[data$day=="4",] 
+d5<- data[data$day=="5",] 
+d6<- data[data$day=="6",] 
+d7<- data[data$day=="7",] 
+d8<- data[data$day=="8",] 
+d9<- data[data$day=="9",] 
+d10<- data[data$day=="10",]
+d11<- data[data$day=="11",] 
+d12<- data[data$day=="12",] 
+d13<- data[data$day=="13",] 
+d14<- data[data$day=="14",] 
+```
+
+```{r}
+#plot each day simulated histogram; y axis=
+
+# pdf(file='plot_initialmicro_low_bestcase.pdf')
+hist(d0$logCFU_init,main="Histogram of simulated spinach APC over shelf-life\n Day = 0", xlab=expression('Log'['10']*'CFU/g'),xlim=c(0,10),ylim=c(0,5000),breaks=20, col="gray")
+hist(d1$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 1",  xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d2$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 2", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d3$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 3", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d4$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 4", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d5$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 5", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d6$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 6", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d7$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 7", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d8$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 8", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d9$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 9", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+hist(d10$count, main="Histogram of simulated spinach APC over shelf-life\n Day = 10", xlab=expression('Log'['10']*'CFU/g'), xlim=c(0,10), ylim=c(0,5000),breaks=20, col="gray")
+# dev.off()
+```
