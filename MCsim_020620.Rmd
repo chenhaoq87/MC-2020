@@ -93,30 +93,35 @@ data <- data.frame(bulk_tank, milk_unit, AT, day, count)
 
 ## Prep distributions to sample from using input data
 ```{r}
-## How is the initialcount_import data used? Prep distibution for logMPN??
+## (1) Initial contamination: logMPN normal distribution
+#NEED TO ADDRESS WHY NOT CURRENTLY USING THE INPUT DATA
+
+#Question (Sarah): How is the initialcount_import data used? Prep distibution for logMPN??
 # initialcount_data = initialcount_import[,3]
 # initialcountlog_data = initialcount_import[,4]
 
-## Prep values needed for logMPN normal distribution
+# Prep values needed for logMPN normal distribution
 logMPN_mean <- c(-0.7226627) #where does this come from?
 logMPN_sd <- c(.9901429) #where does this come from?
 
-## Sample from logMPN normal distribution
+# Sample from logMPN normal distribution
 logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd)
 
-## Convert logMPN_samp back to MPN
+# Convert logMPN_samp back to MPN
 MPN_samp = 10^logMPN_samp
 
-## Convert MPN for each sample (here, unique for each simulation aka bulk tank) to equivalent in milk unit of interest (here, unit = half gallon)
+# Convert MPN for each sample (here, unique for each simulation aka bulk tank) to equivalent in milk unit of interest (here, unit = half gallon)
 MPN_samp_halfgal = MPN_samp * 1900 #MPN per half gallon (1892.71 mL in half gallon)
+
+## (2) Frequency of allelic types
+#Here, the "distribution" of ATs are taken directly from the input file by creating a vector of the AT in each of the rows in the the column containing the AT
+AT_freq <- freq_import$rpoB.allelic.type 
 
 ```
 
 ## Calculate samples used in the monte carlo
 + Now sample the MPN distributions and the temperature distribution
 ```{r}
-
-
 #Generate initial MPN for each half gallon from Poisson distribution
 #Also sample AT for each half gallon
 MPN_init<-vector()
