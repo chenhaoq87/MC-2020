@@ -130,6 +130,38 @@ MPN_samp = 10^logMPN_samp
 MPN_samp_halfgal = MPN_samp * 1900
 ```
 
+```{r}
+#MPN_init
+MPN_init<-vector()
+for (i in 1:n_sim){
+  MPN_init_samp <-rep(rpois(n_units, MPN_samp_halfgal[i]), times = n_day)
+  MPN_init<-c(MPN_init, MPN_init_samp)}
+```
+
+```{r}
+#allele
+allele <- vector()
+for (i in 1:n_sim){
+  allele_samp <- rep(sample(AT_freq, n_units, replace = T), times = n_day)
+  allele <- c(allele, allele_samp)}
+```
+
+```{r}
+#temps
+temps <- vector()
+for (i in 1:n_sim){
+  for (j in 1:nrow(temp_by_stage)){
+    stage_row <- temp_by_stage[j, ]
+    n_times <- stage_row$endTime - stage_row$beginTime + 1
+    params <- as.numeric(unlist(strsplit(stage_row$parameters, " ")))
+    temp_mean <- params[[1]]
+    temp_sd <- params[[2]]
+    temp_sample <- rep(rnorm(n_units, temp_mean, temp_sd), times = n_times)
+    temps <- c(temps, temp_sample)}}
+#add in temperature
+data$temp <- temps
+```
+
 ## Calculate samples used in the monte carlo
 + Now sample the MPN distributions and the temperature distribution
 ```{r}
