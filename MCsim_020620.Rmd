@@ -120,7 +120,7 @@ temp_by_stage
 
 ## Sample distributions
 ```{r}
-#Sample logMPN distribution
+#Sample logMPN distribution 
 logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd) 
 
 #Convert logMPN_samp back to MPN_samp
@@ -139,18 +139,18 @@ MPN_init<-vector()
 allele <- vector()
 temps <- vector()
 for (i in 1:n_sim){
-  MPN_init_samp <-rep(rpois(n_halfgal, MPN_samp_halfgal[i]), times = n_day)
+  MPN_init_samp <-rep(rpois(n_units, MPN_samp_halfgal[i]), times = n_day)
   MPN_init<-c(MPN_init, MPN_init_samp)
-  allele_samp <- rep(sample(freq_data, n_halfgal, replace = T), times = n_day)
+  allele_samp <- rep(sample(AT_freq, n_units, replace = T), times = n_day)
   allele <- c(allele, allele_samp)
   #now calculate temp
-  for (j in 1:nrow(stages)){
-    stage_row <- stages[j, ]
+  for (j in 1:nrow(temp_by_stage)){
+    stage_row <- temp_by_stage[j, ]
     n_times <- stage_row$endTime - stage_row$beginTime + 1
     params <- as.numeric(unlist(strsplit(stage_row$parameters, " ")))
     temp_mean <- params[[1]]
     temp_sd <- params[[2]]
-    temp_sample <- rep(rnorm(n_halfgal, temp_mean, temp_sd), times = n_times)
+    temp_sample <- rep(rnorm(n_units, temp_mean, temp_sd), times = n_times)
     temps <- c(temps, temp_sample)
   }
 }
