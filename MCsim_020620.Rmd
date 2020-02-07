@@ -168,9 +168,9 @@ MPN_init_mL[MPN_init_mL == 0] <- 0.01;
 data$logMPN_init <- log10(MPN_init_mL) #Add initial logMPN to data frame
 data$AT<-allele #Add in AT data
 
-data$newTemp <- vector(mode="logical", n_sim * n_halfgal * n_day)
-data$newMu<- vector(mode="logical", n_sim * n_halfgal * n_day)
-data$newLag <- vector(mode="logical", n_sim * n_halfgal * n_day)
+data$newTemp <- vector(mode="logical", n_sim * n_units * n_day)
+data$newMu<- vector(mode="logical", n_sim * n_units * n_day)
+data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 ```
 
 
