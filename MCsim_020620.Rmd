@@ -173,4 +173,44 @@ data$newMu<- vector(mode="logical", n_sim * n_units * n_day)
 data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 ```
 
+```{r}
+##Now we will calculate the log10N for each row in the data frame
+##Get the AT and day from the data frame, get growth parameters depending on the AT
+# Simulation   ----
+for (i in 1:(n_sim *n_units * n_day)){
+  #Find row in growth parameter data that corresponds to allele sample
+  allele_index <- which(growth_import$rpoBAT == data$AT[i]) 
+  row <- data[i, ]
+  prev_row <- getPrevRow(data, row$bulk_tank, row$milk_unit, row$day)
+  update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
+  #calculate the new growth parameters using the square root model and our
+  #sampled temperature
+  
+    newT <- row$temp
+    newLag <- ifelse(update, 
+                     lagAtNewTemp(row$day, newT, growth_import$lag[allele_index]),
+                     prev_row$newLag)
+     old_lag <- ifelse(row$day==1, newLag, prev_row$newLag )
+     # newLag <- ifelse(update & row$day <= old_lag & row$day > 1, 
+     #                  adjustLag(row$day, old_lag, newLag),
+     #                  old_lag)
+     newLag <- ifelse(update & row$day > 1, 
+                      adjustLag(row$day, old_lag, newLag, restartExp = F),
+                      old_lag)
+    newMu <-  ifelse(update, 
+                     muAtNewTemp(newT, growth_import$mumax[allele_index]),
+                     prev_row$newMu)
+  data$newTemp[i] <- newT
+  data$newLag[i] <- newLag
+  data$newMu[i] <- newMu
+  
+  #Calculate the log10N count using our new growth parameters
+  newCount <- log10N_func(row$day, newLag, newMu,data$logMPN_init[i],growth_import$LOG10Nmax[allele_index])
+  oldCount <- log10N_func(row$day-1, newLag, newMu,data$logMPN_init[i],growth_import$LOG10Nmax[allele_index])
+  data$count[i] <- ifelse(row$day==1, newCount,
+                          prev_row$count + (newCount-oldCount))
+}
+```
+
+
 
