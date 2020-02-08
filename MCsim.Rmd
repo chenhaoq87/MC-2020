@@ -55,11 +55,11 @@ i. Set important parameters for running the simulation:
 ```{r}
 # (a) n_sim
 # Definition: Number of simulations to run (also referred to as the number of bulk tanks in earlier code; i.e., 1 simulation unit = 1 bulk tank of milk)
-n_sim <-100    #can use any n_sim for testing code, but need to change to at least 10k when running experiments
+n_sim <-100 #can use any n_sim for testing code, but need to change to at least 10k when running experiments
 
 # (b) n_units 
 # Definition: Number of units per lot (currently, half gallon units) 
-n_units <-10
+n_units <- 10
 
 # (c) start_day 
 # Definition: First time point (in days) in unit's shelf life to simulate
@@ -130,7 +130,7 @@ logMPN_sd <- fit$estimate[2]
 ## (b) Frequency of allelic types
 #Here, the "distribution" of ATs are taken directly from the input file by creating a vector of the AT in each of the rows in the the column containing the AT
 
-AT_freq <- freq_import$rpoB.allelic.type 
+AT_freq <- freq_import$ClosestAT 
 
 ## (c) Temperature distribution for each stage (Note for Sarah to fix)
 #Here, the distribution and parameters are currently already written into the input file
@@ -183,24 +183,27 @@ for (i in 1:n_sim){
 ii. Add results from sampling distribution in (i) to dataframe
 ```{r}
 ## (a) Reformat and add initial logMPN to dataframe
-#Convert MPN_init from half-gallon to mLs
+#First convert MPN_init from half-gallon to mLs
 MPN_init_mL <- MPN_init / 1900
-#remove 0's from the data and replace with detection limit
+#Also need to remove 0's from the data and replace with detection limit
 MPN_init_mL[MPN_init_mL == 0] <- 0.01;
 #Add logMPN_init to dataframe
 data$logMPN_init <- log10(MPN_init_mL) 
 
 ## (b) Add AT to dataframe
-data$AT<-allele 
+data$AT <- allele 
 
 ## (c) #Add temp to dataframe
 data$temp <- temps 
+# OR just set what the temperature should be for all:
+# data$temp <- 4
+
 ```
 
 iii. Prepare empty vectors for newTemp, newMu, newLag with length n_sim * n_units * n_day
 ```{r}
 data$newTemp <- vector(mode="logical", n_sim * n_units * n_day)
-data$newMu<- vector(mode="logical", n_sim * n_units * n_day)
+data$newMu <- vector(mode="logical", n_sim * n_units * n_day)
 data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 ```
 
