@@ -196,7 +196,7 @@ data$AT <- allele
 ## (c) #Add temp to dataframe
 data$temp <- temps 
 # OR just set what the temperature should be for all:
-# data$temp <- 4
+data$temp <- 6
 
 ```
 
@@ -244,6 +244,7 @@ for (i in 1:(n_sim *n_units * n_day)){
   data$count[i] <- ifelse(row$day==1, newCount,
                           prev_row$count + (newCount-oldCount))
 }
+
 ```
 
 ## 7. Save results
