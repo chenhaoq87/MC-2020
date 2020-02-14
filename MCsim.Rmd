@@ -33,11 +33,11 @@ set.seed(1)
 ```{r}
 # (a) frequency data
 # spore
-spore_frequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
-spore_freq_import <- read.csv(spore_frequency_file, stringsAsFactors = FALSE, header = TRUE)
+spore_ATfrequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
+spore_ATfreq_import <- read.csv(spore_ATfrequency_file, stringsAsFactors = FALSE, header = TRUE)
 # ppc
-ppc_frequency_file <- "Sam_FFAR_PPCmodel/InputFiles/Frequency_ONLYSAMISOLATES_remove13and23_020120.csv"
-ppc_freq_import <- read.csv(ppc_frequency_file, stringsAsFactors = FALSE, header = TRUE)
+ppc_STfrequency_file <- "Sam_FFAR_PPCmodel/InputFiles/Frequency_ONLYSAMISOLATES_remove13and23_020120.csv"
+ppc_STfreq_import <- read.csv(ppc_STfrequency_file, stringsAsFactors = FALSE, header = TRUE)
 
 # (b) growth parameter data; make sure this contains growth parameters & growth model name
 # spore 
