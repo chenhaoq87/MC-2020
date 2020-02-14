@@ -66,23 +66,27 @@ source("FreqPPC.R")
 ```
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
-    * For the sake of simplifying the code, in PPC files we will temporarily call "ST", "AT" instead to match spore fies
 ```{r}
 # modify frequency data file structure for ppc to match spore
 ppc_STfreq_import <- ppc_STfreq_import %>% 
   rename(RealAT = X16S_ST)
-ppc_STfreq_import$ClosestAT <- ppc_STfreq_import$RealAT
+ppc_STfreq_import$ClosestST <- ppc_STfreq_import$RealST
 ppc_STfreq_import <- ppc_STfreq_import[c(5:6)]
 
+# modify growth import data file structure and also added "ST_" and "AT_", respectively to aid analysis
 ppc_growth_import <- ppc_growth_import %>% 
   rename(mumax = mu,
          LOG10N0 = N0,
          LOG10Nmax = Nmax,
          model_name = modelname)  
+ppc_growth_import$temp <- "ST"
+ppc_growth_import$ST <- paste(ppc_growth_import$temp,ppc_growth_import$ST,sep="_")
 
 spore_growth_import <- spore_growth_import %>%
   .[c(1:5)]%>%
   rename(AT = rpoBAT)
+spore_growth_import$temp <- "AT"
+spore_growth_import$AT <- paste(spore_growth_import$temp,spore_growth_import$AT,sep="_")
 
 ppc_init_file <- ppc_init_file %>%
   .[c(1,3)]%>%
@@ -180,14 +184,14 @@ ppc_log10CFU_sd <- ppc_fit$estimate[2]
 # (i) spore data
 AT_freq <- spore_ATfreq_import$ClosestAT 
 # (ii) ppc data
-ST_freq <- ppc_STfreq_import$ClosestAT 
+ST_freq <- ppc_STfreq_import$ClosestST 
 
 ## (c) Temperature distribution for each stage (Note for Sarah to fix)
 #Here, the distribution and parameters are currently already written into the input file
 temp_by_stage
 
 ## (d) Frequency of PPC
-PPC_freq <- df_freqPPC$exceed20000_d10 #can change this to change by samplings or plants (or can rewrite code below)
+PPC_freq <- as.character(df_freqPPC$exceed20000_d10) #can change this to change by samplings or plants (or can rewrite code below)
 ```
 
 ## 5. Sample distributions
@@ -265,16 +269,41 @@ for (i in 1:n_sim){
 
 ii. Add results from sampling distribution in (i) to dataframe
 ```{r}
-## (a) Reformat and add initial logMPN to dataframe
-#First convert MPN_init from half-gallon to mLs
-MPN_init_mL <- MPN_init / 1900
+## (a) add spoilage_ppc to dataframe
+spoilage_ppc<-as.factor(spoilage_ppc)
+levels(spoilage_ppc)[levels(spoilage_ppc)=="0"] <- "spore"
+levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "ppc"
+data$spoilage_type <- spoilage_ppc
+
+## (a) Reformat and add initial log10CFU & log10MPN to dataframe
+# (i) spore
+#First convert spore_MPN_init from half-gallon to mLs
+spore_MPN_init_mL <- spore_MPN_init / 1900
 #Also need to remove 0's from the data and replace with detection limit
-MPN_init_mL[MPN_init_mL == 0] <- 0.01;
-#Add logMPN_init to dataframe
-data$logMPN_init <- log10(MPN_init_mL) 
+spore_MPN_init_mL[spore_MPN_init_mL == 0] <- 0.01;
+#Add ppc_log10CFU_init to dataframe
+data$spore_log10MPN_init <- log10(spore_MPN_init_mL) 
+
+#(ii) ppc
+#First convert ppc_CFU_init from half-gallon to mLs
+ppc_CFU_init_mL <- ppc_CFU_init / 1900
+#Also need to remove 0's from the data and replace with detection limit (check if 0.01 is actually detection limit)
+ppc_CFU_init_mL[ppc_CFU_init_mL == 0] <- 0.01;
+#Add ppc_log10CFU_init to dataframe
+data$ppc_log10CFU_init <- log10(ppc_CFU_init_mL) 
+
+#(iii) logCount_init
+data$logCount_init <- data$spoilage_type
+data$logCount_init <- with(data, ifelse( logCount_init == "spore", spore_log10MPN_init, ppc_log10CFU_init ) )
 
 ## (b) Add AT to dataframe column STorAT
-data$STorAT <- AT
+#(i) spore
+data$AT <- AT
+#(ii) ppc
+data$ST <- ST
+# (iii) STorAT
+data$STorAT <- data$spoilage_type
+data$STorAT <- with(data, ifelse( STorAT == "spore", AT, ST) )
 
 ## (c) #Add temp to dataframe
 data$temp <- temps 
@@ -322,8 +351,8 @@ for (i in 1:(n_sim *n_units * n_day)){
   data$newMu[i] <- newMu
   
   #Calculate the log10N count using our new growth parameters
-  newCount <- log10N_func(row$day, newLag, newMu,data$logMPN_init[i],growth_import$LOG10Nmax[allele_index])
-  oldCount <- log10N_func(row$day-1, newLag, newMu,data$logMPN_init[i],growth_import$LOG10Nmax[allele_index])
+  newCount <- log10N_func(row$day, newLag, newMu,data$logCount_init[i],growth_import$LOG10Nmax[allele_index])
+  oldCount <- log10N_func(row$day-1, newLag, newMu,data$logCount_init[i],growth_import$LOG10Nmax[allele_index])
   data$count[i] <- ifelse(row$day==1, newCount,
                           prev_row$count + (newCount-oldCount))
 }
