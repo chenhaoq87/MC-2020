@@ -31,7 +31,7 @@ set.seed(1)
 ## 2. Load input files
 * load
 ```{r}
-# (a) frequency data
+# (a) AT/ST frequency data
 # spore
 spore_ATfrequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
 spore_ATfreq_import <- read.csv(spore_ATfrequency_file, stringsAsFactors = FALSE, header = TRUE)
@@ -59,6 +59,9 @@ ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/InitialCount_25percent_S
 # (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
 temp_stages_file <- "temp_stages.csv"
 temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
+
+# (e) PPC frequency data
+source("FreqPPC.R")
 ```
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
