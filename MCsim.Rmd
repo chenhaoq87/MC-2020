@@ -153,34 +153,33 @@ c. Temperature distribution for each stage
 
 # determine appropriate normal distribution based on input data 
 # (i) spore data
-spore_MPNdata$logleft <- log10(spore_MPNdata$left)
-spore_MPNdata$logright <- log10(spore_MPNdata$right)
-spore_MPNdata$logMPN <- log10(spore_MPNdata$MPN)
-cens_data <- spore_MPNdata[,c("logleft","logright")]
+spore_MPNdata$log10left <- log10(spore_MPNdata$left)
+spore_MPNdata$log10right <- log10(spore_MPNdata$right)
+spore_MPNdata$log10MPN <- log10(spore_MPNdata$MPN)
+cens_data <- spore_MPNdata[,c("log10left","log10right")]
 names(cens_data) <- c("left","right")
 spore_fit <- fitdistcens(censdata = cens_data,distr = "norm")
-hist(spore_MPNdata$logMPN,freq=F,xlim = c(-4,4))
+hist(spore_MPNdata$log10MPN,freq=F,xlim = c(-4,4))
 curve(dnorm(x,mean=spore_fit$estimate[1],sd = spore_fit$estimate[2]),add=T)
+plot(spore_fit)
+summary(spore_fit)
 
-spore_logMPN_mean <- spore_fit$estimate[1]
-spore_logMPN_sd <- spore_fit$estimate[2]
+spore_log10MPN_mean <- spore_fit$estimate[1]
+spore_log10MPN_sd <- spore_fit$estimate[2]
 
 # (ii) ppc data; https://stats.stackexchange.com/questions/132652/how-to-determine-which-distribution-fits-my-data-best
-ppc_fit <- fitdist(data = ppc_init_file$CFU,distr = "norm")
 ppc_fit <- fitdist(data = ppc_init_file$log10CFU,distr = "norm")
-descdist(data = ppc_init_file$CFU)
-plot(ppc_fit)
-# initialcount_data <- initialcount_import[,3]
-# initialcountlog_data <- initialcount_import[,4]
+plot(ppc_fit) #fit looks OK
 
-# OR instead of using data, instead you can just set mean and sd to use for normal distribution:
-# logMPN_mean <- c(-0.7226627) 
-# logMPN_sd <- c(.9901429)
+ppc_log10CFU_mean <- ppc_fit$estimate[1]
+ppc_log10CFU_sd <- ppc_fit$estimate[2]
 
 ## (b) Frequency of allelic types
-#Here, the "distribution" of ATs are taken directly from the input file by creating a vector of the AT in each of the rows in the the column containing the AT
-
-AT_freq <- freq_import$ClosestAT 
+#Here, the "distribution" of STs or ATs are taken directly from the input file by creating a vector of the ST or AT in each of the rows in the the column containing the ST or AT
+# (i) spore data
+AT_freq <- spore_ATfreq_import$ClosestAT 
+# (ii) ppc data
+ST_freq <- ppc_STfreq_import$ClosestAT 
 
 ## (c) Temperature distribution for each stage (Note for Sarah to fix)
 #Here, the distribution and parameters are currently already written into the input file
