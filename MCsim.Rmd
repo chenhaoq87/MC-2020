@@ -54,7 +54,7 @@ ppc_growth_import <-read.csv(ppc_growth_file, stringsAsFactors = FALSE)
 # spore
 spore_MPNdata <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
 # ppc
-ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/InitialCount_25percent_SL_101619.csv")
+ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput_SL_021420.csv")
 
 # (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
 temp_stages_file <- "temp_stages.csv"
@@ -84,9 +84,9 @@ spore_growth_import <- spore_growth_import %>%
   rename(AT = rpoBAT)
 
 ppc_init_file <- ppc_init_file %>%
-  .[c(1,3)]%>% #don't include initial micro count since error; asked Sam to check it
-  rename(log10CFU = `LOG Initial microbial count`)
-ppc_init_file$CFU <- 10^(ppc_init_file$log10CFU) #get CFU data
+  .[c(1,3)]%>%
+  rename(CFU = `Initial conc`)
+ppc_init_file$log10CFU <- log10(ppc_init_file$CFU)
 ```
 
 ## 3. Set-up dataframe
