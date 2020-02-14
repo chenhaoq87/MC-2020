@@ -81,7 +81,7 @@ ppc_freq_import <- ppc_freq_import[c(5:6)]
 i. Set important parameters for running the simulation:
 ```{r}
 # (a) n_sim
-# Definition: Number of simulations to run (also referred to as the number of bulk tanks in earlier code; i.e., 1 simulation unit = 1 bulk tank of milk)
+# Definition: Number of simulations to run (also referred to as the number of bulk tanks in earlier code; i.e., 1 simulation unit = 1 lot of milk)
 n_sim <-100 #can use any n_sim for testing code, but need to change to at least 10k when running experiments
 
 # (b) n_units 
@@ -101,9 +101,9 @@ n_day <- 24 # seems like this is the end_day, but keeping code below for now in 
 ii. Prep vectors using defined values above
 ```{r}
 
-# (a) bulk_tank
-#Make a vector for "bulk tank" by repeating sequence of 1:n_sim for length of n_units * n_day
-bulk_tank <- rep(seq(1, n_sim), each = n_units * n_day)
+# (a) lot_id
+#Make a vector for "lot_id" by repeating sequence of 1:n_sim for length of n_units * n_day
+lot_id <- rep(seq(1, n_sim), each = n_units * n_day)
 
 # (b) milk_unit
 #Make a vector for "milk_unit" by repeating the sequence of 1:n_units by n_day * n_sim
@@ -124,7 +124,7 @@ count <- vector(mode = "logical", n_sim * n_units * n_day)
 
 iii. Prep dataframe using vectors above (each vector becomes a column)
 ```{r}
-data <- data.frame(bulk_tank, milk_unit, AT, day, count)
+data <- data.frame(lot_id, milk_unit, AT, day, count)
 ```
 
 ## 4. Prepare distributions using input data
@@ -242,7 +242,7 @@ for (i in 1:(n_sim *n_units * n_day)){
   #Find row in growth parameter data that corresponds to allele sample
   allele_index <- which(growth_import$rpoBAT == data$AT[i]) 
   row <- data[i, ]
-  prev_row <- getPrevRow(data, row$bulk_tank, row$milk_unit, row$day)
+  prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
   update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
   #calculate the new growth parameters using the square root model and our
   #sampled temperature
