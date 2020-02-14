@@ -82,6 +82,11 @@ ppc_growth_import <- ppc_growth_import %>%
 spore_growth_import <- spore_growth_import %>%
   .[c(1:5)]%>%
   rename(AT = rpoBAT)
+
+ppc_init_file <- ppc_init_file %>%
+  .[c(1,3)]%>% #don't include initial micro count since error; asked Sam to check it
+  rename(log10CFU = `LOG Initial microbial count`)
+ppc_init_file$CFU <- 10^(ppc_init_file$log10CFU) #get CFU data
 ```
 
 ## 3. Set-up dataframe
@@ -147,18 +152,24 @@ c. Temperature distribution for each stage
 ## (a) Initial contamination: logMPN normal distribution (note: How is the initialcount_import data used? Where did logMPN_mean and logMPN_sd come from?)
 
 # determine appropriate normal distribution based on input data 
-MPNdata$logleft <- log10(MPNdata$left)
-MPNdata$logright <- log10(MPNdata$right)
-MPNdata$logMPN <- log10(MPNdata$MPN)
-cens_data <- MPNdata[,c("logleft","logright")]
+# (i) spore data
+spore_MPNdata$logleft <- log10(spore_MPNdata$left)
+spore_MPNdata$logright <- log10(spore_MPNdata$right)
+spore_MPNdata$logMPN <- log10(spore_MPNdata$MPN)
+cens_data <- spore_MPNdata[,c("logleft","logright")]
 names(cens_data) <- c("left","right")
-fit <- fitdistcens(censdata = cens_data,distr = "norm")
-hist(MPNdata$logMPN,freq=F,xlim = c(-4,4))
-curve(dnorm(x,mean=fit$estimate[1],sd = fit$estimate[2]),add=T)
+spore_fit <- fitdistcens(censdata = cens_data,distr = "norm")
+hist(spore_MPNdata$logMPN,freq=F,xlim = c(-4,4))
+curve(dnorm(x,mean=spore_fit$estimate[1],sd = spore_fit$estimate[2]),add=T)
 
-logMPN_mean <- fit$estimate[1]
-logMPN_sd <- fit$estimate[2]
+spore_logMPN_mean <- spore_fit$estimate[1]
+spore_logMPN_sd <- spore_fit$estimate[2]
 
+# (ii) ppc data; https://stats.stackexchange.com/questions/132652/how-to-determine-which-distribution-fits-my-data-best
+ppc_fit <- fitdist(data = ppc_init_file$CFU,distr = "norm")
+ppc_fit <- fitdist(data = ppc_init_file$log10CFU,distr = "norm")
+descdist(data = ppc_init_file$CFU)
+plot(ppc_fit)
 # initialcount_data <- initialcount_import[,3]
 # initialcountlog_data <- initialcount_import[,4]
 
