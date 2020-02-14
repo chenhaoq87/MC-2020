@@ -31,18 +31,29 @@ set.seed(1)
 ## 2. Load input files
 ```{r}
 # (a) frequency data
-frequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
-freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
+# spore
+spore_frequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
+spore_freq_import <- read.csv(spore_frequency_file, stringsAsFactors = FALSE, header = TRUE)
+# ppc
+ppc_frequency_file <- "Sam_FFAR_PPCmodel/InputFiles/Frequency_ONLYSAMISOLATES_remove13and23_020120.csv"
+ppc_freq_import <- read.csv(ppc_frequency_file, stringsAsFactors = FALSE, header = TRUE)
 
-# (b) growth parameter data
-growth_file <- "Ariel_2017MC_SporeModel/InputFiles/GrowthParameters.csv" #make sure this contains growth parameters & growth model name
-growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
+# (b) growth parameter data; make sure this contains growth parameters & growth model name
+# spore 
+spore_growth_file <- "Ariel_2017MC_SporeModel/InputFiles/GrowthParameters.csv" 
+spore_growth_import <-read.csv(spore_growth_file, stringsAsFactors = FALSE)
+# ppc
+ppc_growth_file <- "Sam_FFAR_PPCmodel/InputFiles/GrowthParameters_remove13and23_020120.csv" 
+ppc_growth_import <-read.csv(ppc_growth_file, stringsAsFactors = FALSE)
 
 # (c) initial count logMPN data
 # init_file <- "InitialCountsMPN.csv"
 # initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
 
-MPNdata <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
+# spore
+spore_MPNdata <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
+# ppc
+ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/InitialCount_25percent_SL_101619.csv")
 
 # (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
 temp_stages_file <- "temp_stages.csv"
