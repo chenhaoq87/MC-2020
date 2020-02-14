@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(censReg)
 library(fitdistrplus)
+library(splitstackshape)
 
 ## load functions
 source("UtilityFunctions.R")
@@ -52,7 +53,7 @@ ppc_growth_import <-read.csv(ppc_growth_file, stringsAsFactors = FALSE)
 # initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
 
 # spore
-spore_MPNdata <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
+spore_init_file <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
 # ppc
 ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput_SL_021420.csv")
 
@@ -153,13 +154,13 @@ c. Temperature distribution for each stage
 
 # determine appropriate normal distribution based on input data 
 # (i) spore data
-spore_MPNdata$log10left <- log10(spore_MPNdata$left)
-spore_MPNdata$log10right <- log10(spore_MPNdata$right)
-spore_MPNdata$log10MPN <- log10(spore_MPNdata$MPN)
-cens_data <- spore_MPNdata[,c("log10left","log10right")]
+spore_init_file$log10left <- log10(spore_init_file$left)
+spore_init_file$log10right <- log10(spore_init_file$right)
+spore_init_file$log10MPN <- log10(spore_init_file$MPN)
+cens_data <- spore_init_file[,c("log10left","log10right")]
 names(cens_data) <- c("left","right")
 spore_fit <- fitdistcens(censdata = cens_data,distr = "norm")
-hist(spore_MPNdata$log10MPN,freq=F,xlim = c(-4,4))
+hist(spore_init_file$log10MPN,freq=F,xlim = c(-4,4))
 curve(dnorm(x,mean=spore_fit$estimate[1],sd = spore_fit$estimate[2]),add=T)
 plot(spore_fit)
 summary(spore_fit)
@@ -185,6 +186,8 @@ ST_freq <- ppc_STfreq_import$ClosestAT
 #Here, the distribution and parameters are currently already written into the input file
 temp_by_stage
 
+## (d) Frequency of PPC
+PPC_freq <- df_freqPPC$exceed20000_d10 #can change this to change by samplings or plants (or can rewrite code below)
 ```
 
 ## 5. Sample distributions
@@ -194,21 +197,22 @@ i. Sample distributions
     b. Sample AT from AT_freq
     c. Sample temp from temp_by_stage
 ```{r}
-## (a) Sample MPN_init from the initial MPN
-#Sample the logMPN distribution 
-logMPN_samp <- rnorm(n_sim, logMPN_mean, logMPN_sd) 
+## (a) Sample init_count from both the spore & ppc data
+# (i) spore
+#Sample the spore_log10MPN distribution 
+spore_log10MPN_samp <- rnorm(n_sim, spore_log10MPN_mean, spore_log10MPN_sd) 
 
-#Convert logMPN_samp back to MPN_samp
-MPN_samp <- 10^logMPN_samp 
+#Convert spore_log10MPN_samp back to spore_MPN_samp
+spore_MPN_samp <- 10^spore_log10MPN_samp
 
 #Convert MPN for each sample (here, unique for each simulation aka bulk tank) to equivalent in milk unit of interest (here, unit = half gallon; 1892.71 mL in half gallon)
-MPN_samp_halfgal <- MPN_samp * 1900
+spore_MPN_samp_halfgal <- spore_MPN_samp * 1900
 
 #Sample the MPN_init distribution
-MPN_init<-vector()
+spore_MPN_init<-vector()
 for (i in 1:n_sim){
-  MPN_init_samp <-rep(rpois(n_units, MPN_samp_halfgal[i]), times = n_day)
-  MPN_init<-c(MPN_init, MPN_init_samp)}
+  spore_MPN_init_samp <-rep(rpois(n_units, spore_MPN_samp_halfgal[i]), times = n_day)
+  spore_MPN_init<-c(spore_MPN_init, spore_MPN_init_samp)}
 
 ## (b) Sample the AT_freq distriubtion
 allele <- vector()
