@@ -29,6 +29,7 @@ set.seed(1)
 ```
 
 ## 2. Load input files
+* load
 ```{r}
 # (a) frequency data
 # spore
@@ -58,6 +59,18 @@ ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/InitialCount_25percent_S
 # (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
 temp_stages_file <- "temp_stages.csv"
 temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
+```
+
+* Check input files for spore & ppc have the same structure and then modify here as necessary to match
+    * For the sake of simplifying the code, in PPC files we will temporarily call "ST", "AT" instead to match spore fies
+```{r}
+# modify frequency data file structure for ppc to match spore
+names(ppc_freq_import)[names(ppc_freq_import) == 'X16S_ST'] <- 'RealAT'
+ppc_freq_import$ClosestAT <- ppc_freq_import$RealAT
+ppc_freq_import <- ppc_freq_import[c(5:6)]
+
+  
+
 ```
 
 ## 3. Set-up dataframe
