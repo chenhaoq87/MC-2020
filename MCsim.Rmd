@@ -68,12 +68,20 @@ source("FreqPPC.R")
     * For the sake of simplifying the code, in PPC files we will temporarily call "ST", "AT" instead to match spore fies
 ```{r}
 # modify frequency data file structure for ppc to match spore
-names(ppc_freq_import)[names(ppc_freq_import) == 'X16S_ST'] <- 'RealAT'
-ppc_freq_import$ClosestAT <- ppc_freq_import$RealAT
-ppc_freq_import <- ppc_freq_import[c(5:6)]
+ppc_STfreq_import <- ppc_STfreq_import %>% 
+  rename(RealAT = X16S_ST)
+ppc_STfreq_import$ClosestAT <- ppc_STfreq_import$RealAT
+ppc_STfreq_import <- ppc_STfreq_import[c(5:6)]
 
-  
+ppc_growth_import <- ppc_growth_import %>% 
+  rename(mumax = mu,
+         LOG10N0 = N0,
+         LOG10Nmax = Nmax,
+         model_name = modelname)  
 
+spore_growth_import <- spore_growth_import %>%
+  .[c(1:5)]%>%
+  rename(AT = rpoBAT)
 ```
 
 ## 3. Set-up dataframe
@@ -109,9 +117,9 @@ lot_id <- rep(seq(1, n_sim), each = n_units * n_day)
 #Make a vector for "milk_unit" by repeating the sequence of 1:n_units by n_day * n_sim
 milk_unit <- rep(seq(1, n_units), times = n_day * n_sim) 
 
-# (c) AT
-# Make an empty vector for "AT" with the length of n_sim * n_units * n_day
-AT <- vector(mode="logical", n_sim * n_units * n_day) 
+# (c) STorAT
+# Make an empty vector for "STorAT" with the length of n_sim * n_units * n_day
+STorAT <- vector(mode="logical", n_sim * n_units * n_day) 
 
 # (d) day
 #Make a vector repeating days in shelf life that are simulated for each simulation run (i.e., each bulk tank) 
@@ -120,11 +128,15 @@ day <- rep(rep(seq(start_day, start_day+n_day-1), each = n_units), times = n_sim
 # (e) count
 #Make an empty vector for "count" with the length of n_sim * n_units * n_day
 count <- vector(mode = "logical", n_sim * n_units * n_day) 
+
+# (f) spoilage_type
+#Make an empty vector for "spoilage_type" with the length of n_sim * n_units * n_day
+spoilage_type <- vector(mode = "logical", n_sim * n_units * n_day) 
 ```
 
 iii. Prep dataframe using vectors above (each vector becomes a column)
 ```{r}
-data <- data.frame(lot_id, milk_unit, AT, day, count)
+data <- data.frame(lot_id, milk_unit, STorAT, day, count,spoilage_type)
 ```
 
 ## 4. Prepare distributions using input data
@@ -217,8 +229,8 @@ MPN_init_mL[MPN_init_mL == 0] <- 0.01;
 #Add logMPN_init to dataframe
 data$logMPN_init <- log10(MPN_init_mL) 
 
-## (b) Add AT to dataframe
-data$AT <- allele 
+## (b) Add AT to dataframe column STorAT
+data$STorAT <- allele 
 
 ## (c) #Add temp to dataframe
 data$temp <- temps 
@@ -236,11 +248,11 @@ data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 
 ## 6. Calculate log10N for each row in dataframe
 ```{r}
-##Get the AT and day from the data frame, get growth parameters depending on the AT
+##Get the ST or AT and day from the data frame, get growth parameters depending on the ST or AT
 # Simulation   ----
 for (i in 1:(n_sim *n_units * n_day)){
   #Find row in growth parameter data that corresponds to allele sample
-  allele_index <- which(growth_import$rpoBAT == data$AT[i]) 
+  allele_index <- which(growth_import$rpoBAT == data$STorAT[i]) 
   row <- data[i, ]
   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
   update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
