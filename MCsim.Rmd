@@ -194,6 +194,7 @@ PPC_freq <- df_freqPPC$exceed20000_d10 #can change this to change by samplings o
 
 i. Sample distributions
     a. Sample MPN_init from the initial MPN
+    b. Sample whether PPC from PPC_freq
     b. Sample AT from AT_freq
     c. Sample temp from temp_by_stage
 ```{r}
@@ -205,7 +206,7 @@ spore_log10MPN_samp <- rnorm(n_sim, spore_log10MPN_mean, spore_log10MPN_sd)
 #Convert spore_log10MPN_samp back to spore_MPN_samp
 spore_MPN_samp <- 10^spore_log10MPN_samp
 
-#Convert MPN for each sample (here, unique for each simulation aka bulk tank) to equivalent in milk unit of interest (here, unit = half gallon; 1892.71 mL in half gallon)
+#Convert MPN for each sample (here, unique for each simulation aka lot) to equivalent in milk unit of interest (here, unit = half gallon; 1892.71 mL in half gallon)
 spore_MPN_samp_halfgal <- spore_MPN_samp * 1900
 
 #Sample the MPN_init distribution
@@ -214,13 +215,42 @@ for (i in 1:n_sim){
   spore_MPN_init_samp <-rep(rpois(n_units, spore_MPN_samp_halfgal[i]), times = n_day)
   spore_MPN_init<-c(spore_MPN_init, spore_MPN_init_samp)}
 
-## (b) Sample the AT_freq distriubtion
-allele <- vector()
-for (i in 1:n_sim){
-  allele_samp <- rep(sample(AT_freq, n_units, replace = T), times = n_day)
-  allele <- c(allele, allele_samp)}
+# (ii) ppc
+#Sample the ppc_log10CFU distribution 
+ppc_log10CFU_samp <- rnorm(n_sim, ppc_log10CFU_mean, ppc_log10CFU_sd) 
 
-## (c) Sample the temperature distribution
+#Convert ppc_log10MPN_samp back to spore_MPN_samp
+ppc_CFU_samp <- 10^ppc_log10CFU_samp
+
+#Convert CFU for each sample (here, unique for each simulation aka lot) to equivalent in milk unit of interest (here, unit = half gallon; 1892.71 mL in half gallon)
+ppc_CFU_samp_halfgal <- ppc_CFU_samp * 1900
+
+#Sample the CFU_init distribution
+ppc_CFU_init<-vector()
+for (i in 1:n_sim){
+  ppc_CFU_init_samp <-rep(rpois(n_units, ppc_CFU_samp_halfgal[i]), times = n_day)
+  ppc_CFU_init<-c(ppc_CFU_init, ppc_CFU_init_samp)}
+
+## (b) Sample the PPC_freq distribution
+spoilage_ppc <- vector()
+for (i in 1:n_sim){
+  spoilage_ppc_samp <- rep(sample(PPC_freq, n_units, replace = T), times = n_day)
+  spoilage_ppc <- c(spoilage_ppc, spoilage_ppc_samp)}
+
+## (c) Sample from ATorST from AT_freq and ST_freq distributions, respectively
+# (i) sample AT_freq 
+AT <- vector()
+for (i in 1:n_sim){
+ AT_samp <- rep(sample(AT_freq, n_units, replace = T), times = n_day)
+  AT <- c(AT, AT_samp)}
+
+# (ii) sample ST_freq
+ST <- vector()
+for (i in 1:n_sim){
+ ST_samp <- rep(sample(ST_freq, n_units, replace = T), times = n_day)
+  ST <- c(ST, ST_samp)}
+
+## (d) Sample the temperature distribution
 temps <- vector()
 for (i in 1:n_sim){
   for (j in 1:nrow(temp_by_stage)){
@@ -244,7 +274,7 @@ MPN_init_mL[MPN_init_mL == 0] <- 0.01;
 data$logMPN_init <- log10(MPN_init_mL) 
 
 ## (b) Add AT to dataframe column STorAT
-data$STorAT <- allele 
+data$STorAT <- AT
 
 ## (c) #Add temp to dataframe
 data$temp <- temps 
