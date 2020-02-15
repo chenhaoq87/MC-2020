@@ -86,7 +86,8 @@ fig1 <- ggplot() +
                                vjust=-0.25, size = 4)+
   labs(y = "Percent of samples > 4.3 logMPN/mL", x = "Day" )+
   scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
-  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Overall")
 fig1
 ```
 
@@ -141,7 +142,8 @@ spore_fig1 <- ggplot() +
                                vjust=-0.25, size = 4)+
   labs(y = "Percent of samples > 4.3 log10MPN/mL", x = "Day" )+
   scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
-  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Samples that spoiled due to spores")
 spore_fig1
 
 ppc_fig1 <- ggplot() + 
@@ -153,7 +155,8 @@ ppc_fig1 <- ggplot() +
                                vjust=-0.25, size = 4)+
   labs(y = "Percent of samples > 4.3 log10MPN/mL", x = "Day" )+
   scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
-  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Samples that spoiled due to PPC")
 ppc_fig1
 
 
