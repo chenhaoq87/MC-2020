@@ -1,7 +1,7 @@
 ---
 title: "MCsim"
 author: "Sarah I. Murphy, Samantha Lau, Timothy Lott, Aljosa Trmcic"
-date: "2/6/2020"
+date: "2/14/2020"
 output: pdf_document
 ---
 
@@ -67,26 +67,34 @@ source("FreqPPC.R")
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
 ```{r}
-# modify frequency data file structure for ppc to match spore
+# modify frequency data file structure for ppc to match spore and also added "ST_" and "AT_", respectively to aid analysis
 ppc_STfreq_import <- ppc_STfreq_import %>% 
   rename(RealAT = X16S_ST)
-ppc_STfreq_import$ClosestST <- ppc_STfreq_import$RealST
+ppc_STfreq_import$ClosestST <- ppc_STfreq_import$RealAT
 ppc_STfreq_import <- ppc_STfreq_import[c(5:6)]
+ppc_STfreq_import$temp <- "ST"
+ppc_STfreq_import$ClosestST <- paste(ppc_STfreq_import$temp,ppc_STfreq_import$ClosestST,sep="_")
+
+spore_ATfreq_import$temp <- "AT"
+spore_ATfreq_import$ClosestAT <- paste(spore_ATfreq_import$temp,spore_ATfreq_import$ClosestAT,sep="_")
+
 
 # modify growth import data file structure and also added "ST_" and "AT_", respectively to aid analysis
 ppc_growth_import <- ppc_growth_import %>% 
-  rename(mumax = mu,
+  rename(STorAT = ST,
+         mumax = mu,
          LOG10N0 = N0,
          LOG10Nmax = Nmax,
          model_name = modelname)  
 ppc_growth_import$temp <- "ST"
-ppc_growth_import$ST <- paste(ppc_growth_import$temp,ppc_growth_import$ST,sep="_")
+ppc_growth_import$STorAT <- paste(ppc_growth_import$temp,ppc_growth_import$STorAT,sep="_")
 
 spore_growth_import <- spore_growth_import %>%
   .[c(1:5)]%>%
-  rename(AT = rpoBAT)
+  rename(STorAT = rpoBAT)
+spore_growth_import$model_name <- "buchanan" #may change later
 spore_growth_import$temp <- "AT"
-spore_growth_import$AT <- paste(spore_growth_import$temp,spore_growth_import$AT,sep="_")
+spore_growth_import$STorAT <- paste(spore_growth_import$temp,spore_growth_import$STorAT,sep="_")
 
 ppc_init_file <- ppc_init_file %>%
   .[c(1,3)]%>%
@@ -146,13 +154,14 @@ spoilage_type <- vector(mode = "logical", n_sim * n_units * n_day)
 
 iii. Prep dataframe using vectors above (each vector becomes a column)
 ```{r}
-data <- data.frame(lot_id, milk_unit, STorAT, day, count,spoilage_type)
+data <- data.frame(lot_id, milk_unit, STorAT, spoilage_type, day, count)
 ```
 
 ## 4. Prepare distributions using input data
 a. Initial contamination: logMPN normal distribution
 b. Frequency of allelic types
 c. Temperature distribution for each stage 
+d. Frequency of PPC (i.e., spoilage_type)
 ```{r}
 ## (a) Initial contamination: logMPN normal distribution (note: How is the initialcount_import data used? Where did logMPN_mean and logMPN_sd come from?)
 
@@ -199,8 +208,8 @@ PPC_freq <- as.character(df_freqPPC$exceed20000_d10) #can change this to change 
 i. Sample distributions
     a. Sample MPN_init from the initial MPN
     b. Sample whether PPC from PPC_freq
-    b. Sample AT from AT_freq
-    c. Sample temp from temp_by_stage
+    c. Sample AT from AT_freq
+    d. Sample temp from temp_by_stage
 ```{r}
 ## (a) Sample init_count from both the spore & ppc data
 # (i) spore
@@ -319,13 +328,18 @@ data$newMu <- vector(mode="logical", n_sim * n_units * n_day)
 data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 ```
 
+iv. join growth_import files
+```{r}
+growth_import<-rbind(ppc_growth_import,spore_growth_import)
+```
+
 ## 6. Calculate log10N for each row in dataframe
 ```{r}
 ##Get the ST or AT and day from the data frame, get growth parameters depending on the ST or AT
 # Simulation   ----
 for (i in 1:(n_sim *n_units * n_day)){
   #Find row in growth parameter data that corresponds to allele sample
-  allele_index <- which(growth_import$rpoBAT == data$STorAT[i]) 
+  allele_index <- which(growth_import$STorAT == data$STorAT[i]) 
   row <- data[i, ]
   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
   update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
