@@ -47,12 +47,12 @@ mean_byDay_bySpoilageType
 
 ggplot(data=data, aes(x=day,y=count))+
   geom_violin()+
-  labs(y = "Milk spore count (log MPN/mL)", x = "Day" )
+  labs(y = "Milk spore count (log bacterial count/mL)", x = "Day" )
 
 ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
   geom_violin()+
   #scale_y_continuous(limits = c(-5, 15), breaks = seq(-5, 15, by = 1))+
-  labs(y = "Milk spore count (log MPN/mL)", x = "Day" )
+  labs(y = "Milk spore count (log bacterial count /mL)", x = "Day" )
 
 ```
 
