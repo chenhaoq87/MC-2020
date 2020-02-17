@@ -1,5 +1,5 @@
 ---
-title: "MCsim"
+title: "MCsim_ForoughFFARModel"
 author: "Sarah I. Murphy, Samantha Lau, Timothy Lott, Aljosa Trmcic"
 date: "2/14/2020"
 output: pdf_document
@@ -37,57 +37,57 @@ set.seed(1)
 spore_ATfrequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
 spore_ATfreq_import <- read.csv(spore_ATfrequency_file, stringsAsFactors = FALSE, header = TRUE)
 # ppc
-ppc_STfrequency_file <- "Sam_FFAR_PPCmodel/InputFiles/Frequency_ONLYSAMISOLATES_remove13and23_020120.csv"
-ppc_STfreq_import <- read.csv(ppc_STfrequency_file, stringsAsFactors = FALSE, header = TRUE)
+# ppc_STfrequency_file <- "Sam_FFAR_PPCmodel/InputFiles/Frequency_ONLYSAMISOLATES_remove13and23_020120.csv"
+# ppc_STfreq_import <- read.csv(ppc_STfrequency_file, stringsAsFactors = FALSE, header = TRUE)
 
 # (b) growth parameter data; make sure this contains growth parameters & growth model name
 # spore 
 spore_growth_file <- "Ariel_2017MC_SporeModel/InputFiles/GrowthParameters.csv" 
 spore_growth_import <-read.csv(spore_growth_file, stringsAsFactors = FALSE)
 # ppc
-ppc_growth_file <- "Sam_FFAR_PPCmodel/InputFiles/GrowthParameters_remove13and23_020120.csv" 
-ppc_growth_import <-read.csv(ppc_growth_file, stringsAsFactors = FALSE)
+# ppc_growth_file <- "Sam_FFAR_PPCmodel/InputFiles/GrowthParameters_remove13and23_020120.csv" 
+# ppc_growth_import <-read.csv(ppc_growth_file, stringsAsFactors = FALSE)
 
 # (c) initial count logMPN data
 # init_file <- "InitialCountsMPN.csv"
 # initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
 
 # spore
-spore_init_file <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
-# ppc
-ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput_SL_021420.csv")
+# spore_init_file <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
+# # ppc
+# ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput_SL_021420.csv")
 
 # (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
 temp_stages_file <- "temp_stages.csv"
 temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
 
 # (e) PPC frequency data
-source("FreqPPC.R")
+# source("FreqPPC.R")
 ```
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
 ```{r}
 # modify frequency data file structure for ppc to match spore and also added "ST_" and "AT_", respectively to aid analysis
-ppc_STfreq_import <- ppc_STfreq_import %>% 
-  rename(RealAT = X16S_ST)
-ppc_STfreq_import$ClosestST <- ppc_STfreq_import$RealAT
-ppc_STfreq_import <- ppc_STfreq_import[c(5:6)]
-ppc_STfreq_import$temp <- "ST"
-ppc_STfreq_import$ClosestST <- paste(ppc_STfreq_import$temp,ppc_STfreq_import$ClosestST,sep="_")
+# ppc_STfreq_import <- ppc_STfreq_import %>% 
+#   rename(RealAT = X16S_ST)
+# ppc_STfreq_import$ClosestST <- ppc_STfreq_import$RealAT
+# ppc_STfreq_import <- ppc_STfreq_import[c(5:6)]
+# ppc_STfreq_import$temp <- "ST"
+# ppc_STfreq_import$ClosestST <- paste(ppc_STfreq_import$temp,ppc_STfreq_import$ClosestST,sep="_")
 
 spore_ATfreq_import$temp <- "AT"
 spore_ATfreq_import$ClosestAT <- paste(spore_ATfreq_import$temp,spore_ATfreq_import$ClosestAT,sep="_")
 
 
 # modify growth import data file structure and also added "ST_" and "AT_", respectively to aid analysis
-ppc_growth_import <- ppc_growth_import %>% 
-  rename(STorAT = ST,
-         mumax = mu,
-         LOG10N0 = N0,
-         LOG10Nmax = Nmax,
-         model_name = modelname)  
-ppc_growth_import$temp <- "ST"
-ppc_growth_import$STorAT <- paste(ppc_growth_import$temp,ppc_growth_import$STorAT,sep="_")
+# ppc_growth_import <- ppc_growth_import %>% 
+#   rename(STorAT = ST,
+#          mumax = mu,
+#          LOG10N0 = N0,
+#          LOG10Nmax = Nmax,
+#          model_name = modelname)  
+# ppc_growth_import$temp <- "ST"
+# ppc_growth_import$STorAT <- paste(ppc_growth_import$temp,ppc_growth_import$STorAT,sep="_")
 
 spore_growth_import <- spore_growth_import %>%
   .[c(1:5)]%>%
@@ -96,10 +96,10 @@ spore_growth_import$model_name <- "buchanan" #may change later
 spore_growth_import$temp <- "AT"
 spore_growth_import$STorAT <- paste(spore_growth_import$temp,spore_growth_import$STorAT,sep="_")
 
-ppc_init_file <- ppc_init_file %>%
-  .[c(1,3)]%>%
-  rename(CFU = `Initial conc`)
-ppc_init_file$log10CFU <- log10(ppc_init_file$CFU)
+# ppc_init_file <- ppc_init_file %>%
+#   .[c(1,3)]%>%
+#   rename(CFU = `Initial conc`)
+# ppc_init_file$log10CFU <- log10(ppc_init_file$CFU)
 ```
 
 ## 3. Set-up dataframe
@@ -182,18 +182,18 @@ spore_log10MPN_mean <- spore_fit$estimate[1]
 spore_log10MPN_sd <- spore_fit$estimate[2]
 
 # (ii) ppc data; https://stats.stackexchange.com/questions/132652/how-to-determine-which-distribution-fits-my-data-best
-ppc_fit <- fitdist(data = ppc_init_file$log10CFU,distr = "norm")
-plot(ppc_fit) #fit looks OK
-
-ppc_log10CFU_mean <- ppc_fit$estimate[1]
-ppc_log10CFU_sd <- ppc_fit$estimate[2]
+# ppc_fit <- fitdist(data = ppc_init_file$log10CFU,distr = "norm")
+# plot(ppc_fit) #fit looks OK
+# 
+# ppc_log10CFU_mean <- ppc_fit$estimate[1]
+# ppc_log10CFU_sd <- ppc_fit$estimate[2]
 
 ## (b) Frequency of allelic types
 #Here, the "distribution" of STs or ATs are taken directly from the input file by creating a vector of the ST or AT in each of the rows in the the column containing the ST or AT
 # (i) spore data
 AT_freq <- spore_ATfreq_import$ClosestAT 
 # (ii) ppc data
-ST_freq <- ppc_STfreq_import$ClosestST 
+# ST_freq <- ppc_STfreq_import$ClosestST 
 
 ## (c) Temperature distribution for each stage (Note for Sarah to fix)
 #Here, the distribution and parameters are currently already written into the input file
@@ -229,26 +229,26 @@ for (i in 1:n_sim){
   spore_MPN_init<-c(spore_MPN_init, spore_MPN_init_samp)}
 
 # (ii) ppc
-#Sample the ppc_log10CFU distribution 
-ppc_log10CFU_samp <- rnorm(n_sim, ppc_log10CFU_mean, ppc_log10CFU_sd) 
-
-#Convert ppc_log10MPN_samp back to spore_MPN_samp
-ppc_CFU_samp <- 10^ppc_log10CFU_samp
-
-#Convert CFU for each sample (here, unique for each simulation aka lot) to equivalent in milk unit of interest (here, unit = half gallon; 1892.71 mL in half gallon)
-ppc_CFU_samp_halfgal <- ppc_CFU_samp * 1900
-
-#Sample the CFU_init distribution
-ppc_CFU_init<-vector()
-for (i in 1:n_sim){
-  ppc_CFU_init_samp <-rep(rpois(n_units, ppc_CFU_samp_halfgal[i]), times = n_day)
-  ppc_CFU_init<-c(ppc_CFU_init, ppc_CFU_init_samp)}
+# #Sample the ppc_log10CFU distribution 
+# ppc_log10CFU_samp <- rnorm(n_sim, ppc_log10CFU_mean, ppc_log10CFU_sd) 
+# 
+# #Convert ppc_log10MPN_samp back to spore_MPN_samp
+# ppc_CFU_samp <- 10^ppc_log10CFU_samp
+# 
+# #Convert CFU for each sample (here, unique for each simulation aka lot) to equivalent in milk unit of interest (here, unit = half gallon; 1892.71 mL in half gallon)
+# ppc_CFU_samp_halfgal <- ppc_CFU_samp * 1900
+# 
+# #Sample the CFU_init distribution
+# ppc_CFU_init<-vector()
+# for (i in 1:n_sim){
+#   ppc_CFU_init_samp <-rep(rpois(n_units, ppc_CFU_samp_halfgal[i]), times = n_day)
+#   ppc_CFU_init<-c(ppc_CFU_init, ppc_CFU_init_samp)}
 
 ## (b) Sample the PPC_freq distribution
-spoilage_ppc <- vector()
-for (i in 1:n_sim){
-  spoilage_ppc_samp <- rep(sample(PPC_freq, n_units, replace = T), times = n_day)
-  spoilage_ppc <- c(spoilage_ppc, spoilage_ppc_samp)}
+# spoilage_ppc <- vector()
+# for (i in 1:n_sim){
+#   spoilage_ppc_samp <- rep(sample(PPC_freq, n_units, replace = T), times = n_day)
+#   spoilage_ppc <- c(spoilage_ppc, spoilage_ppc_samp)}
 
 ## (c) Sample from ATorST from AT_freq and ST_freq distributions, respectively
 # (i) sample AT_freq 
@@ -258,10 +258,10 @@ for (i in 1:n_sim){
   AT <- c(AT, AT_samp)}
 
 # (ii) sample ST_freq
-ST <- vector()
-for (i in 1:n_sim){
- ST_samp <- rep(sample(ST_freq, n_units, replace = T), times = n_day)
-  ST <- c(ST, ST_samp)}
+# ST <- vector()
+# for (i in 1:n_sim){
+#  ST_samp <- rep(sample(ST_freq, n_units, replace = T), times = n_day)
+#   ST <- c(ST, ST_samp)}
 
 ## (d) Sample the temperature distribution
 temps <- vector()
@@ -279,10 +279,11 @@ for (i in 1:n_sim){
 ii. Add results from sampling distribution in (i) to dataframe
 ```{r}
 ## (a) add spoilage_ppc to dataframe
-spoilage_ppc<-as.factor(spoilage_ppc)
-levels(spoilage_ppc)[levels(spoilage_ppc)=="0"] <- "spore"
-levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "ppc"
-data$spoilage_type <- spoilage_ppc
+# spoilage_ppc<-as.factor(spoilage_ppc)
+# levels(spoilage_ppc)[levels(spoilage_ppc)=="0"] <- "spore"
+# levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "ppc"
+# data$spoilage_type <- spoilage_ppc
+data$spoilage_type <- "spore" #set to "spore" since spore only
 
 ## (a) Reformat and add initial log10CFU & log10MPN to dataframe
 # (i) spore
@@ -295,24 +296,29 @@ data$spore_log10MPN_init <- log10(spore_MPN_init_mL)
 
 #(ii) ppc
 #First convert ppc_CFU_init from half-gallon to mLs
-ppc_CFU_init_mL <- ppc_CFU_init / 1900
-#Also need to remove 0's from the data and replace with detection limit (check if 0.01 is actually detection limit)
-ppc_CFU_init_mL[ppc_CFU_init_mL == 0] <- 0.01;
-#Add ppc_log10CFU_init to dataframe
-data$ppc_log10CFU_init <- log10(ppc_CFU_init_mL) 
+# ppc_CFU_init_mL <- ppc_CFU_init / 1900
+# #Also need to remove 0's from the data and replace with detection limit (check if 0.01 is actually detection limit)
+# ppc_CFU_init_mL[ppc_CFU_init_mL == 0] <- 0.01;
+# #Add ppc_log10CFU_init to dataframe
+# data$ppc_log10CFU_init <- log10(ppc_CFU_init_mL) 
 
 #(iii) logCount_init
-data$logCount_init <- data$spoilage_type
-data$logCount_init <- with(data, ifelse( logCount_init == "spore", spore_log10MPN_init, ppc_log10CFU_init ) )
+# data$logCount_init <- data$spoilage_type
+# data$logCount_init <- with(data, ifelse( logCount_init == "spore", spore_log10MPN_init, ppc_log10CFU_init ) )
+
+data$logCount_init <- spore_log10MPN_init #since spore only
 
 ## (b) Add AT to dataframe column STorAT
 #(i) spore
-data$AT <- AT
+# data$AT <- AT
 #(ii) ppc
-data$ST <- ST
+# data$ST <- ST
 # (iii) STorAT
-data$STorAT <- data$spoilage_type
-data$STorAT <- with(data, ifelse( STorAT == "spore", AT, ST) )
+# data$STorAT <- data$spoilage_type
+# data$STorAT <- with(data, ifelse( STorAT == "spore", AT, ST) )
+
+#(i) spore
+data$STorAT <- AT
 
 ## (c) #Add temp to dataframe
 data$temp <- temps 
@@ -330,7 +336,8 @@ data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 
 iv. join growth_import files
 ```{r}
-growth_import<-rbind(ppc_growth_import,spore_growth_import)
+# growth_import<-rbind(ppc_growth_import,spore_growth_import)
+growth_import <- spore_growth_import #since only spore
 ```
 
 ## 6. Calculate log10N for each row in dataframe
@@ -381,18 +388,20 @@ for (i in 1:(n_sim *n_units * n_day)){
   row <- data[i, ]
   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
   update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
-  data$spore_count[i] <- log10N_func(data$day[i],growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index]) 
-  data$ppc_count[i] <- log10N_func(data$day[i]*24,growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index])}
+  data$spore_count[i] <- log10N_func(data$day[i],growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index])} 
+  # data$ppc_count[i] <- log10N_func(data$day[i]*24,growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index])}
 ```
 * Get count data
 ```{r}
-data$count <- data$spoilage_type
-data$count <- with(data, ifelse( count == "spore", spore_count, ppc_count ) )
+# data$count <- data$spoilage_type
+# data$count <- with(data, ifelse( count == "spore", spore_count, ppc_count ) )
+
+data$count <- spore_count #since only spore
 ```
 
 ## 7. Save results
 ```{r}
-save(data,file="MCsim_result_df.RData")
+# save(data,file="MCsim_result_df.RData")
 ```
 
 
