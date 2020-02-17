@@ -1,0 +1,402 @@
+---
+title: "DataAnalysis_ForForough_FFARModel"
+author: "Sarah I. Murphy"
+date: "2/16/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set-up environment
+```{r}
+#load packages
+library(readr)
+library(dplyr)
+library(splitstackshape)
+library(ggplot2)
+
+#load data
+load("MCsim_result_df_F1.RData")
+df_F1 <- data
+load("MCsim_result_df_F2.RData")
+df_F2 <- data
+load("MCsim_result_df_F3.RData")
+df_F3 <- data
+load("MCsim_result_df_F4.RData")
+df_F4 <- data
+load("MCsim_result_df_F5.RData")
+df_F5 <- data
+
+#join files
+data<-rbind(df_F1,df_F2,df_F3,df_F4,df_F5)
+```
+
+## Data Analysis   ----
+```{r}
+data$lot_id<- as.factor(data$lot_id)
+data$day<- as.factor(data$day)
+data$logCount_init<- as.factor(data$logCount_init)
+
+#Calculate the mean count by day
+data %>%
+  group_by(logCount_init,day) %>%
+  summarise(mean = mean(count), sd = sd(count))-> mean_byDay
+mean_byDay
+```
+
+```{r}
+ggplot(data=data, aes(x=day,y=count,col=logCount_init))+
+  scale_y_continuous(limits = c(-2.5, 8), breaks = seq(-2, 8, by = 1))+
+  geom_violin()+
+  labs(y = "Milk spore count (log10 MPN/mL)", x = "Day" )
+```
+
+
+
+```{r}
+#what percent of samples spoiled for each day in shelf life
+days <- seq(1, 35, 1)
+spoiled <- vector(mode = "logical", length(days))
+spoiled_by_day <- data.frame(days, spoiled)
+
+for (d in days) {
+  numerator <-   length(which(subset(data, data$day == d)$count>4.3))
+  denominator <- length(subset(data, data$day == d)$count)
+  
+  spoiled_by_day[spoiled_by_day$days==d,]$spoiled <- numerator / denominator * 100
+}
+
+spoiled_by_day$days <- factor(spoiled_by_day$days)
+```
+
+```{r}
+#Plot
+# pdf(file='plot_mu_low_worstcase_summary.pdf')
+fig1 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day, 
+                               aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 4.3 logMPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Overall")
+fig1
+```
+
+```{r}
+#what percent of samples spoiled for each day in shelf life
+#get data
+data1 <- data %>%
+  filter(logCount_init == "-1.989")
+
+data2 <- data %>%
+  filter(logCount_init == "-1.239")
+
+data3 <- data %>%
+  filter(logCount_init == "-0.72")
+
+data4 <- data %>%
+  filter(logCount_init == "-0.201")
+
+data5 <- data %>%
+  filter(logCount_init == "0.549")
+
+#days
+days1 <- seq(1, 35, 1)
+days2 <- seq(1, 35, 1)
+days3 <- seq(1, 35, 1)
+days4 <- seq(1, 35, 1)
+days5 <- seq(1, 35, 1)
+
+spoiled1 <- vector(mode = "logical", length(days1))
+spoiled2 <- vector(mode = "logical", length(days2))
+spoiled3 <- vector(mode = "logical", length(days3))
+spoiled4 <- vector(mode = "logical", length(days4))
+spoiled5 <- vector(mode = "logical", length(days5))
+
+#make df
+spoiled_by_day1 <- data.frame(days1, spoiled1)
+spoiled_by_day2 <- data.frame(days2, spoiled2)
+spoiled_by_day3 <- data.frame(days3, spoiled3)
+spoiled_by_day4 <- data.frame(days4, spoiled4)
+spoiled_by_day5 <- data.frame(days5, spoiled5)
+
+
+for (d in days1) {
+  numerator1 <-   length(which(subset(data1, data1$day == d)$count>6))
+  denominator1 <- length(subset(data1, data1$day == d)$count)
+  
+  spoiled_by_day1[spoiled_by_day1$days1==d,]$spoiled1 <- numerator1 / denominator1 * 100
+}
+
+spoiled_by_day1$days1 <- factor(spoiled_by_day1$days1)
+first_day1 <- spoiled_by_day1[spoiled_by_day1$spoiled1>5,'days1'][1]
+
+for (d in days2) {
+  numerator2 <-   length(which(subset(data2, data2$day == d)$count>6))
+  denominator2 <- length(subset(data2, data2$day == d)$count)
+  
+  spoiled_by_day2[spoiled_by_day2$days2==d,]$spoiled2 <- numerator2 / denominator2 * 100
+}
+
+spoiled_by_day2$days2 <- factor(spoiled_by_day2$days2)
+first_day2 <- spoiled_by_day2[spoiled_by_day2$spoiled2>5,'days2'][1]
+
+for (d in days3) {
+  numerator3 <-   length(which(subset(data3, data3$day == d)$count>6))
+  denominator3 <- length(subset(data3, data3$day == d)$count)
+  
+  spoiled_by_day3[spoiled_by_day3$days3==d,]$spoiled3 <- numerator3 / denominator3 * 100
+}
+
+spoiled_by_day3$days3 <- factor(spoiled_by_day3$days3)
+first_day3 <- spoiled_by_day3[spoiled_by_day3$spoiled3>5,'days3'][1]
+
+for (d in days4) {
+  numerator4 <-   length(which(subset(data4, data4$day == d)$count>6))
+  denominator4 <- length(subset(data4, data4$day == d)$count)
+  
+  spoiled_by_day4[spoiled_by_day4$days4==d,]$spoiled4 <- numerator4 / denominator4 * 100
+}
+
+spoiled_by_day4$days4 <- factor(spoiled_by_day4$days4)
+first_day4 <- spoiled_by_day4[spoiled_by_day4$spoiled4>5,'days4'][1]
+
+for (d in days5) {
+  numerator5 <-   length(which(subset(data5, data5$day == d)$count>6))
+  denominator5 <- length(subset(data5, data5$day == d)$count)
+  
+  spoiled_by_day5[spoiled_by_day5$days5==d,]$spoiled5 <- numerator5 / denominator5 * 100
+}
+
+spoiled_by_day5$days5 <- factor(spoiled_by_day5$days5)
+first_day5 <- spoiled_by_day5[spoiled_by_day5$spoiled5>5,'days5'][1]
+
+first_day1
+first_day2
+first_day3
+first_day4
+first_day5
+```
+
+```{r}
+#Plot
+fig1 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day1$spoiled1, x = spoiled_by_day1$days1), data = spoiled_by_day1, stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day1,aes(x = spoiled_by_day1$days1, y = spoiled_by_day1$spoiled1, label = round(spoiled_by_day1$spoiled1, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 6 log10MPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 35, 1), labels=seq(1, 35, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Spoiled samples; initial contamination = -1.989")
+fig1
+
+fig2 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day2$spoiled2, x = spoiled_by_day2$days2), data = spoiled_by_day2, stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day2,aes(x = spoiled_by_day2$days2, y = spoiled_by_day2$spoiled2, label = round(spoiled_by_day2$spoiled2, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 6 log10MPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 35, 1), labels=seq(1, 35, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Spoiled samples; initial contamination = -1.239")
+fig2
+
+fig3 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day3$spoiled3, x = spoiled_by_day3$days3), data = spoiled_by_day3, stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day3,aes(x = spoiled_by_day3$days3, y = spoiled_by_day3$spoiled3, label = round(spoiled_by_day3$spoiled3, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 6 log10MPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 35, 1), labels=seq(1, 35, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Spoiled samples; initial contamination = -0.72")
+fig3
+
+fig4 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day4$spoiled4, x = spoiled_by_day4$days4), data = spoiled_by_day4, stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day4,aes(x = spoiled_by_day4$days4, y = spoiled_by_day4$spoiled4, label = round(spoiled_by_day4$spoiled4, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 6 log10MPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 35, 1), labels=seq(1, 35, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Spoiled samples; initial contamination = -0.201")
+fig4
+
+
+fig5 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day5$spoiled5, x = spoiled_by_day5$days5), data = spoiled_by_day5, stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day5,aes(x = spoiled_by_day5$days5, y = spoiled_by_day5$spoiled5, label = round(spoiled_by_day5$spoiled5, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 6 log10MPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 35, 1), labels=seq(1, 35, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Spoiled samples; initial contamination = 0.549")
+fig5
+```
+
+*F1
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data1, data1$day == 14)$count>6))/length(subset(data1, data1$day == 14)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data1, data1$day == 21)$count>6))/length(subset(data1, data1$day == 21)$count)
+
+#What percent of samples spoiled by day 28?
+length(which(subset(data1, data1$day == 28)$count>6))/length(subset(data1, data1$day == 28)$count)
+
+#What percent of samples spoiled by day 35?
+length(which(subset(data1, data1$day == 35)$count>6))/length(subset(data1, data1$day == 35)$count)
+```
+*F2
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data2, data2$day == 14)$count>6))/length(subset(data2, data2$day == 14)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data2, data2$day == 21)$count>6))/length(subset(data2, data2$day == 21)$count)
+
+#What percent of samples spoiled by day 28?
+length(which(subset(data2, data2$day == 28)$count>6))/length(subset(data2, data2$day == 28)$count)
+
+#What percent of samples spoiled by day 35?
+length(which(subset(data2, data2$day == 35)$count>6))/length(subset(data2, data2$day == 35)$count)
+```
+*F3
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data3, data3$day == 14)$count>6))/length(subset(data3, data3$day == 14)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data3, data3$day == 21)$count>6))/length(subset(data3, data3$day == 21)$count)
+
+#What percent of samples spoiled by day 28?
+length(which(subset(data3, data3$day == 28)$count>6))/length(subset(data2, data2$day == 28)$count)
+
+#What percent of samples spoiled by day 35?
+length(which(subset(data3, data3$day == 35)$count>6))/length(subset(data3, data3$day == 35)$count)
+```
+*F3
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data3, data3$day == 14)$count>6))/length(subset(data3, data3$day == 14)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data3, data3$day == 21)$count>6))/length(subset(data3, data3$day == 21)$count)
+
+#What percent of samples spoiled by day 28?
+length(which(subset(data3, data3$day == 28)$count>6))/length(subset(data3, data3$day == 28)$count)
+
+#What percent of samples spoiled by day 35?
+length(which(subset(data3, data3$day == 35)$count>6))/length(subset(data3, data3$day == 35)$count)
+```
+*F4
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data4, data4$day == 14)$count>6))/length(subset(data4, data4$day == 14)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data4, data4$day == 21)$count>6))/length(subset(data4, data4$day == 21)$count)
+
+#What percent of samples spoiled by day 28?
+length(which(subset(data4, data4$day == 28)$count>6))/length(subset(data4, data4$day == 28)$count)
+
+#What percent of samples spoiled by day 35?
+length(which(subset(data4, data4$day == 35)$count>6))/length(subset(data4, data4$day == 35)$count)
+```
+
+*F5
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data5, data5$day == 14)$count>6))/length(subset(data5, data5$day == 14)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data5, data5$day == 21)$count>6))/length(subset(data5, data5$day == 21)$count)
+
+#What percent of samples spoiled by day 28?
+length(which(subset(data5, data5$day == 28)$count>6))/length(subset(data5, data5$day == 28)$count)
+
+#What percent of samples spoiled by day 35?
+length(which(subset(data5, data5$day == 35)$count>6))/length(subset(data5, data5$day == 35)$count)
+```
+
+```{r}
+##
+#Make df of data by day
+d1<- data[data$day=="1",] 
+d2<- data[data$day=="2",] 
+d3<- data[data$day=="3",] 
+d4<- data[data$day=="4",] 
+d5<- data[data$day=="5",] 
+d6<- data[data$day=="6",] 
+d7<- data[data$day=="7",] 
+d8<- data[data$day=="8",] 
+d9<- data[data$day=="9",] 
+d10<- data[data$day=="10",]
+d11<- data[data$day=="11",] 
+d12<- data[data$day=="12",] 
+d13<- data[data$day=="13",] 
+d14<- data[data$day=="14",] 
+d15<- data[data$day=="15",]
+d16<- data[data$day=="16",]
+d17<- data[data$day=="17",]
+d18<- data[data$day=="18",]
+d19<- data[data$day=="19",]
+d20<- data[data$day=="20",]
+d21<- data[data$day=="21",]
+d22<- data[data$day=="22",]
+d23<- data[data$day=="23",]
+d24<- data[data$day=="24",]
+d25<- data[data$day=="25",] 
+d26<- data[data$day=="26",] 
+d27<- data[data$day=="27",] 
+d28<- data[data$day=="28",] 
+d29<- data[data$day=="29",] 
+d30<- data[data$day=="30",]
+d31<- data[data$day=="31",] 
+d32<- data[data$day=="32",] 
+d33<- data[data$day=="33",] 
+d34<- data[data$day=="34",] 
+d35<- data[data$day=="35",] 
+```
+
+```{r}
+#plot each day simulated histogram;
+
+# pdf(file='plot_initialmicro_low_bestcase.pdf')
+hist(d1$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 1",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d2$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 2",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d3$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 3",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d4$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 4",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d5$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 5",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d6$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 6",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d7$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 7",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d8$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 8",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d9$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 9",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d10$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 10",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d11$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 11",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d12$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 12",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d13$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 13",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d14$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 14",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d15$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 15",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d16$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 16",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d17$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 17",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d18$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 18",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d19$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 19",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d20$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 20",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d21$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 21",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d22$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 22",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d23$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 23",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+hist(d24$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 24",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,25000),breaks=20, col="gray")
+
+# dev.off()
+```
