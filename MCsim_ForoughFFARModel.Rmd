@@ -18,9 +18,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 ## load packages
 library(readr)
-library(censReg)
-library(fitdistrplus)
-library(splitstackshape)
+# library(censReg)
+# library(fitdistrplus)
+# library(splitstackshape)
 library(dplyr)
 
 ## load functions
@@ -293,7 +293,7 @@ ii. Add results from sampling distribution in (i) to dataframe
 # levels(spoilage_ppc)[levels(spoilage_ppc)=="0"] <- "spore"
 # levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "ppc"
 # data$spoilage_type <- spoilage_ppc
-data$spoilage_type <- "spore" #set to "spore" since spore only
+# data$spoilage_type <- "spore" #set to "spore" since spore only
 
 ## (a) Reformat and add initial log10CFU & log10MPN to dataframe
 # (i) spore
@@ -333,7 +333,7 @@ data$STorAT <- AT
 ## (c) #Add temp to dataframe
 # data$temp <- temps 
 # OR just set what the temperature should be for all:
-data$temp <- 6
+# data$temp <- 6
 
 ```
 
@@ -392,11 +392,14 @@ iv. join growth_import files
     *put count for spore and ppc in different columns for now since data had been hour previously for ppc
 ```{r}
 for (i in 1:(n_sim *n_units * n_day)){
-  allele_index <- which(growth_import$STorAT == data$STorAT[i]) #Find row in growth parameter data that corresponds to allele sample
-  row <- data[i, ]
-  prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
-  update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
-  data$count[i] <- log10N_func(data$day[i],spore_growth_import$lag[allele_index],spore_growth_import$mumax[allele_index],data$logCount_init[i],spore_growth_import$LOG10Nmax[allele_index])}
+  allele_index <- which(spore_growth_import$STorAT == data$STorAT[i]) 
+  data$count[i] <- log10N_func(data$day[i],spore_growth_import$lag[allele_index],spore_growth_import$mumax[allele_index],-1.989,spore_growth_import$LOG10Nmax[allele_index])}
+
+# for (i in 1:(n_sim *n_units * n_day)){
+#   allele_index <- which(growth_import$STorAT == data$STorAT[i]) #Find row in growth parameter data that corresponds to allele sample
+#   row <- data[i, ]
+#   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
+#   update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
   # data$spore_count[i] <- log10N_func(data$day[i],growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index]) 
   # data$ppc_count[i] <- log10N_func(data$day[i]*24,growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index])}
 ```
@@ -408,7 +411,7 @@ for (i in 1:(n_sim *n_units * n_day)){
 
 ## 7. Save results
 ```{r}
-# save(data,file="MCsim_result_df.RData")
+save(data,file="MCsim_result_df_F1.RData")
 ```
 
 
