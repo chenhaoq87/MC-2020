@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 ## load packages
 library(readr)
+library(tidyverse)
 library(censReg)
 library(fitdistrplus)
 library(splitstackshape)
