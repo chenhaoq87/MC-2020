@@ -1,5 +1,5 @@
 ## Utility Functions
-# Last edited: 020620
+# Last edited: 022120
 
 ## (1) buchanan_log10N, (2) gompertz_log10N, (3) baranyi_log10N
 # Source: All equations for the 3 models below are copied from the Nlms package in R (https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R)
@@ -7,11 +7,11 @@
 # Purpose: Calculate log10N using respective growth model (either buchanan, gompertz, or barayani)
 
 # Parameters: Same for (1) buchanan, (2) gompertz, and (3) barayani
-# (i) t: 
-# (ii) lag: 
-# (iii) mumax: 
-# (iv) LOG10N0: 
-# (v) LOG10Nmax: 
+# (i) t: time in hours
+# (ii) lag: length of lag phase
+# (iii) mumax: growth rate (LOG10 CFU/mL per hour)
+# (iv) LOG10N0: initial microbial concentration 
+# (v) LOG10Nmax: carrying capacity
 
 # Functions:
 buchanan_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax){
@@ -139,7 +139,7 @@ getPrevRow <- function(df, sim_run, milk_unit, day) {
 # Purpose: 
 
 # Parameters:
-# (i) df:
+# (i) df: dataframe
 # (ii) sim_run:
 # (iii) milk_unit:
 # (iv) day:

@@ -47,12 +47,32 @@ mean_byDay_bySpoilageType
 
 ggplot(data=data, aes(x=day,y=count))+
   geom_violin()+
-  labs(y = "Milk spore count (log bacterial count/mL)", x = "Day" )
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
 
 ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
   geom_violin()+
-  #scale_y_continuous(limits = c(-5, 15), breaks = seq(-5, 15, by = 1))+
-  labs(y = "Milk spore count (log bacterial count /mL)", x = "Day" )
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
+  geom_violin()+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
+  geom_jitter(shape=3)+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type,group=lot_id))+
+  geom_jitter(shape=3)+
+  scale_x_discrete(breaks = seq(1, 24, 2), labels=seq(1, 24, 2)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )+
+  facet_wrap(~lot_id)
 
 ```
 
@@ -177,8 +197,8 @@ length(which(subset(data, data$day == 24)$count>4.3))/length(subset(data, data$d
 ```{r}
 ##
 #Make df of data by day
-# d0<-data[c(1:3,6)]
-# d0<-unique(d0)
+d0<-data[c(1:4,9)]
+d0<-unique(d0)
 d1<- data[data$day=="1",] 
 d2<- data[data$day=="2",] 
 d3<- data[data$day=="3",] 
@@ -210,6 +230,7 @@ d24<- data[data$day=="24",]
 #plot each day simulated histogram;
 
 # pdf(file='plot_initialmicro_low_bestcase.pdf')
+hist(d0$logCount_init, main="Histogram of simulated milk spore count over shelf-life\n Day = 0",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
 hist(d1$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 1",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
 hist(d2$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 2",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
 hist(d3$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 3",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
@@ -237,3 +258,42 @@ hist(d24$count, main="Histogram of simulated milk spore count over shelf-life\n 
 
 # dev.off()
 ```
+
+```{r}
+ggplot(d0, aes(logCount_init, fill = spoilage_type)) +
+  geom_histogram(bins=20)
+ggplot(data, aes(count, fill = spoilage_type)) +
+  geom_histogram()+
+  facet_wrap(~day)
+```
+
+* make an animation of simulation results
+```{r}
+# library(gganimate)
+# data2 <- data
+# data2$day <- as.integer(data2$day)
+# p <- ggplot(data2,
+#   aes(x = count, fill = spoilage_type)) +
+#   geom_histogram(show.legend = TRUE, alpha = 0.7,bins=20) +
+#   scale_y_continuous(breaks = seq(0,250,50))+
+#   scale_x_continuous(breaks = seq(-4, 10, 2)) +
+#   transition_time(day) +
+#   labs(title = "Day: {frame_time}",x="Milk bacteria count (log10 MPN or CFU/mL)") +
+#   view_follow(fixed_y = TRUE)
+# p
+```
+
+
+```{r}
+#plot histogram with both the simulated and fake actual count data
+d0_mean <- d0 %>%
+  group_by(LOT) %>%
+  summarise(mean = mean(logCFU_init), sd = sd(logCFU_init))
+
+plot(density(d0$logCFU_init), main="Day 0 - simulated initial count data vs input initial count data", 
+     xlab="LOG CFU/g", xlim=c(0,10), ylim=c(0,4))
+lines(density(initialcount_import$log10_mean_count), col="blue")
+legend('topright',  legend = c("simulated", "actual"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+```
+

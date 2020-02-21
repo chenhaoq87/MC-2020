@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 ## load packages
 library(readr)
+library(tidyverse)
 library(censReg)
 library(fitdistrplus)
 library(splitstackshape)
@@ -37,7 +38,7 @@ set.seed(1)
 spore_ATfrequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
 spore_ATfreq_import <- read.csv(spore_ATfrequency_file, stringsAsFactors = FALSE, header = TRUE)
 # ppc
-ppc_STfrequency_file <- "Sam_FFAR_PPCmodel/InputFiles/Frequency_ONLYSAMISOLATES_remove13and23_020120.csv"
+ppc_STfrequency_file <- "Sam_FFAR_PPCmodel/InputFiles/Frequency_ALLISOLATES_021120.csv"
 ppc_STfreq_import <- read.csv(ppc_STfrequency_file, stringsAsFactors = FALSE, header = TRUE)
 
 # (b) growth parameter data; make sure this contains growth parameters & growth model name
@@ -45,24 +46,25 @@ ppc_STfreq_import <- read.csv(ppc_STfrequency_file, stringsAsFactors = FALSE, he
 spore_growth_file <- "Ariel_2017MC_SporeModel/InputFiles/GrowthParameters.csv" 
 spore_growth_import <-read.csv(spore_growth_file, stringsAsFactors = FALSE)
 # ppc
-ppc_growth_file <- "Sam_FFAR_PPCmodel/InputFiles/GrowthParameters_remove13and23_020120.csv" 
+ppc_growth_file <- "Sam_FFAR_PPCmodel/InputFiles/ST_percentidentity_MCinput_SL_021920.csv" 
 ppc_growth_import <-read.csv(ppc_growth_file, stringsAsFactors = FALSE)
 
-# (c) initial count logMPN data
-# init_file <- "InitialCountsMPN.csv"
-# initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
-
+# (c) initial microbial count data
 # spore
 spore_init_file <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_RawMPN_3.6.17.csv")
 # ppc
 ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput_SL_021420.csv")
 
 # (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
-temp_stages_file <- "temp_stages.csv"
-temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
+# temp_stages_file <- "temp_stages.csv"
+# temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
 
 # (e) PPC frequency data
 source("FreqPPC.R")
+# get PPC frequency data for 1 plant only
+plant_freq_ppc <- df_freqPPC %>%
+  filter(plantID=="I") #randomly chose plantID, as 40 samples
+
 ```
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
@@ -77,7 +79,6 @@ ppc_STfreq_import$ClosestST <- paste(ppc_STfreq_import$temp,ppc_STfreq_import$Cl
 
 spore_ATfreq_import$temp <- "AT"
 spore_ATfreq_import$ClosestAT <- paste(spore_ATfreq_import$temp,spore_ATfreq_import$ClosestAT,sep="_")
-
 
 # modify growth import data file structure and also added "ST_" and "AT_", respectively to aid analysis
 ppc_growth_import <- ppc_growth_import %>% 
@@ -126,7 +127,6 @@ n_day <- 24 # seems like this is the end_day, but keeping code below for now in 
 
 ii. Prep vectors using defined values above
 ```{r}
-
 # (a) lot_id
 #Make a vector for "lot_id" by repeating sequence of 1:n_sim for length of n_units * n_day
 lot_id <- rep(seq(1, n_sim), each = n_units * n_day)
@@ -197,7 +197,7 @@ ST_freq <- ppc_STfreq_import$ClosestST
 
 ## (c) Temperature distribution for each stage (Note for Sarah to fix)
 #Here, the distribution and parameters are currently already written into the input file
-temp_by_stage
+# temp_by_stage
 
 ## (d) Frequency of PPC
 PPC_freq <- as.character(df_freqPPC$exceed20000_d10) #can change this to change by samplings or plants (or can rewrite code below)
@@ -244,7 +244,7 @@ for (i in 1:n_sim){
   ppc_CFU_init_samp <-rep(rpois(n_units, ppc_CFU_samp_halfgal[i]), times = n_day)
   ppc_CFU_init<-c(ppc_CFU_init, ppc_CFU_init_samp)}
 
-## (b) Sample the PPC_freq distribution
+## (b) Sample the PPC_freq distribution 
 spoilage_ppc <- vector()
 for (i in 1:n_sim){
   spoilage_ppc_samp <- rep(sample(PPC_freq, n_units, replace = T), times = n_day)
@@ -264,16 +264,16 @@ for (i in 1:n_sim){
   ST <- c(ST, ST_samp)}
 
 ## (d) Sample the temperature distribution
-temps <- vector()
-for (i in 1:n_sim){
-  for (j in 1:nrow(temp_by_stage)){
-    stage_row <- temp_by_stage[j, ]
-    n_times <- stage_row$endTime - stage_row$beginTime + 1
-    params <- as.numeric(unlist(strsplit(stage_row$parameters, " ")))
-    temp_mean <- params[[1]]
-    temp_sd <- params[[2]]
-    temp_sample <- rep(rnorm(n_units, temp_mean, temp_sd), times = n_times)
-    temps <- c(temps, temp_sample)}}
+# temps <- vector()
+# for (i in 1:n_sim){
+#   for (j in 1:nrow(temp_by_stage)){
+#     stage_row <- temp_by_stage[j, ]
+#     n_times <- stage_row$endTime - stage_row$beginTime + 1
+#     params <- as.numeric(unlist(strsplit(stage_row$parameters, " ")))
+#     temp_mean <- params[[1]]
+#     temp_sd <- params[[2]]
+#     temp_sample <- rep(rnorm(n_units, temp_mean, temp_sd), times = n_times)
+#     temps <- c(temps, temp_sample)}}
 ```
 
 ii. Add results from sampling distribution in (i) to dataframe
@@ -315,7 +315,8 @@ data$STorAT <- data$spoilage_type
 data$STorAT <- with(data, ifelse( STorAT == "spore", AT, ST) )
 
 ## (c) #Add temp to dataframe
-data$temp <- temps 
+# data$temp <- temps 
+
 # OR just set what the temperature should be for all:
 data$temp <- 6
 
