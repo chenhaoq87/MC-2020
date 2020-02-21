@@ -61,6 +61,10 @@ ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput
 
 # (e) PPC frequency data
 source("FreqPPC.R")
+# get PPC frequency data for 1 plant only
+plant_freq_ppc <- df_freqPPC %>%
+  filter(plantID=="I") #randomly chose plantID, as 40 samples
+
 ```
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
@@ -240,7 +244,7 @@ for (i in 1:n_sim){
   ppc_CFU_init_samp <-rep(rpois(n_units, ppc_CFU_samp_halfgal[i]), times = n_day)
   ppc_CFU_init<-c(ppc_CFU_init, ppc_CFU_init_samp)}
 
-## (b) Sample the PPC_freq distribution
+## (b) Sample the PPC_freq distribution 
 spoilage_ppc <- vector()
 for (i in 1:n_sim){
   spoilage_ppc_samp <- rep(sample(PPC_freq, n_units, replace = T), times = n_day)
