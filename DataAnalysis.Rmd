@@ -51,8 +51,28 @@ ggplot(data=data, aes(x=day,y=count))+
 
 ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
   geom_violin()+
-  #scale_y_continuous(limits = c(-5, 15), breaks = seq(-5, 15, by = 1))+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
   labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
+  geom_violin()+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
+  geom_jitter(shape=3)+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type,group=lot_id))+
+  geom_jitter(shape=3)+
+  scale_x_discrete(breaks = seq(1, 24, 2), labels=seq(1, 24, 2)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )+
+  facet_wrap(~lot_id)
 
 ```
 
@@ -247,22 +267,20 @@ ggplot(data, aes(count, fill = spoilage_type)) +
   facet_wrap(~day)
 ```
 
+* make an animation of simulation results
 ```{r}
-library(gganimate)
-data2 <- data
-data2$day <- as.integer(data2$day)
-p <- ggplot(data2,
-  aes(x = count, fill = spoilage_type)) +
-  geom_histogram(show.legend = TRUE, alpha = 0.7,bins=20) +
-  scale_y_continuous(breaks = seq(0,250,50))+
-  scale_x_continuous(breaks = seq(-4, 10, 2)) +
-  transition_time(day) +
-  labs(title = "Day: {frame_time}",x="Milk bacteria count (log10 MPN or CFU/mL)") +
-  view_follow(fixed_y = TRUE)
-p
-
-# anim_save("anim_spoilage_sim.gif")
-# anim_save("anim_spoilage_sim.mp4")
+# library(gganimate)
+# data2 <- data
+# data2$day <- as.integer(data2$day)
+# p <- ggplot(data2,
+#   aes(x = count, fill = spoilage_type)) +
+#   geom_histogram(show.legend = TRUE, alpha = 0.7,bins=20) +
+#   scale_y_continuous(breaks = seq(0,250,50))+
+#   scale_x_continuous(breaks = seq(-4, 10, 2)) +
+#   transition_time(day) +
+#   labs(title = "Day: {frame_time}",x="Milk bacteria count (log10 MPN or CFU/mL)") +
+#   view_follow(fixed_y = TRUE)
+# p
 ```
 
 
