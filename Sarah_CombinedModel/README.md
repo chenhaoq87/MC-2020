@@ -1,0 +1,1 @@
+*This folder contains files for the combined model; however, MCsim.Rmd in the main MC-2020 folder is the combined model (i.e., model files are mostly in MC-2020, but files for validation, for example, can be found in this folder)*
