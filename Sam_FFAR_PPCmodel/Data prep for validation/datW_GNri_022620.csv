@@ -1,0 +1,481 @@
+VSLNumber_SampleID,Plant name,Genus,Species,Genus_Species,X16S_ST,MilkFlv
+433_33-1,Hood-Portland,Pseudomonas,lundensis,Pseudomonas_lundensis,11,white
+433_33-1,Hood-Portland,Pseudomonas,tolaasii,Pseudomonas_tolaasii,12,white
+433_33-1,Hood-Portland,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+433_33-1,Hood-Portland,Pseudomonas,poae,Pseudomonas_poae,9,white
+433_33-1,Hood-Portland,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+434_22-1,Upstate Rochester,Pseudomonas,poae,Pseudomonas_poae,9,white
+434_22-1,Upstate Rochester,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,GN_NA,white
+434_22-1,Upstate Rochester,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+434_22-1,Upstate Rochester,Pseudomonas,gessardii,Pseudomonas_gessardii,9,white
+434_22-1,Upstate Rochester,Pseudomonas,gessardii_proteolytica_poae_lurida_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_sl,9,white
+434_23-2,Upstate Rochester,Pseudomonas,orientalis,Pseudomonas_orientalis,GN_NA,white
+434_23-2,Upstate Rochester,Pseudomonas,cedrina,Pseudomonas_cedrina,21,white
+434_23-2,Upstate Rochester,Janthinobacterium,lividum,Janthinobacterium_lividum,19,white
+434_23-2,Upstate Rochester,Pseudomonas,gessardii,Pseudomonas_gessardii,20,white
+434_23-2,Upstate Rochester,Pseudomonas,brenneri,Pseudomonas_brenneri,16,white
+434_23-2,Upstate Rochester,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+434_23-2,Upstate Rochester,Pseudomonas,rhizosphaerae,Pseudomonas_rhizosphaerae,22,white
+434_32-2,Upstate Buffalo,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+434_33-1,Upstate Buffalo,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,24,white
+434_32-2,Upstate Buffalo,Pseudomonas,poae_lurida_rhodesiae_sl,Pseudomonas_poae_lurida_rhodesiae_sl,16,white
+434_33-1,Upstate Buffalo,Pseudomonas,brassicacearum_migulae_corrugata_sl,Pseudomonas_brassicacearum_migulae_corrugata_sl,24,white
+434_62-1,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+434_62-1,Byrne Dairy,Pseudomonas,fragi_deceptionensis_sl,Pseudomonas_fragi_deceptionensis_sl,GN_NA,white
+434_62-1,Byrne Dairy,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,GN_NA,white
+434_62-2,Byrne Dairy,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+434_62-2,Byrne Dairy,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,GN_NA,white
+434_63,Byrne Dairy,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+434_72,Cornell Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+434_72,Cornell Dairy,Pseudomonas,sp_simiae_poae_lurida,Pseudomonas_sp_simiae_poae_lurida,GN_NA,white
+434_72,Cornell Dairy,Pseudomonas,sp_poae_lurida,Pseudomonas_sp_poae_lurida,GN_NA,white
+434_72,Cornell Dairy,Pseudomonas,gessardii_proteolytica_poae_lurida_rhodesiae_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_rhodesiae_sl,9,white
+434_72-1,Cornell Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+434_73,Cornell Dairy,Pseudomonas,sp_simiae_poae_lurida,Pseudomonas_sp_simiae_poae_lurida,GN_NA,white
+434_73,Cornell Dairy,Pseudomonas,sp_poae_lurida,Pseudomonas_sp_poae_lurida,GN_NA,white
+434_73,Cornell Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+434_73-1,Cornell Dairy,Pseudomonas,poae,Pseudomonas_poae,9,white
+434_73-1,Cornell Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+434_73,Cornell Dairy,Pseudomonas,poae,Pseudomonas_poae,9,white
+434_72,Cornell Dairy,Pseudomonas,gessardii_proteolytica_poae_lurida_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_sl,9,white
+434_72,Cornell Dairy,Pseudomonas,poae,Pseudomonas_poae,9,white
+434_72-1,Cornell Dairy,Pseudomonas,poae,Pseudomonas_poae,9,white
+434_73-1,Cornell Dairy,Pseudomonas,gessardii_proteolytica_poae_lurida_rhodesiae_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_rhodesiae_sl,9,white
+435_12-1,Stewart's,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,33,white
+435_12-1,Stewart's,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,35,white
+435_12-1,Stewart's,Pseudomonas,libanensis_poae_lurida_sl,Pseudomonas_libanensis_poae_lurida_sl,33,white
+435_12-1,Stewart's,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+435_12-1,Stewart's,Kluyvera,cryocrescens,Kluyvera_cryocrescens,34,white
+435_12-1,Stewart's,Citrobacter/Raoultella/Kluyvera,murliniae_braakii_ornithinolytica_ascorbata_sl,Citrobacter/Raoultella/Kluyvera_murliniae_braakii_ornithinolytica_ascorbata_sl,34,white
+435_12-1,Stewart's,Raoultella/Kluyvera,ornithinolytica_ascorbata_cryocrescens_sl,Raoultella/Kluyvera_ornithinolytica_ascorbata_cryocrescens_sl,GN_NA,white
+435_13-1,Stewart's,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,33,white
+435_13-1,Stewart's,Hafnia,paralvei,Hafnia_paralvei,36,white
+435_13-1,Stewart's,Pseudomonas,libanensis_poae_lurida_sl,Pseudomonas_libanensis_poae_lurida_sl,33,white
+435_13-1,Stewart's,Pseudomonas,brenneri_orientalis_grimontii_poae_lurida_sl,Pseudomonas_brenneri_orientalis_grimontii_poae_lurida_sl,16,white
+435_13-1,Stewart's,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,GN_NA,white
+435_13-1,Stewart's,Hafnia,paralvei,Hafnia_paralvei,37,white
+435_13-1,Stewart's,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+435_13-1,Stewart's,Pseudomonas,fragi,Pseudomonas_fragi,39,white
+435_13-1,Stewart's,Hafnia,paralvei,Hafnia_paralvei,38,white
+435_13-1,Stewart's,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+435_13-1,Stewart's,Hafnia,paralvei,Hafnia_paralvei,40,white
+435_13-1,Stewart's,Hafnia,paralvei,Hafnia_paralvei,GN_NA,white
+435_42-2,Garelick Farms,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+435_43-2,Garelick Farms,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+435_43-2,Garelick Farms,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+435_73,Hood-Concord,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+435_73-2,Hood-Concord,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+435_82,Hood-Portland,Shewanella,hafniensis,Shewanella_hafniensis,47,white
+435_82,Hood-Portland,Buttiauxella,brennerae,Buttiauxella_brennerae,48,white
+435_82,Hood-Portland,Buttiauxella,brennerae,Buttiauxella_brennerae,49,white
+435_82,Hood-Portland,Buttiauxella,gaviniae_brennerae_sl,Buttiauxella_gaviniae_brennerae_sl,49,white
+435_82,Hood-Portland,Pseudomonas,fulva_plecoglossicida_sl,Pseudomonas_fulva_plecoglossicida_sl,50,white
+435_82-1,Hood-Portland,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+435_82-2,Hood-Portland,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+435_82-2,Hood-Portland,Pseudomonas,poae,Pseudomonas_poae,51,white
+435_82-2,Hood-Portland,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+435_83-1,Hood-Portland,Pseudomonas,fulva_plecoglossicida_sl,Pseudomonas_fulva_plecoglossicida_sl,6,white
+435_83-1,Hood-Portland,Enterobacter,ludwigii,Enterobacter_ludwigii,53,white
+435_83-2,Hood-Portland,Comamonas,cf_thiooxydans,Comamonas_cf_thiooxydans,54,white
+435_83-2,Hood-Portland,Comamonas,thiooxydans,Comamonas_thiooxydans,54,white
+435_83-2,Hood-Portland,Enterobacter,ludwigii,Enterobacter_ludwigii,53,white
+436_73,Upstate Buffalo,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+436_73-1,Upstate Buffalo,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+436_83-2,Upstate Rochester,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+436_83-2,Upstate Rochester,Rahnella,aquatilis,Rahnella_aquatilis,56,white
+436_83-2,Upstate Rochester,Rahnella,cf_aquatilis,Rahnella_cf_aquatilis,56,white
+436_92,Hood-Agawam,Pseudomonas,abietaniphila,Pseudomonas_abietaniphila,57,white
+436_92,Hood-Agawam,Pseudomonas,brassicacearum_migulae_corrugata_sl,Pseudomonas_brassicacearum_migulae_corrugata_sl,10,white
+437_22-2,Byrne Dairy,Pseudomonas,tolaasii,Pseudomonas_tolaasii,60,white
+437_22-2,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+437_22-2,Byrne Dairy,Pseudomonas,gessardii,Pseudomonas_gessardii,9,white
+437_22-2,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+437_22-2,Byrne Dairy,Pseudomonas,gessardii_proteolytica_sl,Pseudomonas_gessardii_proteolytica_sl,62,white
+437_22-2,Byrne Dairy,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+437_22-2,Byrne Dairy,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,60,white
+437_22-2,Byrne Dairy,Serratia,quinivorans,Serratia_quinivorans,61,white
+437_22-2,Byrne Dairy,Raoultella,ornithinolytica,Raoultella_ornithinolytica,63,white
+437_23-2,Byrne Dairy,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+437_23-2,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+437_23-2,Byrne Dairy,Rahnella,cf_aquatilis,Rahnella_cf_aquatilis,65,white
+437_23-2,Byrne Dairy,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+437_23-2,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,67,white
+437_23-2,Byrne Dairy,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+437_23-2,Byrne Dairy,Pseudomonas,proteolytica_orientalis_sl,Pseudomonas_proteolytica_orientalis_sl,64,white
+437_23-2,Byrne Dairy,Pseudomonas,deceptionensis,Pseudomonas_deceptionensis,13,white
+437_23-2,Byrne Dairy,Rahnella,aquatilis,Rahnella_aquatilis,68,white
+437_23-2,Byrne Dairy,Cedecea,davisae,Cedecea_davisae,66,white
+437_32-1,Cornell Dairy,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+437_32-1,Cornell Dairy,Raoultella/Kluyvera,ornithinolytica_cryocrescens_sl,Raoultella/Kluyvera_ornithinolytica_cryocrescens_sl,71,white
+437_32-1,Cornell Dairy,Raoultella/Kluyvera,ornithinolytica_ascorbata_cryocrescens_sl,Raoultella/Kluyvera_ornithinolytica_ascorbata_cryocrescens_sl,71,white
+437_32-1,Cornell Dairy,Massilia,aurea,Massilia_aurea,72,white
+437_32-1,Cornell Dairy,Raoultella,ornithinolytica,Raoultella_ornithinolytica,71,white
+437_32-1,Cornell Dairy,Raoultella/Kluyvera,ornithinolytica_ascorbata_sl,Raoultella/Kluyvera_ornithinolytica_ascorbata_sl,71,white
+437_72,Garelick Farms,Pseudomonas,orientalis,Pseudomonas_orientalis,73,white
+437_72,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,16,white
+437_72,Garelick Farms,Yersinia,kristensenii_bercovieri_sl,Yersinia_kristensenii_bercovieri_sl,74,white
+437_72,Garelick Farms,Pseudomonas,costantinii_poae_lurida_sl,Pseudomonas_costantinii_poae_lurida_sl,59,white
+437_72,Garelick Farms,Pantoea,anthophila,Pantoea_anthophila,75,white
+437_72,Garelick Farms,Yersinia,kristensenii,Yersinia_kristensenii,74,white
+437_72-1,Garelick Farms,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+437_72-2,Garelick Farms,Janthinobacterium,lividum,Janthinobacterium_lividum,76,white
+437_73,Garelick Farms,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,78,white
+437_73,Garelick Farms,Pantoea,anthophila,Pantoea_anthophila,75,white
+437_73,Garelick Farms,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,77,white
+437_73-1,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,16,white
+437_73-1,Garelick Farms,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+437_73-2,Garelick Farms,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,78,white
+437_73-2,Garelick Farms,Pantoea,anthophila,Pantoea_anthophila,75,white
+437_73-2,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,16,white
+437_82-1,Stewart's,Pseudomonas,monteilii_oryzihabitans_vranovensis_sl,Pseudomonas_monteilii_oryzihabitans_vranovensis_sl,6,white
+437_82-1,Stewart's,Limnohabitans,planktonicus,Limnohabitans_planktonicus,3,white
+437_82-1,Stewart's,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+437_82-1,Stewart's,Pseudomonas,taiwanensis_fulva_plecoglossicida_sl,Pseudomonas_taiwanensis_fulva_plecoglossicida_sl,6,white
+437_82-1,Stewart's,Pseudomonas,guariconensis_taiwanensis_fulva_parafulva_fulva_sl,Pseudomonas_guariconensis_taiwanensis_fulva_parafulva_fulva_sl,6,white
+437_23,Byrne Dairy,Pseudomonas,deceptionensis,Pseudomonas_deceptionensis,13,white
+438_12,Hood-Agawam,Pseudomonas,deceptionensis_lundensis_fragi_sl,Pseudomonas_deceptionensis_lundensis_fragi_sl,11,white
+438_13,Hood-Agawam,Pseudomonas,abietaniphila,Pseudomonas_abietaniphila,10,white
+438_22,Hood-Concord,Acinetobacter,guillouiae,Acinetobacter_guillouiae,1,white
+438_23-2,Hood-Concord,Hafnia,paralvei,Hafnia_paralvei,79,white
+438_23-2,Hood-Concord,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+438_23-2,Hood-Concord,Pseudomonas,libanensis_poae_lurida_sl,Pseudomonas_libanensis_poae_lurida_sl,51,white
+438_23-2,Hood-Concord,Pseudomonas,libanensis_poae_lurida_rhodesiae_sl,Pseudomonas_libanensis_poae_lurida_rhodesiae_sl,51,white
+438_33,Hood-Portland,Pseudomonas,lundensis,Pseudomonas_lundensis,11,white
+438_33,Hood-Portland,Pseudomonas,lundensis_taetrolens_sl,Pseudomonas_lundensis_taetrolens_sl,11,white
+438_33,Hood-Portland,Lelliottia,amnigena,Lelliottia_amnigena,17,white
+438_33,Hood-Portland,Pseudomonas,jessenii_taetrolens_sl,Pseudomonas_jessenii_taetrolens_sl,11,white
+438_33,Hood-Portland,Pseudomonas,fragi,Pseudomonas_fragi,11,white
+438_33,Hood-Portland,Kluyvera/Lelliottia,intermedia_amnigeAim2_Prelim_sl,Kluyvera/Lelliottia_intermedia_amnigeAim2_Prelim_sl,17,white
+438_33-1,Hood-Portland,Pseudomonas,jessenii_umsongensis_sl,Pseudomonas_jessenii_umsongensis_sl,15,white
+438_33-1,Hood-Portland,Pseudomonas,jessenii_mandelii_umsongensis_vancouverensis_kilonensis_sl,Pseudomonas_jessenii_mandelii_umsongensis_vancouverensis_kilonensis_sl,15,white
+438_33-1,Hood-Portland,Pseudomonas,jessenii_mandelii_umsongensis_vancouverensis_kilonensis_sl,Pseudomonas_jessenii_mandelii_umsongensis_vancouverensis_kilonensis_sl,80,white
+438_33-2,Hood-Portland,Obesumbacterium,proteus,Obesumbacterium_proteus,81,white
+438_33-2,Hood-Portland,Hafnia,paralvei,Hafnia_paralvei,81,white
+438_33-2,Hood-Portland,Obesumbacterium/Hafnia,proteus_paralvei_sl,Obesumbacterium/Hafnia_proteus_paralvei_sl,81,white
+438_33-2,Hood-Portland,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,82,white
+438_33-2,Hood-Portland,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,78,white
+438_33-2,Hood-Portland,Lelliottia,amnigena,Lelliottia_amnigena,17,white
+438_12-2,Hood-Agawam,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,33,white
+439_22-2,Upstate Rochester,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+439_23-2,Upstate Rochester,Pseudomonas,proteolytica,Pseudomonas_proteolytica,83,white
+439_23-2,Upstate Rochester,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+439_23-2,Upstate Rochester,Pseudomonas,gessardii_proteolytica_poae_lurida_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_sl,9,white
+439_32,Upstate Buffalo,Obesumbacterium,proteus,Obesumbacterium_proteus,84,white
+439_33,Upstate Buffalo,Pseudomonas,orientalis,Pseudomonas_orientalis,85,white
+439_33,Upstate Buffalo,Acinetobacter,guillouiae,Acinetobacter_guillouiae,1,white
+439_33,Upstate Buffalo,Klebsiella,pneumoniae,Klebsiella_pneumoniae,86,white
+439_33-1,Upstate Buffalo,Pseudomonas,orientalis_proteolytica_trivialis_sl,Pseudomonas_orientalis_proteolytica_trivialis_sl,85,white
+439_33-1,Upstate Buffalo,Pseudomonas,orientalis,Pseudomonas_orientalis,85,white
+439_33-1,Upstate Buffalo,Pseudomonas,orientalis_trivialis_sl,Pseudomonas_orientalis_trivialis_sl,85,white
+439_33-2,Upstate Buffalo,Pseudomonas,gessardii_proteolytica_sl,Pseudomonas_gessardii_proteolytica_sl,88,white
+439_33-2,Upstate Buffalo,Pseudomonas,lundensis,Pseudomonas_lundensis,11,white
+439_33-2,Upstate Buffalo,Pseudomonas,lundensis_deceptionensis_sl,Pseudomonas_lundensis_deceptionensis_sl,11,white
+439_33-2,Upstate Buffalo,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,16,white
+439_33-2,Upstate Buffalo,Pseudomonas,orientalis_trivialis_sl,Pseudomonas_orientalis_trivialis_sl,85,white
+439_33-2,Upstate Buffalo,Pseudomonas,chlororaphis,Pseudomonas_chlororaphis,87,white
+439_33-2,Upstate Buffalo,Pseudomonas,orientalis,Pseudomonas_orientalis,85,white
+439_52-1,Byrne Dairy,Comamonas,cf_thiooxydans,Comamonas_cf_thiooxydans,54,white
+439_52-2,Byrne Dairy,Pantoea,anthophila,Pantoea_anthophila,89,white
+439_52-2,Byrne Dairy,Rahnella,cf_aquatilis,Rahnella_cf_aquatilis,56,white
+439_52-2,Byrne Dairy,Rahnella,aquatilis,Rahnella_aquatilis,65,white
+439_52-2,Byrne Dairy,Pseudomonas,libanensis_poae_lurida_sl,Pseudomonas_libanensis_poae_lurida_sl,GN_NA,white
+439_52-2,Byrne Dairy,Pseudomonas,rhizosphaerae_congelans_sl,Pseudomonas_rhizosphaerae_congelans_sl,90,white
+439_52-2,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+439_52-2,Byrne Dairy,Rahnella,aquatilis,Rahnella_aquatilis,56,white
+439_52-2,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+439_52-2,Byrne Dairy,Pantoea,anthophila,Pantoea_anthophila,75,white
+439_53-1,Byrne Dairy,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+439_53-1,Byrne Dairy,Pseudomonas,brenneri_grimontii_sl,Pseudomonas_brenneri_grimontii_sl,67,white
+439_53-1,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+439_53-1,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,67,white
+439_53-1,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,14,white
+439_53-1,Byrne Dairy,Pseudomonas,orientalis_brenneri_grimontii_rhodesiae_sl,Pseudomonas_orientalis_brenneri_grimontii_rhodesiae_sl,16,white
+439_53-1,Byrne Dairy,Pseudomonas,fragi_lundensis_sl,Pseudomonas_fragi_lundensis_sl,14,white
+439_53-1,Byrne Dairy,Lelliottia,amnigena,Lelliottia_amnigena,17,white
+439_53-2,Byrne Dairy,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+439_53-2,Byrne Dairy,Hafnia,cf_paralvei,Hafnia_cf_paralvei,99,white
+439_53-2,Byrne Dairy,Rahnella,cf_aquatilis,Rahnella_cf_aquatilis,56,white
+439_53-2,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+439_53-2,Byrne Dairy,Pseudomonas,deceptionensis,Pseudomonas_deceptionensis,13,white
+439_53-2,Byrne Dairy,Pseudomonas,psychrophila,Pseudomonas_psychrophila,13,white
+439_53-2,Byrne Dairy,Pseudomonas,proteolytica,Pseudomonas_proteolytica,83,white
+439_53-2,Byrne Dairy,Pseudomonas,orientalis_libanensis_proteolytica_sl,Pseudomonas_orientalis_libanensis_proteolytica_sl,95,white
+439_53-2,Byrne Dairy,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+439_53-2,Byrne Dairy,Obesumbacterium,cf_proteus,Obesumbacterium_cf_proteus,98,white
+439_53-2,Byrne Dairy,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+439_53-2,Byrne Dairy,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+439_53-2,Byrne Dairy,Serratia,proteamaculans,Serratia_proteamaculans,92,white
+439_53-2,Byrne Dairy,Pseudomonas,libanensis,Pseudomonas_libanensis,97,white
+439_53-2,Byrne Dairy,Raoultella,terrigena,Raoultella_terrigena,18,white
+439_53-2,Byrne Dairy,Citrobacter,gillenii,Citrobacter_gillenii,94,white
+439_53-2,Byrne Dairy,Hafnia,paralvei,Hafnia_paralvei,96,white
+439_53-2,Byrne Dairy,Buttiauxella,brennerae,Buttiauxella_brennerae,93,white
+439_53-2,Byrne Dairy,Hafnia,cf_paralvei,Hafnia_cf_paralvei,91,white
+439_53-2,Byrne Dairy,Hafnia,paralvei,Hafnia_paralvei,36,white
+439_63,Cornell Dairy,Pseudomonas,grimontii,Pseudomonas_grimontii,100,white
+440_43-2,Garelick Farms,Janthinobacterium,lividum,Janthinobacterium_lividum,101,white
+440_43-2,Garelick Farms,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+440_43-2,Garelick Farms,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+440_43-2,Garelick Farms,Janthinobacterium,lividum,Janthinobacterium_lividum,102,white
+440_82,Hood-Concord,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+440_82,Hood-Concord,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+440_82,Hood-Concord,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+440_82,Hood-Concord,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+440_82-2,Hood-Concord,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+440_83-1,Hood-Concord,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+440_83-1,Hood-Concord,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+440_83-2,Hood-Concord,Pseudomonas,orientalis_trivialis_sl,Pseudomonas_orientalis_trivialis_sl,23,white
+440_83-2,Hood-Concord,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+440_92-1,Hood-Portland,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+440_92-1,Hood-Portland,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+440_92-1,Hood-Portland,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+440_92-1,Hood-Portland,Pseudomonas,tolaasii_jessenii_sl,Pseudomonas_tolaasii_jessenii_sl,52,white
+440_93-1,Hood-Portland,Pseudomonas,libanensis_poae_lurida_sl,Pseudomonas_libanensis_poae_lurida_sl,51,white
+440_93-1,Hood-Portland,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+440_93-1,Hood-Portland,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+440_93-1,Hood-Portland,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+440_93-2,Hood-Portland,Lelliottia,amnigena,Lelliottia_amnigena,17,white
+440_93-2,Hood-Portland,Brevundimonas,vesicularis_(T);_LMG_2350,Brevundimonas_vesicularis_(T);_LMG_2350,105,white
+440_93-2,Hood-Portland,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+440_93-2,Hood-Portland,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+440_42,Garelick Farms,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+440_42,Garelick Farms,Comamonas,cf_koreensis,Comamonas_cf_koreensis,GN_NA,white
+441_62-2,Hood-Agawam,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,107,white
+441_63,Hood-Agawam,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+441_63,Hood-Agawam,Pseudomonas,lundensis_fragi_sl,Pseudomonas_lundensis_fragi_sl,11,white
+441_63,Hood-Agawam,Pseudomonas,fragi,Pseudomonas_fragi,11,white
+441_63,Hood-Agawam,Pseudomonas,rhizosphaerae,Pseudomonas_rhizosphaerae,108,white
+441_63,Hood-Agawam,Pseudomonas,abietaniphila,Pseudomonas_abietaniphila,108,white
+441_63-2,Hood-Agawam,Pseudomonas,brassicacearum_reinekei_chlororaphis_migulae_vancouverensis_sl,Pseudomonas_brassicacearum_reinekei_chlororaphis_migulae_vancouverensis_sl,82,white
+441_63-2,Hood-Agawam,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,82,white
+441_63-2,Hood-Agawam,Pseudomonas,reinekei_chlororaphis_migulae_sl,Pseudomonas_reinekei_chlororaphis_migulae_sl,82,white
+441_63-2,Hood-Agawam,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,10,white
+441_63-2,Hood-Agawam,Pseudomonas,brassicacearum_reinekei_chlororaphis_tolaasii_migulae_sl,Pseudomonas_brassicacearum_reinekei_chlororaphis_tolaasii_migulae_sl,82,white
+441_82-2,Upstate Rochester,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+441_83,Upstate Rochester,Chryseobacterium,shigense,Chryseobacterium_shigense,GN_NA,white
+441_83,Upstate Rochester,Chryseobacterium,shigense_luteum_sl,Chryseobacterium_shigense_luteum_sl,109,white
+441_83-2,Upstate Rochester,Janthinobacterium,lividum,Janthinobacterium_lividum,43,white
+441_83-2,Upstate Rochester,Pseudomonas,jessenii_umsongensis_sl,Pseudomonas_jessenii_umsongensis_sl,11,white
+441_83-2,Upstate Rochester,Lelliottia,amnigena,Lelliottia_amnigena,17,white
+441_83-2,Upstate Rochester,Pseudomonas,fragi,Pseudomonas_fragi,111,white
+441_83-2,Upstate Rochester,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+441_83-2,Upstate Rochester,Obesumbacterium,proteus,Obesumbacterium_proteus,110,white
+441_83-2,Upstate Rochester,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+441_83-2,Upstate Rochester,Pseudomonas,jessenii,Pseudomonas_jessenii,11,white
+441_83-2,Upstate Rochester,Pseudomonas,lundensis_taetrolens_sl,Pseudomonas_lundensis_taetrolens_sl,11,white
+441_92-2,Upstate Buffalo,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,106,white
+441_92-2,Upstate Buffalo,Pseudomonas,rhizosphaerae_abietaniphila_sl,Pseudomonas_rhizosphaerae_abietaniphila_sl,106,white
+441_93,Upstate Buffalo,Pseudomonas,lini_jessenii_cedriAim2_Prelim_mandelii_koreensis_sl,Pseudomonas_lini_jessenii_cedriAim2_Prelim_mandelii_koreensis_sl,112,white
+441_93-2,Upstate Buffalo,Pseudomonas,fragi,Pseudomonas_fragi,67,white
+441_93-2,Upstate Buffalo,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,67,white
+441_93-2,Upstate Buffalo,Citrobacter,murliniae_braakii_sl,Citrobacter_murliniae_braakii_sl,113,white
+441_73-1,Hood-Barre,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+442_22,Byrne Dairy,Pseudomonas,jessenii_umsongensis_sl,Pseudomonas_jessenii_umsongensis_sl,11,white
+442_22,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,14,white
+442_22-1,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+442_22-1,Byrne Dairy,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+442_22-1,Byrne Dairy,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+442_22-1,Byrne Dairy,Yersinia,kristensenii,Yersinia_kristensenii,114,white
+442_22-2,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,115,white
+442_22-2,Byrne Dairy,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+442_23,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+442_23,Byrne Dairy,Pseudomonas,japonica_fulva_plecoglossicida_sl,Pseudomonas_japonica_fulva_plecoglossicida_sl,116,white
+442_23,Byrne Dairy,Pseudomonas,taiwanensis_japonica_fulva_plecoglossicida_sl,Pseudomonas_taiwanensis_japonica_fulva_plecoglossicida_sl,116,white
+442_23-1,Byrne Dairy,Pseudomonas,monteilii,Pseudomonas_monteilii,117,white
+442_23-1,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,16,white
+442_23-1,Byrne Dairy,Limnohabitans,cf_planktonicus,Limnohabitans_cf_planktonicus,3,white
+442_23-2,Byrne Dairy,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+442_23-2,Byrne Dairy,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+442_23-2,Byrne Dairy,Pseudomonas,orientalis_trivialis_sl,Pseudomonas_orientalis_trivialis_sl,23,white
+442_23-2,Byrne Dairy,Pseudomonas,orientalis_trivialis_sl,Pseudomonas_orientalis_trivialis_sl,GN_NA,white
+442_72,Garelick Farms,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+442_73,Garelick Farms,Pseudomonas,gessardii_libanensis_grimontii_proteolytica_sl,Pseudomonas_gessardii_libanensis_grimontii_proteolytica_sl,119,white
+442_73-1,Garelick Farms,Serratia,grimesii,Serratia_grimesii,120,white
+442_73-2,Garelick Farms,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+442_83,Stewart's,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+433_22,Hood-Concord,Citrobacter,farmeri,Citrobacter_farmeri,5,white
+433_32,Hood-Portland,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+433_12,Hood-Agawam,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+433_22,Hood-Concord,Acinetobacter,guillouiae,Acinetobacter_guillouiae,1,white
+433_32,Hood-Portland,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+433_22,Hood-Concord,Pseudomonas,taiwanensis_fulva_plecoglossicida_sl,Pseudomonas_taiwanensis_fulva_plecoglossicida_sl,6,white
+433_32,Hood-Portland,Pseudomonas,fragi,Pseudomonas_fragi,11,white
+433_32,Hood-Portland,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+433_33,Hood-Portland,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+433_23,Hood-Concord,Acinetobacter,guillouiae,Acinetobacter_guillouiae,1,white
+433_12,Hood-Agawam,Limnohabitans,cf_planktonicus,Limnohabitans_cf_planktonicus,3,white
+433_32,Hood-Portland,Raoultella,terrigena,Raoultella_terrigena,18,white
+433_32,Hood-Portland,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+433_12,Hood-Agawam,Comamonas,cf_koreensis,Comamonas_cf_koreensis,4,white
+433_42,Hood-Barre,Acinetobacter,guillouiae,Acinetobacter_guillouiae,1,white
+434_22,Upstate Rochester,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+434_23,Upstate Rochester,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+434_32,Upstate Buffalo,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,24,white
+434_32,Upstate Buffalo,Pseudomonas,brassicacearum_migulae_proteolytica_sl,Pseudomonas_brassicacearum_migulae_proteolytica_sl,GN_NA,white
+434_32,Upstate Buffalo,Pseudomonas,brassicacearum_migulae_proteolytica_sl,Pseudomonas_brassicacearum_migulae_proteolytica_sl,24,white
+434_33,Upstate Buffalo,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+434_22,Upstate Rochester,Pseudomonas,taiwanensis_fulva_plecoglossicida_sl,Pseudomonas_taiwanensis_fulva_plecoglossicida_sl,6,white
+434_23,Upstate Rochester,Pseudomonas,tolaasii_cedriAim2_Prelim_koreensis_trivialis_chlororaphis_sl,Pseudomonas_tolaasii_cedriAim2_Prelim_koreensis_trivialis_chlororaphis_sl,21,white
+434_23,Upstate Rochester,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+434_23,Upstate Rochester,Aeromonas,jandaei_media_hydrophila_sl,Aeromonas_jandaei_media_hydrophila_sl,7,white
+434_32,Upstate Buffalo,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,GN_NA,white
+434_32,Upstate Buffalo,Pseudomonas,rhodesiae,Pseudomonas_rhodesiae,16,white
+434_32,Upstate Buffalo,Pseudomonas,migulae_proteolytica_sl,Pseudomonas_migulae_proteolytica_sl,24,white
+434_33,Upstate Buffalo,Pseudomonas,rhizosphaerae,Pseudomonas_rhizosphaerae,8,white
+434_33,Upstate Buffalo,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+434_33,Upstate Buffalo,Pseudomonas,rhizosphaerae,Pseudomonas_rhizosphaerae,GN_NA,white
+437_22,Byrne Dairy,Pseudomonas,trivialis,Pseudomonas_trivialis,23,white
+Aim2_Prelim_P12-4,Byrne Dairy,Pseudomonas,brassicacearum_tolaasii_migulae_rhizosphaerae_sl,Pseudomonas_brassicacearum_tolaasii_migulae_rhizosphaerae_sl,22,white
+Aim2_Prelim_P12-4,Byrne Dairy,Serratia,sp_glossinae_marcescens,Serratia_sp_glossinae_marcescens,122,white
+Aim2_Prelim_P12-4,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+Aim2_Prelim_P12-6,Byrne Dairy,Pseudomonas,jessenii_umsongensis_sl,Pseudomonas_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P13-4,Byrne Dairy,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P13-4,Byrne Dairy,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+Aim2_Prelim_P13-6,Byrne Dairy,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P13-6,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+Aim2_Prelim_P13-6,Byrne Dairy,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+Aim2_Prelim_P12-4,Byrne Dairy,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+Aim2_Prelim_P12-2,Byrne Dairy,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P12-6,Byrne Dairy,Pseudomonas,gessardii_proteolytica_poae_lurida_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_sl,9,white
+Aim2_Prelim_P12-6,Byrne Dairy,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P13-2,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+Aim2_Prelim_P13-2,Byrne Dairy,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P13-4,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+Aim2_Prelim_P13-6,Byrne Dairy,Pseudomonas,gessardii_proteolytica_poae_lurida_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_sl,9,white
+Aim2_Prelim_P13-6,Byrne Dairy,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P12-2,Byrne Dairy,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P12-6,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,129,white
+Aim2_Prelim_P13-2,Byrne Dairy,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P13-6,Byrne Dairy,Pseudomonas,jessenii_umsongensis_sl,Pseudomonas_jessenii_umsongensis_sl,11,white
+Aim2_Prelim_P12-1,Byrne Dairy,Acinetobacter,guillouiae,Acinetobacter_guillouiae,1,white
+Aim2_Prelim_P12-4,Byrne Dairy,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+Aim2_Prelim_P12-6,Byrne Dairy,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P12-1,Byrne Dairy,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,78,white
+Aim2_Prelim_P12-6,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+Aim2_Prelim_P12-6,Byrne Dairy,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+Aim2_Prelim_P13-4,Byrne Dairy,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P12-1,Byrne Dairy,Sphingobacterium,kitahiroshimense,Sphingobacterium_kitahiroshimense,125,white
+Aim2_Prelim_P12-2,Byrne Dairy,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+Aim2_Prelim_P23-4,Upstate Buffalo,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+Aim2_Prelim_P23-5,Upstate Buffalo,Comamonas,cf_koreensis,Comamonas_cf_koreensis,4,white
+Aim2_Prelim_P33-3,Upstate Rochester,Pseudomonas,marincola,Pseudomonas_marincola,127,white
+Aim2_Prelim_P33-3,Upstate Rochester,Pseudomonas,anguilliseptica,Pseudomonas_anguilliseptica,127,white
+Aim2_Prelim_P23-4,Upstate Buffalo,Citrobacter,gillenii,Citrobacter_gillenii,46,white
+Aim2_Prelim_P23-5,Upstate Buffalo,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+Aim2_Prelim_P33-3,Upstate Rochester,Pseudomonas,sp_marincola_anguilliseptica,Pseudomonas_sp_marincola_anguilliseptica,128,white
+Aim2_Prelim_P33-3,Upstate Rochester,Acinetobacter,haemolyticus,Acinetobacter_haemolyticus,2,white
+Aim2_Prelim_P33-3,Upstate Rochester,Pseudomonas,cf_marincola,Pseudomonas_cf_marincola,128,white
+Aim2_Prelim_P22-4,Upstate Buffalo,Comamonas,cf_koreensis,Comamonas_cf_koreensis,4,white
+Aim2_Prelim_P23-5,Upstate Buffalo,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+Aim2_Prelim_P33-3,Upstate Rochester,Pseudomonas,peli,Pseudomonas_peli,128,white
+Aim2_Prelim_P43-2,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,33,white
+Aim2_Prelim_P43-2,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,132,white
+Aim2_Prelim_P42-1,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+Aim2_Prelim_P42-1,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,33,white
+Aim2_Prelim_P42-3,Garelick Farms,Pseudomonas,trivialis,Pseudomonas_trivialis,23,white
+Aim2_Prelim_P42-3,Garelick Farms,Pseudomonas,grimontii,Pseudomonas_grimontii,100,white
+Aim2_Prelim_P43-1,Garelick Farms,Pseudomonas,yamanorum_grimontii_sl,Pseudomonas_yamanorum_grimontii_sl,100,white
+Aim2_Prelim_P43-1,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+Aim2_Prelim_P43-2,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+Aim2_Prelim_P43-2,Garelick Farms,Pseudomonas,jessenii_umsongensis_sl,Pseudomonas_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P43-3,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+Aim2_Prelim_P43-3,Garelick Farms,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P43-4,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+Aim2_Prelim_P43-4,Garelick Farms,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+Aim2_Prelim_P42-3,Garelick Farms,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,GN_NA,white
+Aim2_Prelim_P42-3,Garelick Farms,Obesumbacterium/Hafnia,proteus_paralvei_sl,Obesumbacterium/Hafnia_proteus_paralvei_sl,133,white
+Aim2_Prelim_P42-3,Garelick Farms,Pseudomonas,deceptionensis_fragi_sl,Pseudomonas_deceptionensis_fragi_sl,13,white
+Aim2_Prelim_P43-1,Garelick Farms,Pseudomonas,grimontii,Pseudomonas_grimontii,100,white
+Aim2_Prelim_P43-1,Garelick Farms,Pseudomonas,brenneri_orientalis_grimontii_rhodesiae_sl,Pseudomonas_brenneri_orientalis_grimontii_rhodesiae_sl,16,white
+Aim2_Prelim_P43-2,Garelick Farms,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P43-3,Garelick Farms,Pseudomonas,gessardii_proteolytica_poae_lurida_protegens_sl,Pseudomonas_gessardii_proteolytica_poae_lurida_protegens_sl,9,white
+Aim2_Prelim_P43-4,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,132,white
+Aim2_Prelim_P43-4,Garelick Farms,Pseudomonas,granadensis_helmanticensis_sl,Pseudomonas_granadensis_helmanticensis_sl,11,white
+Aim2_Prelim_P43-4,Garelick Farms,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+Aim2_Prelim_P42-3,Garelick Farms,Obesumbacterium,proteus,Obesumbacterium_proteus,134,white
+Aim2_Prelim_P42-3,Garelick Farms,Pseudomonas,deceptionensis,Pseudomonas_deceptionensis,13,white
+Aim2_Prelim_P42-3,Garelick Farms,Obesumbacterium/Hafnia,proteus_paralvei_sl,Obesumbacterium/Hafnia_proteus_paralvei_sl,135,white
+Aim2_Prelim_P42-4,Garelick Farms,Acinetobacter,guillouiae,Acinetobacter_guillouiae,1,white
+Aim2_Prelim_P43-1,Garelick Farms,Hafnia,paralvei,Hafnia_paralvei,36,white
+Aim2_Prelim_P43-3,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,33,white
+457_22-1,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+457_22-2,Byrne Dairy,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+457_22-2,Byrne Dairy,Pseudomonas,proteolytica,Pseudomonas_proteolytica,83,white
+457_22-2,Byrne Dairy,Obesumbacterium,proteus,Obesumbacterium_proteus,110,white
+457_22-2,Byrne Dairy,Hafnia,alvei,Hafnia_alvei,141,white
+457_22-2,Byrne Dairy,Hafnia,paralvei,Hafnia_paralvei,42,white
+457_22-3,Byrne Dairy,Pseudomonas,proteolytica,Pseudomonas_proteolytica,83,white
+457_22-3,Byrne Dairy,Rahnella,aquatilis,Rahnella_aquatilis,68,white
+457_22-3,Byrne Dairy,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,51,white
+457_23,Byrne Dairy,Acinetobacter,pakistanensis_harbinensis_sl,Acinetobacter_pakistanensis_harbinensis_sl,70,white
+457_23-2,Byrne Dairy,Pseudomonas,trivialis,Pseudomonas_trivialis,23,white
+457_23-2,Byrne Dairy,Serratia,quinivorans,Serratia_quinivorans,61,white
+457_23-4,Byrne Dairy,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+457_24,Byrne Dairy,Pseudomonas,monteilii,Pseudomonas_monteilii,117,white
+457_22-3,Byrne Dairy,Rahnella,aquatilis,Rahnella_aquatilis,143,white
+457_23,Byrne Dairy,Psychrobacter,adeliensis_cryohalolentis_cibarius_urativorans_okhotskensis_sl,Psychrobacter_adeliensis_cryohalolentis_cibarius_urativorans_okhotskensis_sl,30,white
+457_23-2,Byrne Dairy,Pseudomonas,orientalis_trivialis_sl,Pseudomonas_orientalis_trivialis_sl,23,white
+457_24,Byrne Dairy,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,10,white
+457_24-1,Byrne Dairy,Pseudomonas,brassicacearum_migulae_sl,Pseudomonas_brassicacearum_migulae_sl,78,white
+458_12,Garelick Farms,Pseudomonas,yamanorum_grimontii_rhodesiae_sl,Pseudomonas_yamanorum_grimontii_rhodesiae_sl,100,white
+458_12,Garelick Farms,Pseudomonas,yamanorum_grimontii_sl,Pseudomonas_yamanorum_grimontii_sl,100,white
+458_12-1,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,131,white
+458_12-1,Garelick Farms,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+458_12-1,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+458_12-1,Garelick Farms,Pseudomonas,yamanorum_grimontii_sl,Pseudomonas_yamanorum_grimontii_sl,100,white
+458_12-1,Garelick Farms,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+458_12-1,Garelick Farms,Hafnia,paralvei,Hafnia_paralvei,36,white
+458_12-2,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+458_12-3,Garelick Farms,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+458_13,Garelick Farms,Pseudomonas,grimontii,Pseudomonas_grimontii,100,white
+458_13,Garelick Farms,Pseudomonas,helmanticensis,Pseudomonas_helmanticensis,11,white
+458_13,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+458_13-1,Garelick Farms,Sphingobacterium,kitahiroshimense,Sphingobacterium_kitahiroshimense,142,white
+458_13-2,Garelick Farms,Pseudomonas,grimontii,Pseudomonas_grimontii,100,white
+458_13-2,Garelick Farms,Pseudomonas,lundensis_helmanticensis_sl,Pseudomonas_lundensis_helmanticensis_sl,11,white
+458_13-2,Garelick Farms,Buttiauxella,izardii,Buttiauxella_izardii,144,white
+458_13-2,Garelick Farms,Leclercia,adecarboxylata,Leclercia_adecarboxylata,145,white
+458_13-2,Garelick Farms,Lelliottia,amnigena,Lelliottia_amnigena,17,white
+458_13-2,Garelick Farms,Hafnia,paralvei,Hafnia_paralvei,96,white
+458_13-2,Garelick Farms,Pseudomonas,lundensis,Pseudomonas_lundensis,11,white
+458_13-3,Garelick Farms,Pseudomonas,orientalis_brenneri_grimontii_rhodesiae_sl,Pseudomonas_orientalis_brenneri_grimontii_rhodesiae_sl,146,white
+458_22-1,Upstate Rochester,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+458_22-1,Upstate Rochester,Rahnella,cf_aquatilis,Rahnella_cf_aquatilis,56,white
+458_22-1,Upstate Rochester,Pseudomonas,lundensis_helmanticensis_sl,Pseudomonas_lundensis_helmanticensis_sl,11,white
+458_23,Upstate Rochester,Serratia,quinivorans,Serratia_quinivorans,147,white
+458_24,Upstate Rochester,Psychrobacter,maritimus_vallis_sl,Psychrobacter_maritimus_vallis_sl,30,white
+458_31,Upstate Buffalo,Pseudomonas,fragi,Pseudomonas_fragi,13,white
+458_32,Upstate Buffalo,Pseudomonas,deceptionensis,Pseudomonas_deceptionensis,13,white
+458_32,Upstate Buffalo,Stenotrophomonas,rhizophila,Stenotrophomonas_rhizophila,41,white
+458_34,Upstate Buffalo,Pseudomonas,deceptionensis,Pseudomonas_deceptionensis,13,white
+458_34,Upstate Buffalo,Pseudomonas,orientalis_libanensis_proteolytica_trivialis_sl,Pseudomonas_orientalis_libanensis_proteolytica_trivialis_sl,95,white
+458_34,Upstate Buffalo,Pseudomonas,protegens,Pseudomonas_protegens,20,white
+458_34-1,Upstate Buffalo,Pseudomonas,grimontii,Pseudomonas_grimontii,100,white
+458_34-1,Upstate Buffalo,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+458_34-1,Upstate Buffalo,Pseudomonas,orientalis,Pseudomonas_orientalis,23,white
+458_34-1,Upstate Buffalo,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+458_12,Garelick Farms,Pseudomonas,orientalis_brenneri_grimontii_rhodesiae_sl,Pseudomonas_orientalis_brenneri_grimontii_rhodesiae_sl,146,white
+458_12,Garelick Farms,Pseudomonas,grimontii_rhodesiae_sl,Pseudomonas_grimontii_rhodesiae_sl,100,white
+458_12,Garelick Farms,Pseudomonas,orientalis_brenneri_grimontii_rhodesiae_sl,Pseudomonas_orientalis_brenneri_grimontii_rhodesiae_sl,73,white
+458_12,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,148,white
+458_12-1,Garelick Farms,Pseudomonas,grimontii,Pseudomonas_grimontii,100,white
+458_12-2,Garelick Farms,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+458_12-3,Garelick Farms,Hafnia,paralvei,Hafnia_paralvei,36,white
+458_12-3,Garelick Farms,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+458_13-1,Garelick Farms,Sphingobacterium,kitahiroshimense,Sphingobacterium_kitahiroshimense,GN_NA,white
+458_13-1,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+458_13-2,Garelick Farms,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,16,white
+458_13-2,Garelick Farms,Pseudomonas,yamanorum_grimontii_sl,Pseudomonas_yamanorum_grimontii_sl,100,white
+458_13-3,Garelick Farms,Hafnia,paralvei,Hafnia_paralvei,36,white
+458_13-3,Garelick Farms,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+458_22,Upstate Rochester,Pseudomonas,yamanorum_grimontii_sl,Pseudomonas_yamanorum_grimontii_sl,100,white
+458_23-1,Upstate Rochester,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
+458_23-2,Upstate Rochester,Pseudomonas,lundensis_helmanticensis_sl,Pseudomonas_lundensis_helmanticensis_sl,11,white
+458_23-2,Upstate Rochester,Pseudomonas,tolaasii,Pseudomonas_tolaasii,52,white
+458_23-2,Upstate Rochester,Pseudomonas,poae_lurida_sl,Pseudomonas_poae_lurida_sl,9,white
+458_24,Upstate Rochester,Psychrobacter,namhaensis_aquaticus_fozii_sl,Psychrobacter_namhaensis_aquaticus_fozii_sl,30,white
+458_32,Upstate Buffalo,Janthinobacterium,sp_agaricidamnosum_lividum,Janthinobacterium_sp_agaricidamnosum_lividum,149,white
+458_34,Upstate Buffalo,Pseudomonas,protegens,Pseudomonas_protegens,62,white
+458_34-1,Upstate Buffalo,Pseudomonas,helmanticensis,Pseudomonas_helmanticensis,11,white
+458_34-1,Upstate Buffalo,Janthinobacterium,lividum,Janthinobacterium_lividum,150,white
+458_34-1,Upstate Buffalo,Pseudomonas,tolaasii_jessenii_umsongensis_sl,Pseudomonas_tolaasii_jessenii_umsongensis_sl,52,white
