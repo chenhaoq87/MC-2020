@@ -104,10 +104,10 @@ dfw2_merged2 <- dfw2_merged2[c(1:3,28,4:27)]
 # write.csv(dfw2_merged2,"dfw2_merged_022720.csv")
 
 # read in Sam R's PPC data
-df_PPC_raw <- read_excel("Sam_FFAR_PPCmodel/Sarah S-PPC query 2020-02-27.xlsx")
+df_PPC_raw <- read_excel("Sam_FFAR_PPCmodel/Sarah S-PPC query 2020-02-27_withPlant.xlsx")
 # rename columns in df_PPC
 df_PPC <- df_PPC_raw  
-colnames(df_PPC)[1] <- "VSLNumber"
+colnames(df_PPC)[2] <- "VSLNumber"
 # only use pasteurized fluid white milk; either 1, 2, 3, or 4 from the right (after removing "-" to the left)
 df_PPC$SampleID<- trimws(df_PPC$SampleID, which = c("both"))
 df_PPC$temp <- df_PPC$SampleID
@@ -119,6 +119,7 @@ df_PPCw <- df_PPC %>%
   filter(milkType == "1"|milkType == "2"|milkType == "3"|milkType == "4") %>% #only include white milk
   filter(id3 !="1N 4"&id3 !="1N 3"&id3 !="1N 2"&id3 !="1N 1"&id3 !="2N 1"&id3 !="3NPOST 1"&id3 !="3NPRE 1" )%>%
   filter(SampleID!=	"72-1*" & SampleID!=	"73-1*")
-temp2 <- df_PPCw[c(1:5)]
+temp2 <- df_PPCw[c(1:6)]
 # merge Sam R PPC with dfw2merged2
-# SamRdat_full <- merge(dfw2_merged2,temp2,by=c("Plant_VSLNumber_SampleID")
+SamRdat_full <- merge(dfw2_merged2,temp2,by=c("Plant","VSLNumber","SampleID"), all.x=TRUE)
+# write.csv(SamRdat_full,"SamRdat_full.csv")
