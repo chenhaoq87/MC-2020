@@ -2,25 +2,29 @@ library(readr)
 library(tidyverse)
 
 # load data
+library(readxl)
+df<- read_excel("Sam_FFAR_PPCmodel/Samantha Sample micro data 2020-02-25.xlsx")
 freq_df <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Frequency_ALLISOLATES_021120.csv") #freq file; isolates from Sam R's study
-df <- read_csv("Sam_FFAR_PPCmodel/Samantha Sample micro data 2020-02-25.csv") #count data for samples from Sam R's study
+# df <- read_csv("Sam_FFAR_PPCmodel/Samantha Sample micro data 2020-02-25.csv") #count data for samples from Sam R's study
 
 # rename columns in df
 colnames(df)[1] <- "VSLNumber"
-freq_df$VSLNumber_SampleID <- as.factor(freq_df$VSLNumber_SampleID)
-summary(freq_df$VSLNumber_SampleID)
-freq_df1 <- freq_df
 # only use pasteurized fluid white milk; either 1, 2, 3, or 4 from the right (after removing "-" to the left)
+df$SampleID<- trimws(df$SampleID, which = c("both"))
 df$temp <- df$SampleID
 df <- df %>%
   separate(temp,c("id1","id2"),sep="-")
 df <- df %>%
-  separate(id1,c("id3","milkType"),sep=-1)
+  separate(id1,c("id3","milkType"),sep=-2)
 dfw <- df %>%
   filter(milkType == "1"|milkType == "2"|milkType == "3"|milkType == "4") %>% #only include white milk
   filter(id3 !="1N 4"&id3 !="1N 3"&id3 !="1N 2"&id3 !="1N 1"&id3 !="2N 1"&id3 !="3NPOST 1"&id3 !="3NPRE 1" )%>%
   filter(SampleID!=	"72-1*" & SampleID!=	"73-1*")
 
+# prep freq_df
+freq_df$VSLNumber_SampleID <- as.factor(freq_df$VSLNumber_SampleID)
+summary(freq_df$VSLNumber_SampleID)
+freq_df1 <- freq_df
 # get milkType and ids from freq_df
 freq_df$temp <- freq_df$VSLNumber_SampleID
 freq_df <- freq_df %>%
@@ -70,6 +74,7 @@ rm(list=setdiff(ls(), c("dfw","freq_df1")))
 dfw$VSLNumber_SampleID <- paste(dfw$VSLNumber,dfw$SampleID,sep="_")
 dfw$Test_Day <- paste(dfw$Test,dfw$Day,sep="_")
 dfw$Plant_VSLNumber_SampleID <- paste(dfw$Plant,dfw$VSLNumber_SampleID,sep="_")
+dfw$Countability[is.na(dfw$Countability)==TRUE] <- "OK"
 dfw <- dfw %>%
   filter(Countability!="M")
 # convert dates to appropriate format
@@ -96,7 +101,7 @@ temp <- unique(dfw[c(17,18)])
 dfw2_merged2 <- merge(dfw2_merged,temp,by="Plant_VSLNumber_SampleID")
 dfw2_merged2<- separate(data=dfw2_merged2, Plant_VSLNumber_SampleID,c("Plant", "VSLNumber", "SampleID"),sep="_")
 dfw2_merged2 <- dfw2_merged2[c(1:3,28,4:27)]
-# write.csv(dfw2_merged2,"dfw2_merged2.csv")
+# write.csv(dfw2_merged2,"dfw2_merged_022720.csv")
 
 # df3 <- dfw2_merged2
 # df3$CVTA_DI_ND <- ifelse((df3$LOD_CVTA_DI == "<" & df3$CVTA_DI == 10)|(df3$LOD_CVTA_DI == "<" & df3$CVTA_DI == 20),1,0)
