@@ -125,7 +125,33 @@ SamRdat_full <- merge(dfw2_merged2,temp2,by=c("Plant","VSLNumber","SampleID"), a
 # write.csv(SamRdat_full,"SamRdat_full.csv")
 
 #clear environment
-rm(list=setdiff(ls(), c("SamRdat_full","freq_df1")))
+# rm(list=setdiff(ls(), c("SamRdat_full","freq_df1")))
+test <- unique(freq_df[c(1,5)]) # unique ST
+df_freq <- read_excel("Sam_FFAR_PPCmodel/Samantha Sarah Frequency Table 2020-02-26.xlsx")
+df_freq2 <- df_freq %>%
+  filter(Day == "D21") %>%
+  filter(`Gram Status`== "-")
+df_freq2$temp <- df_freq2$SampleID
+df_freq2 <- df_freq2 %>%
+  separate(temp,c("id1","id2"),sep="-")
+df_freq2 <- df_freq2 %>%
+  separate(id1,c("id3","milkType"),sep=-2)
+df_freq2w <- df_freq2 %>%
+  filter(milkType == "1"|milkType == "2"|milkType == "3"|milkType == "4") %>% #only include white milk
+  filter(id3 !="1N 4"&id3 !="1N 3"&id3 !="1N 2"&id3 !="1N 1"&id3 !="2N 1"&id3 !="3NPOST 1"&id3 !="3NPRE 1" )%>%
+  filter(SampleID!=	"72-1*" & SampleID!=	"73-1*")
+df_freq2w2 <- unique(df_freq2w[c(4,9,10,16)])
+df_freq2w3 <- df_freq2w2 %>%
+  filter(is.na(`16S ST`)!=TRUE)
+colnames(df_freq2w3)[1] <- "Plant"
+
+#
+# write.csv(df_freq2w3,"df_freq_D21only_unique16SST.csv")
+
+## get data for Upstate Buffalo
+UB_16Sfreq <- df_freq2w3 %>%
+  filter(Plant == "Upstate Buffalo")
+UB_micro <- dfw2_merged2 %>%
+  filter(Plant == "Upstate Buffalo")
 
 
-# 
