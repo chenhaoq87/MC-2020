@@ -1,0 +1,346 @@
+---
+title: "DataAnalysis"
+author: "Sarah I. Murphy"
+date: "2/6/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set-up environment
+```{r}
+#load packages
+library(readr)
+library(dplyr)
+library(splitstackshape)
+library(ggplot2)
+
+#load data
+load("Baseline_Buffalo_NoBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+
+# load("Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+# load("Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+
+# load("Buffalo_NoBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+# load("Buffalo_MoraruBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+# load("Buffalo_TetraPakBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+# 
+# load("Buffalo_NoBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+# load("Buffalo_MoraruBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+# load("Buffalo_TetraPakBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+```
+
+## Data Analysis   ----
+```{r}
+data$lot_id<- as.factor(data$lot_id)
+data$day<- as.factor(data$day)
+
+#Calculate the mean count by day
+data %>%
+  group_by(day) %>%
+  summarise(mean = mean(count), sd = sd(count))-> mean_byDay
+mean_byDay
+
+#Calculate the mean count by day by spoilage_type
+data %>%
+  group_by(spoilage_type,day) %>%
+  summarise(mean = mean(count), sd = sd(count))-> mean_byDay_bySpoilageType
+mean_byDay_bySpoilageType
+```
+
+```{r}
+# ggplot(data=data, aes(x=day,y=count))+
+#   geom_boxplot()+
+#   scale_y_continuous(limits = c(-5, 15), breaks = seq(-5, 15, by = 1))+
+#   labs(y = "Milk spore count (log MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count))+
+  geom_violin()+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
+  geom_violin()+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
+  geom_violin()+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
+  geom_jitter(shape=3)+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
+
+ggplot(data=data, aes(x=day,y=count, col=spoilage_type,group=lot_id))+
+  geom_jitter(shape=3)+
+  scale_x_discrete(breaks = seq(1, 24, 2), labels=seq(1, 24, 2)) +
+  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )+
+  facet_wrap(~lot_id)
+
+```
+
+
+
+```{r}
+#what percent of samples spoiled for each day in shelf life
+days <- seq(1, 24, 1)
+spoiled <- vector(mode = "logical", length(days))
+spoiled_by_day <- data.frame(days, spoiled)
+
+for (d in days) {
+  numerator <-   length(which(subset(data, data$day == d)$count>4.3))
+  denominator <- length(subset(data, data$day == d)$count)
+  
+  spoiled_by_day[spoiled_by_day$days==d,]$spoiled <- numerator / denominator * 100
+}
+
+spoiled_by_day$days <- factor(spoiled_by_day$days)
+```
+
+```{r}
+#Plot
+# pdf(file='plot_mu_low_worstcase_summary.pdf')
+fig1 <- ggplot() + 
+  geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spoiled_by_day, 
+                               aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 4.3 logMPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Overall")
+fig1
+```
+
+```{r}
+#what percent of samples spoiled for each day in shelf life
+#get data
+ppc_data <- data %>%
+  filter(spoilage_type == "ppc")
+
+spore_data <- data %>%
+  filter(spoilage_type == "spore")
+
+#days
+ppc_days <- seq(1, 24, 1)
+spore_days <- seq(1, 24, 1)
+ppc_spoiled <- vector(mode = "logical", length(ppc_days))
+spore_spoiled <- vector(mode = "logical", length(spore_days))
+
+#make df
+ppc_spoiled_by_day <- data.frame(ppc_days, ppc_spoiled)
+spore_spoiled_by_day <- data.frame(spore_days, spore_spoiled)
+
+
+for (d in spore_days) {
+  spore_numerator <-   length(which(subset(spore_data, spore_data$day == d)$count>4.3))
+  spore_denominator <- length(subset(spore_data, spore_data$day == d)$count)
+  
+  spore_spoiled_by_day[spore_spoiled_by_day$spore_days==d,]$spore_spoiled <- spore_numerator / spore_denominator * 100
+}
+
+spore_spoiled_by_day$spore_days <- factor(spore_spoiled_by_day$spore_days)
+
+for (d in ppc_days) {
+  ppc_numerator <-   length(which(subset(ppc_data, ppc_data$day == d)$count>4.3))
+  ppc_denominator <- length(subset(ppc_data, ppc_data$day == d)$count)
+  
+  ppc_spoiled_by_day[ppc_spoiled_by_day$ppc_days==d,]$ppc_spoiled <- ppc_numerator / ppc_denominator * 100
+}
+
+ppc_spoiled_by_day$ppc_days <- factor(ppc_spoiled_by_day$ppc_days)
+
+```
+
+```{r}
+#Plot
+spore_fig1 <- ggplot() + 
+  geom_bar(aes(y = spore_spoiled_by_day$spore_spoiled, x = spore_spoiled_by_day$spore_days), data = spore_spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = spore_spoiled_by_day, 
+                               aes(x = spore_spoiled_by_day$spore_days, y = spore_spoiled_by_day$spore_spoiled, label = round(spore_spoiled_by_day$spore_spoiled, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 4.3 log10MPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Samples that spoiled due to spores")
+spore_fig1
+
+ppc_fig1 <- ggplot() + 
+  geom_bar(aes(y = ppc_spoiled_by_day$ppc_spoiled, x = ppc_spoiled_by_day$ppc_days), data = ppc_spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge") +
+  geom_text(data = ppc_spoiled_by_day, 
+                               aes(x = ppc_spoiled_by_day$ppc_days, y = ppc_spoiled_by_day$ppc_spoiled, label = round(ppc_spoiled_by_day$ppc_spoiled, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)+
+  labs(y = "Percent of samples > 4.3 log10MPN/mL", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+  ggtitle("Samples that spoiled due to PPC")
+ppc_fig1
+
+
+```
+* Summarize how many samples exceeded 20,000 CFU/mL by X day; maybe switch 24 to 35
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data, data$day == 14)$count>4.3))/length(subset(data, data$day == 14)$count)
+
+#What percent of samples spoiled by day 17?
+length(which(subset(data, data$day == 17)$count>4.3))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data, data$day == 21)$count>4.3))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 24?
+length(which(subset(data, data$day == 24)$count>4.3))/length(subset(data, data$day == 24)$count)
+```
+* Summarize how many samples exceeded 5,000,000 CFU/mL by X day
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data, data$day == 14)$count>6.69897))/length(subset(data, data$day == 14)$count)
+
+#What percent of samples spoiled by day 17?
+length(which(subset(data, data$day == 17)$count>6.69897))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 19?
+length(which(subset(data, data$day == 19)$count>6.69897))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data, data$day == 21)$count>6.69897))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 24?
+length(which(subset(data, data$day == 24)$count>6.69897))/length(subset(data, data$day == 24)$count)
+```
+* For the constant temp data, also report % samples more than 1000 cfu/mL on d 14
+```{r}
+#What percent of samples spoiled by day 14?
+length(which(subset(data, data$day == 14)$count>3))/length(subset(data, data$day == 14)$count)
+
+#What percent of samples spoiled by day 17?
+length(which(subset(data, data$day == 17)$count>3))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 19?
+length(which(subset(data, data$day == 19)$count>3))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 21?
+length(which(subset(data, data$day == 21)$count>3))/length(subset(data, data$day == 21)$count)
+
+#What percent of samples spoiled by day 24?
+length(which(subset(data, data$day == 24)$count>3))/length(subset(data, data$day == 24)$count)
+```
+
+```{r}
+##
+#Make df of data by day
+d0<-data[c(1:4,9)]
+d0<-unique(d0)
+d1<- data[data$day=="1",] 
+d2<- data[data$day=="2",] 
+d3<- data[data$day=="3",] 
+d4<- data[data$day=="4",] 
+d5<- data[data$day=="5",] 
+d6<- data[data$day=="6",] 
+d7<- data[data$day=="7",] 
+d8<- data[data$day=="8",] 
+d9<- data[data$day=="9",] 
+d10<- data[data$day=="10",]
+d11<- data[data$day=="11",] 
+d12<- data[data$day=="12",] 
+d13<- data[data$day=="13",] 
+d14<- data[data$day=="14",] 
+d15<- data[data$day=="15",]
+d16<- data[data$day=="16",]
+d17<- data[data$day=="17",]
+d18<- data[data$day=="18",]
+d19<- data[data$day=="19",]
+d20<- data[data$day=="20",]
+d21<- data[data$day=="21",]
+d22<- data[data$day=="22",]
+d23<- data[data$day=="23",]
+d24<- data[data$day=="24",]
+
+```
+
+```{r}
+#plot each day simulated histogram;
+
+# pdf(file='plot_initialmicro_low_bestcase.pdf')
+hist(d0$logCount_init, main="Histogram of simulated milk spore count over shelf-life\n Day = 0",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d1$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 1",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d2$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 2",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d3$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 3",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d4$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 4",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d5$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 5",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d6$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 6",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d7$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 7",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d8$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 8",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d9$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 9",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d10$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 10",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d11$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 11",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d12$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 12",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d13$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 13",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d14$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 14",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d15$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 15",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d16$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 16",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d17$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 17",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d18$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 18",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d19$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 19",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d20$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 20",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d21$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 21",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d22$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 22",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d23$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 23",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+hist(d24$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 24",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
+
+# dev.off()
+```
+
+```{r}
+ggplot(d0, aes(logCount_init, fill = spoilage_type)) +
+  geom_histogram(bins=20)
+ggplot(data, aes(count, fill = spoilage_type)) +
+  geom_histogram()+
+  facet_wrap(~day)
+```
+
+* make an animation of simulation results
+```{r}
+# library(gganimate)
+# data2 <- data
+# data2$day <- as.integer(data2$day)
+# p <- ggplot(data2,
+#   aes(x = count, fill = spoilage_type)) +
+#   geom_histogram(show.legend = TRUE, alpha = 0.7,bins=20) +
+#   scale_y_continuous(breaks = seq(0,250,50))+
+#   scale_x_continuous(breaks = seq(-4, 10, 2)) +
+#   transition_time(day) +
+#   labs(title = "Day: {frame_time}",x="Milk bacteria count (log10 MPN or CFU/mL)") +
+#   view_follow(fixed_y = TRUE)
+# p
+```
+
+
+```{r}
+#plot histogram with both the simulated and fake actual count data
+d0_mean <- d0 %>%
+  group_by(LOT) %>%
+  summarise(mean = mean(logCFU_init), sd = sd(logCFU_init))
+
+plot(density(d0$logCFU_init), main="Day 0 - simulated initial count data vs input initial count data", 
+     xlab="LOG CFU/g", xlim=c(0,10), ylim=c(0,4))
+lines(density(initialcount_import$log10_mean_count), col="blue")
+legend('topright',  legend = c("simulated", "actual"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+```
+

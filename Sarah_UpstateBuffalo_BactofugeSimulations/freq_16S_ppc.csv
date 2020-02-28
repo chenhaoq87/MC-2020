@@ -1,96 +1,148 @@
 "","Plant","VSLNumber","SampleID","16S ST"
 "1","Byrne Dairy","434","62-2",NA
-"2","Byrne Dairy","437","22-2",9
-"3","Byrne Dairy","437","22-2",16
-"4","Byrne Dairy","437","23-2",16
-"5","Byrne Dairy","437","23-2",67
-"6","Byrne Dairy","437","23-2",13
-"7","Byrne Dairy","437","23-2",66
-"8","Byrne Dairy","439","52-2",13
-"9","Byrne Dairy","439","53-1",16
-"10","Byrne Dairy","439","53-2",13
-"11","Byrne Dairy","439","53-2",36
-"12","Byrne Dairy","439","53-2",98
-"13","Byrne Dairy","439","53-2",94
-"14","Byrne Dairy","439","53-2",83
-"15","Byrne Dairy","442","22",NA
-"16","Byrne Dairy","442","22-1",16
-"17","Byrne Dairy","442","22-1",13
-"18","Byrne Dairy","442","23-1",117
-"19","Byrne Dairy","442","23-2",23
-"20","Byrne Dairy","457","22-2",110
-"21","Byrne Dairy","457","22-2",42
-"22","Byrne Dairy","457","22-2",13
-"23","Byrne Dairy","457","22-3",NA
-"24","Byrne Dairy","457","23-2",61
-"25","Byrne Dairy","457","23-2",23
-"26","Byrne Dairy","Aim2","Prelim",NA
-"27","Byrne Dairy","Aim2","Prelim",NA
-"28","Byrne Dairy","Aim2","Prelim",NA
-"29","Byrne Dairy","Aim2","Prelim",NA
-"30","Byrne Dairy","Aim2","Prelim",NA
-"31","Byrne Dairy","Aim2","Prelim",NA
-"32","Cornell Dairy","434","72",9
-"33","Cornell Dairy","434","72-1",9
-"34","Cornell Dairy","434","73",9
-"35","Cornell Dairy","434","73-1",9
-"36","Cornell Dairy","439","63",NA
-"37","Garelick Farms","437","72",NA
-"38","Garelick Farms","437","72-1",NA
-"39","Garelick Farms","437","73",77
-"40","Garelick Farms","437","73-2",NA
-"41","Garelick Farms","458","12",NA
-"42","Garelick Farms","458","12-1",NA
-"43","Garelick Farms","458","13-2",NA
-"44","Garelick Farms","Aim2","Prelim",NA
-"45","Garelick Farms","Aim2","Prelim",NA
-"46","Garelick Farms","Aim2","Prelim",NA
-"47","Garelick Farms","Aim2","Prelim",NA
-"48","Garelick Farms","Aim2","Prelim",NA
-"49","Garelick Farms","Aim2","Prelim",NA
-"50","Hood-Agawam","438","12",NA
-"51","Hood-Agawam","441","63-2",NA
-"52","Hood-Concord","438","23-2",51
-"53","Hood-Concord","438","23-2",79
-"54","Hood-Concord","440","82",23
-"55","Hood-Concord","440","83-2",NA
-"56","Hood-Portland","433","32",11
-"57","Hood-Portland","433","32",9
-"58","Hood-Portland","433","32",13
-"59","Hood-Portland","433","33-1",NA
-"60","Hood-Portland","433","34",NA
-"61","Hood-Portland","438","33",11
-"62","Hood-Portland","438","33-2",81
-"63","Hood-Portland","440","92-1",52
-"64","Hood-Portland","440","92-1",51
-"65","Hood-Portland","440","93-1",51
-"66","Hood-Portland","440","93-1",52
-"67","Stewart's","435","12-1",34
-"68","Stewart's","435","13-1",16
-"69","Stewart's","435","13-1",38
-"70","Stewart's","435","13-1",40
-"71","Upstate Buffalo","434","31",NA
-"72","Upstate Buffalo","434","32",16
-"73","Upstate Buffalo","434","32-2",NA
-"74","Upstate Buffalo","434","33",16
-"75","Upstate Buffalo","434","33-1",24
-"76","Upstate Buffalo","434","34",NA
-"77","Upstate Buffalo","439","33-1",85
-"78","Upstate Buffalo","439","33-2",88
-"79","Upstate Buffalo","439","33-2",85
-"80","Upstate Buffalo","441","93-2",67
-"81","Upstate Buffalo","441","93-2",113
-"82","Upstate Buffalo","458","34-1",NA
-"83","Upstate Buffalo","Aim2","Prelim",NA
-"84","Upstate Rochester","434","21",NA
-"85","Upstate Rochester","434","22",9
-"86","Upstate Rochester","434","22-1",9
-"87","Upstate Rochester","434","23",7
-"88","Upstate Rochester","434","23",21
-"89","Upstate Rochester","434","23-2",23
-"90","Upstate Rochester","434","23-2",16
-"91","Upstate Rochester","434","24",NA
-"92","Upstate Rochester","439","23-2",83
-"93","Upstate Rochester","441","83-2",43
-"94","Upstate Rochester","441","83-2",16
-"95","Upstate Rochester","441","83-2",110
+"2","Byrne Dairy","437","22-2",63
+"3","Byrne Dairy","437","22-2",61
+"4","Byrne Dairy","437","22-2",9
+"5","Byrne Dairy","437","22-2",62
+"6","Byrne Dairy","437","22-2",16
+"7","Byrne Dairy","437","23-2",23
+"8","Byrne Dairy","437","23-2",65
+"9","Byrne Dairy","437","23-2",67
+"10","Byrne Dairy","437","23-2",13
+"11","Byrne Dairy","437","23-2",66
+"12","Byrne Dairy","437","23-2",16
+"13","Byrne Dairy","439","52-2",51
+"14","Byrne Dairy","439","52-2",90
+"15","Byrne Dairy","439","52-2",13
+"16","Byrne Dairy","439","53-1",16
+"17","Byrne Dairy","439","53-1",67
+"18","Byrne Dairy","439","53-1",14
+"19","Byrne Dairy","439","53-2",95
+"20","Byrne Dairy","439","53-2",94
+"21","Byrne Dairy","439","53-2",97
+"22","Byrne Dairy","439","53-2",13
+"23","Byrne Dairy","439","53-2",83
+"24","Byrne Dairy","439","53-2",36
+"25","Byrne Dairy","439","53-2",23
+"26","Byrne Dairy","439","53-2",96
+"27","Byrne Dairy","439","53-2",98
+"28","Byrne Dairy","442","22",11
+"29","Byrne Dairy","442","22-1",13
+"30","Byrne Dairy","442","22-1",16
+"31","Byrne Dairy","442","23-1",117
+"32","Byrne Dairy","442","23-2",23
+"33","Byrne Dairy","442","23-2",16
+"34","Byrne Dairy","457","22-2",13
+"35","Byrne Dairy","457","22-2",42
+"36","Byrne Dairy","457","22-2",83
+"37","Byrne Dairy","457","22-2",141
+"38","Byrne Dairy","457","22-2",110
+"39","Byrne Dairy","457","22-3",51
+"40","Byrne Dairy","457","22-3",83
+"41","Byrne Dairy","457","22-3",68
+"42","Byrne Dairy","457","23-2",61
+"43","Byrne Dairy","457","23-2",23
+"44","Byrne Dairy","Aim2","Prelim",NA
+"45","Byrne Dairy","Aim2","Prelim",NA
+"46","Byrne Dairy","Aim2","Prelim",NA
+"47","Byrne Dairy","Aim2","Prelim",NA
+"48","Byrne Dairy","Aim2","Prelim",NA
+"49","Byrne Dairy","Aim2","Prelim",NA
+"50","Cornell Dairy","434","72",9
+"51","Cornell Dairy","434","72-1",9
+"52","Cornell Dairy","434","73",9
+"53","Cornell Dairy","434","73-1",9
+"54","Cornell Dairy","439","63",NA
+"55","Garelick Farms","437","72",NA
+"56","Garelick Farms","437","72-1",23
+"57","Garelick Farms","437","73",75
+"58","Garelick Farms","437","73",77
+"59","Garelick Farms","437","73-2",NA
+"60","Garelick Farms","458","12",148
+"61","Garelick Farms","458","12",100
+"62","Garelick Farms","458","12-1",36
+"63","Garelick Farms","458","12-1",100
+"64","Garelick Farms","458","12-1",23
+"65","Garelick Farms","458","13-2",100
+"66","Garelick Farms","458","13-2",96
+"67","Garelick Farms","458","13-2",11
+"68","Garelick Farms","Aim2","Prelim",NA
+"69","Garelick Farms","Aim2","Prelim",NA
+"70","Garelick Farms","Aim2","Prelim",NA
+"71","Garelick Farms","Aim2","Prelim",NA
+"72","Garelick Farms","Aim2","Prelim",NA
+"73","Garelick Farms","Aim2","Prelim",NA
+"74","Hood-Agawam","438","12",NA
+"75","Hood-Agawam","441","63-2",82
+"76","Hood-Agawam","441","63-2",10
+"77","Hood-Concord","438","23-2",79
+"78","Hood-Concord","438","23-2",51
+"79","Hood-Concord","440","82",23
+"80","Hood-Concord","440","82",13
+"81","Hood-Concord","440","82",16
+"82","Hood-Concord","440","83-2",NA
+"83","Hood-Portland","433","32",9
+"84","Hood-Portland","433","32",18
+"85","Hood-Portland","433","32",13
+"86","Hood-Portland","433","32",11
+"87","Hood-Portland","433","33-1",9
+"88","Hood-Portland","433","34",NA
+"89","Hood-Portland","438","33",17
+"90","Hood-Portland","438","33",11
+"91","Hood-Portland","438","33-2",81
+"92","Hood-Portland","438","33-2",17
+"93","Hood-Portland","438","33-2",78
+"94","Hood-Portland","440","92-1",51
+"95","Hood-Portland","440","92-1",52
+"96","Hood-Portland","440","93-1",51
+"97","Hood-Portland","440","93-1",52
+"98","Stewart's","435","12-1",34
+"99","Stewart's","435","13-1",33
+"100","Stewart's","435","13-1",36
+"101","Stewart's","435","13-1",40
+"102","Stewart's","435","13-1",16
+"103","Stewart's","435","13-1",39
+"104","Stewart's","435","13-1",13
+"105","Stewart's","435","13-1",38
+"106","Upstate Buffalo","434","31",NA
+"107","Upstate Buffalo","434","32",16
+"108","Upstate Buffalo","434","32",24
+"109","Upstate Buffalo","434","32-2",16
+"110","Upstate Buffalo","434","33",2
+"111","Upstate Buffalo","434","33",8
+"112","Upstate Buffalo","434","33",16
+"113","Upstate Buffalo","434","33-1",24
+"114","Upstate Buffalo","434","34",NA
+"115","Upstate Buffalo","439","33-1",85
+"116","Upstate Buffalo","439","33-2",11
+"117","Upstate Buffalo","439","33-2",85
+"118","Upstate Buffalo","439","33-2",87
+"119","Upstate Buffalo","439","33-2",88
+"120","Upstate Buffalo","441","93-2",113
+"121","Upstate Buffalo","441","93-2",67
+"122","Upstate Buffalo","458","34-1",9
+"123","Upstate Buffalo","458","34-1",23
+"124","Upstate Buffalo","458","34-1",52
+"125","Upstate Buffalo","Aim2","Prelim",NA
+"126","Upstate Rochester","434","21",NA
+"127","Upstate Rochester","434","22",6
+"128","Upstate Rochester","434","22",9
+"129","Upstate Rochester","434","22-1",9
+"130","Upstate Rochester","434","23",21
+"131","Upstate Rochester","434","23",23
+"132","Upstate Rochester","434","23",7
+"133","Upstate Rochester","434","23-2",16
+"134","Upstate Rochester","434","23-2",19
+"135","Upstate Rochester","434","23-2",23
+"136","Upstate Rochester","434","23-2",22
+"137","Upstate Rochester","434","23-2",20
+"138","Upstate Rochester","434","23-2",21
+"139","Upstate Rochester","434","24",NA
+"140","Upstate Rochester","439","23-2",83
+"141","Upstate Rochester","441","83-2",11
+"142","Upstate Rochester","441","83-2",43
+"143","Upstate Rochester","441","83-2",110
+"144","Upstate Rochester","441","83-2",13
+"145","Upstate Rochester","441","83-2",17
+"146","Upstate Rochester","441","83-2",111
+"147","Upstate Rochester","441","83-2",16

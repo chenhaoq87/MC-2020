@@ -129,17 +129,22 @@ SamRdat_full$`S-PPC` <- as.character(SamRdat_full$`S-PPC`)
 test <- unique(freq_df[c(1,5)]) # unique ST
 df_freq <- read_excel("Sam_FFAR_PPCmodel/Samantha Sarah Frequency Table 2020-02-26.xlsx")
 df_freq2 <- df_freq %>%
-  filter(Day == "D21") %>%
+  filter(Day == "D21"|Day == "D17"|Day == "D14") %>% # change this to 17 so taht we can have more ST
   filter(`Gram Status`== "-")
 df_freq2$temp <- df_freq2$SampleID
 df_freq2 <- df_freq2 %>%
   separate(temp,c("id1","id2"),sep="-")
 df_freq2 <- df_freq2 %>%
   separate(id1,c("id3","milkType"),sep=-2)
+df_freq2 <- df_freq2 %>%
+  filter(milkType!="*")
 df_freq2w <- df_freq2 %>%
   filter(milkType == "1"|milkType == "2"|milkType == "3"|milkType == "4") %>% #only include white milk
   filter(id3 !="1N 4"&id3 !="1N 3"&id3 !="1N 2"&id3 !="1N 1"&id3 !="2N 1"&id3 !="3NPOST 1"&id3 !="3NPRE 1" )%>%
   filter(SampleID!=	"72-1*" & SampleID!=	"73-1*")
+# df_freq2wM <- df_freq2w %>%
+#   filter(is.na(`16S ST`)==TRUE)
+# write.csv(df_freq2wM,"df_missingST.csv")
 df_freq2w2 <- unique(df_freq2w[c(4,9,10,16)])
 df_freq2w3 <- df_freq2w2 %>%
   filter(is.na(`16S ST`)!=TRUE)
@@ -233,7 +238,7 @@ rm(list=setdiff(ls(), c("freq_16S_ppc","micro_ppc","freq_spoilagetype")))
 # write.csv(freq_16S_ppc,"freq_16S_ppc.csv")
 # write.csv(micro_ppc,"micro_ppc.csv")
 # write.csv(freq_spoilagetype,"freq_spoilagetype.csv")
-
+# 
 # temp <- micro_PPC[c(2:6,9:14)]
 # colnames(micro_PPC)[2] <- 
 # merge(micro)
