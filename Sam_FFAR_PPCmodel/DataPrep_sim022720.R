@@ -149,7 +149,92 @@ colnames(df_freq2w3)[1] <- "Plant"
 # write.csv(df_freq2w3,"df_freq_D21only_unique16SST.csv")
 
 # import Sam L's initial count stuff
-# micro_PPC <- read_csv("Sam_FFAR_PPCmodel/Data prep for validation/Redo of initial concentration/Initialmicrodata_final_SL_022720.csv")
+micro_PPC <- read_csv("Sam_FFAR_PPCmodel/Data prep for validation/Redo of initial concentration/Initialmicrodata_final_SL_022720.csv")
+micro_PPC <- micro_PPC %>%
+  separate(ID,c("VSLNumber","SampleID"),sep="_")
+micro_PPC$Lau_SpoiledPPC_yn  <- "yes"
+micro_PPC_freq <- micro_PPC[c(2:4,9)]
+test <- merge(micro_PPC_freq,SamRdat_full,by=c("Plant","VSLNumber","SampleID"),all = TRUE)
+
+test$Lau_SpoiledPPC_yn[is.na(test$Lau_SpoiledPPC_yn)==TRUE]<- "no"
+
+test$SPC_DI<- as.numeric(test$SPC_DI)
+test$SPC_D7<- as.numeric(test$SPC_D7)
+test$SPC_D10<- as.numeric(test$SPC_D10)
+test$SPC_D14<- as.numeric(test$SPC_D14)
+test$SPC_D17<- as.numeric(test$SPC_D17)
+test$SPC_D21<- as.numeric(test$SPC_D21)
+
+test$CVTA_DI<- as.numeric(test$CVTA_DI)
+test$CVTA_D7<- as.numeric(test$CVTA_D7)
+test$CVTA_D10<- as.numeric(test$CVTA_D10)
+test$CVTA_D14<- as.numeric(test$CVTA_D14)
+test$CVTA_D17<- as.numeric(test$CVTA_D17)
+test$CVTA_D21<- as.numeric(test$CVTA_D21)
+
+test$Spoiled20000_yn <- ifelse((test$SPC_DI>20000 | test$SPC_D7>20000 | test$SPC_D10>20000| test$SPC_D14>20000| test$SPC_D17>20000| test$SPC_D21>20000), "yes", "NotSpoiled") #same as "S" column, but for all
+# test$Spoiled1mill_yn <- ifelse((test$SPC_DI>1000000 | test$SPC_D7>1000000 | test$SPC_D10>1000000| test$SPC_D14>1000000| test$SPC_D17>1000000| test$SPC_D21>1000000), "yes", "no") #same as "S" column, but for all
+test$AnyGN_yn <- ifelse((test$CVTA_DI>1000 | test$CVTA_D7>1000 | test$CVTA_D10>1000| test$CVTA_D14>1000| test$CVTA_D17>1000| test$CVTA_D21>1000), "yes", "no") #same as "S" column, but for all
+test$exceed20000byD10_yn <- ifelse((test$SPC_DI>20000 | test$SPC_D7>20000 | test$SPC_D10>20000), "yes", "no") #same as "S" column, but for all
+test$exceed100000postD10_yn <- ifelse(test$exceed20000byD10_yn == "no" & (test$SPC_D14>100000 | test$SPC_D17>100000 | test$SPC_D21>100000), "yes", "no") #same as "S" column, but for all
+
+test$temp1 <- ifelse(test$CVTA_DI>1000,1,0)
+test$temp2 <-ifelse(test$CVTA_D7>1000,1,0)
+test$temp3 <-ifelse(test$CVTA_D10>1000,1,0)
+test$temp4 <-ifelse(test$CVTA_D14>1000,1,0)
+test$temp5 <-ifelse(test$CVTA_D17>1000,1,0)
+test$temp6 <-ifelse(test$CVTA_D21>1000,1,0)
+test$tempadd <- test$temp1 + test$temp2 + test$temp3 + test$temp4 + test$temp5 + test$temp6
+test$GN_AtLeast2x <- ifelse(test$tempadd>1,"yes","no")
+
+test$spoilagetype2 <- paste(test$Spoiled20000_yn,test$exceed20000byD10_yn,test$AnyGN_yn,sep="_")
+test$spoilagetype[test$spoilagetype2=="yes_yes_yes"]<-"ppc"
+test$spoilagetype[test$Spoiled20000_yn=="NotSpoiled"]<-"NotSpoiled"
+test$spoilagetype[test$spoilagetype2=="yes_no_no"]<-"spore"
+test$spoilagetype[test$spoilagetype2=="yes_no_yes"]<-"REVIEW"
+test$spoilagetype[test$GN_AtLeast2x=="no" &test$spoilagetype=="REVIEW"]<-"spore"
+test$spoilagetype[test$exceed100000postD10_yn=="yes" &test$spoilagetype=="REVIEW"]<-"spore"
+
+
+reviewdf <- test %>%
+  filter(spoilagetype=="REVIEW")
+reviewdf <- reviewdf[c(1:5,11,10,6:9,17,16,12:15,18:37)]
+
+#whatever remains, remove from the dataset
+micro_test <- test %>%
+  filter(spoilagetype!="REVIEW")
+micro_PPC$Log10CFU_Initial <- micro_PPC$Slope + micro_PPC$Y_intercept
+micro_final<- merge(micro_test,micro_PPC,by=c("Plant","VSLNumber","SampleID"),all=TRUE)
+
+micro_full <- micro_final[c(1:3,5,46,53,12:17,24:29)]
+micro_full$Log10CFU_Initial[micro_full$spoilagetype=="spore"]<-"NA"
+micro_full$Log10CFU_Initial[is.na(micro_full$Log10CFU_Initial)==TRUE]<-"NA"
+micro_full$Log10CFU_Initial <- as.numeric(micro_full$Log10CFU_Initial)
+micro_full$Log10CFU_Initial_1logRed <- micro_full$Log10CFU_Initial - 1
+micro_full$Log10CFU_Initial_2logRed <- micro_full$Log10CFU_Initial - 2
+micro_full$CFU_Initial  <- 10^micro_full$Log10CFU_Initial 
+micro_full$CFU_Initial_1logRed  <- 10^micro_full$Log10CFU_Initial_1logRed 
+micro_full$CFU_Initial_2logRed  <- 10^micro_full$Log10CFU_Initial_2logRed 
+
+# 
+
+#clear environment
+rm(list=setdiff(ls(), c("df_freq2w3","micro_full")))
+
+colnames(df_freq2w3)[2] <- "VSLNumber"
+micro_ppc <- micro_full %>%
+  filter(spoilagetype == "ppc")
+
+micro_ppc_samples <- micro_ppc[c(1:3)]
+freq_16S_ppc <- merge(df_freq2w3,micro_ppc_samples,by=c("Plant","VSLNumber","SampleID"),all.y = TRUE)
+freq_spoilagetype <- micro_full[c(1:3,5,7:18)]
+rm(list=setdiff(ls(), c("freq_16S_ppc","micro_ppc","freq_spoilagetype")))
+
+# write.csv(freq_16S_ppc,"freq_16S_ppc.csv")
+# write.csv(micro_ppc,"micro_ppc.csv")
+# write.csv(freq_spoilagetype,"freq_spoilagetype.csv")
+
+# temp <- micro_PPC[c(2:6,9:14)]
 # colnames(micro_PPC)[2] <- 
 # merge(micro)
 ## get data for Upstate Buffalo
