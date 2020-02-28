@@ -123,7 +123,7 @@ temp2 <- df_PPCw[c(1:6)]
 # merge Sam R PPC with dfw2merged2
 SamRdat_full <- merge(dfw2_merged2,temp2,by=c("Plant","VSLNumber","SampleID"), all.x=TRUE)
 # write.csv(SamRdat_full,"SamRdat_full.csv")
-
+SamRdat_full$`S-PPC` <- as.character(SamRdat_full$`S-PPC`)
 #clear environment
 # rm(list=setdiff(ls(), c("SamRdat_full","freq_df1")))
 test <- unique(freq_df[c(1,5)]) # unique ST
@@ -151,7 +151,11 @@ colnames(df_freq2w3)[1] <- "Plant"
 ## get data for Upstate Buffalo
 UB_16Sfreq <- df_freq2w3 %>%
   filter(Plant == "Upstate Buffalo")
-UB_micro <- dfw2_merged2 %>%
+UB_micro_all <- SamRdat_full %>%
   filter(Plant == "Upstate Buffalo")
+UB_micro_S_PPC <- UB_micro_all %>%
+  filter(`S-PPC` == "TRUE")
+UB_micro_S_PPC <- UB_micro_S_PPC[c(1:4,10,9,5:8,16,15,11:14,17:31)]
+UB_micro_all <- UB_micro_all[c(1:4,10,9,5:8,16,15,11:14,17:31)]
 
-
+# 
