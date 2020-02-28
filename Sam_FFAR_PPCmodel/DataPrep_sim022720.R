@@ -156,6 +156,6 @@ UB_micro_all <- SamRdat_full %>%
 UB_micro_S_PPC <- UB_micro_all %>%
   filter(`S-PPC` == "TRUE")
 UB_micro_S_PPC <- UB_micro_S_PPC[c(1:4,10,9,5:8,16,15,11:14,17:31)]
-UB_micro_all <- UB_micro_all[c(1:4,10,9,5:8,16,15,11:14,17:31)]
+UB_micro_all <- UB_micro_all[c(1:4,31,10,9,5:8,16,15,11:14,17:30)]
 
 # 
