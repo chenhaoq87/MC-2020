@@ -148,14 +148,18 @@ colnames(df_freq2w3)[1] <- "Plant"
 #
 # write.csv(df_freq2w3,"df_freq_D21only_unique16SST.csv")
 
+# import Sam L's initial count stuff
+# micro_PPC <- read_csv("Sam_FFAR_PPCmodel/Data prep for validation/Redo of initial concentration/Initialmicrodata_final_SL_022720.csv")
+# colnames(micro_PPC)[2] <- 
+# merge(micro)
 ## get data for Upstate Buffalo
-UB_16Sfreq <- df_freq2w3 %>%
-  filter(Plant == "Upstate Buffalo")
-UB_micro_all <- SamRdat_full %>%
-  filter(Plant == "Upstate Buffalo")
-UB_micro_S_PPC <- UB_micro_all %>%
-  filter(`S-PPC` == "TRUE")
-UB_micro_S_PPC <- UB_micro_S_PPC[c(1:4,10,9,5:8,16,15,11:14,17:31)]
-UB_micro_all <- UB_micro_all[c(1:4,31,10,9,5:8,16,15,11:14,17:30)]
+# UB_16Sfreq <- df_freq2w3 %>%
+#   filter(Plant == "Upstate Buffalo")
+# UB_micro_all <- SamRdat_full %>%
+#   filter(Plant == "Upstate Buffalo")
+# UB_micro_S_PPC <- UB_micro_all %>%
+#   filter(`S-PPC` == "TRUE")
+# UB_micro_S_PPC <- UB_micro_S_PPC[c(1:4,10,9,5:8,16,15,11:14,17:31)]
+# UB_micro_all <- UB_micro_all[c(1:4,31,10,9,5:8,16,15,11:14,17:30)]
 
 # 
