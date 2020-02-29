@@ -80,23 +80,23 @@ ppc_STfreq_import <- ppc_STfreq_import %>%
 * What's PPC for Buffalo for each VSL?
 ```{r}
 # this is how to get the average spoilage type
-# freq_spoilageType_byVSLNumber <- freq_spoilageType %>%
-#   group_by(VSLNumber,spoilagetype) %>%
-#   summarize(n=n())%>%
-#   mutate(freq = n / sum(n))
-# 
-# mean_freq_spoilageType <- freq_spoilageType_byVSLNumber %>%
-#   group_by(spoilagetype) %>%
-#   summarize(mean_freq=mean(freq),
-#             mean_freq_per=mean_freq*100)
-# 
-# PPC_freq <- expandRows(mean_freq_spoilageType,'mean_freq_per')$spoilagetype
-# PPC_freq<-as.vector(PPC_freq)
+freq_spoilageType_byVSLNumber <- freq_spoilageType %>%
+  group_by(VSLNumber,spoilagetype) %>%
+  summarize(n=n())%>%
+  mutate(freq = n / sum(n))
+
+mean_freq_spoilageType <- freq_spoilageType_byVSLNumber %>%
+  group_by(spoilagetype) %>%
+  summarize(mean_freq=mean(freq),
+            mean_freq_per=mean_freq*100)
+
+PPC_freq <- expandRows(mean_freq_spoilageType,'mean_freq_per')$spoilagetype
+PPC_freq<-as.vector(PPC_freq)
 
 # this is worst VSL for Buffalo; VSL 434
-Worst_freq_spoilageType <- freq_spoilageType %>%
-  filter(VSLNumber=="434")
-PPC_freq <- as.character(Worst_freq_spoilageType$spoilagetype)
+# Worst_freq_spoilageType <- freq_spoilageType %>%
+#   filter(VSLNumber=="434")
+# PPC_freq <- as.character(Worst_freq_spoilageType$spoilagetype)
 
 # this is the "best case" where PPC = 0
 # Best_freq_spoilageType <- freq_spoilageType %>%

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 #load packages
 library(readr)
-library(dplyr)
+library(tidyverse)
 library(splitstackshape)
 library(ggplot2)
 
@@ -192,6 +192,11 @@ df_percent_byScenario_byDay<- df %>%
             n_exceed20000=sum(count > 4.3),
             per_exceed20000=n_exceed20000/n_total*100) 
 df_percent_byScenario_byDay <- df_percent_byScenario_byDay[c(1:5,8,10,12,14,7,9,11,13,6)]
+
+# Save df as .csv
+write.csv(df_mean_byScenario_byDay, "df_mean_byScenario_byDay_Buffalo.csv")
+write.csv(df_mean_byScenario_byDay_bySpoilageType, "df_mean_byScenario_byDay_bySpoilageType_Buffalo.csv")
+write.csv(df_percent_byScenario_byDay, "df_percent_byScenario_byDay_Buffalo.csv")
 ```
 
 ```{r}
