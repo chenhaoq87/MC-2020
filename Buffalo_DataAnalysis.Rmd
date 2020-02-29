@@ -18,155 +18,221 @@ library(splitstackshape)
 library(ggplot2)
 
 #load data
-load("Baseline_Buffalo_NoBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Baseline_Buffalo_NoBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_NoBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_MoraruBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_TetraPakBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_NoBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_MoraruBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_TetraPakBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Baseline_Buffalo_NoBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_NoBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_MoraruBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_TetraPakBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_NoBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_MoraruBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
+load("~/Documents/Projects_Papers/2020_Projects/2020_MilkMC/MC-2020/Sarah_UpstateBuffalo_BactofugeSimulations/Buffalo_TetraPakBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
+```
 
-# load("Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
-# load("Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
-
-# load("Buffalo_NoBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
-# load("Buffalo_MoraruBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
-# load("Buffalo_TetraPakBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+* Merge the data
+```{r}
+# colnames(data_NB_MeanSpoilType_CT)[6] <- "NB_MeanSpoilType_CT"
+# colnames(data_NB_MeanSpoilType_LT)[6] <- "NB_MeanSpoilType_LT"
+# colnames(data_NB_BestPPCVSL436_CT)[6] <- "NB_BestPPCVSL436_CT"
+# colnames(data_NB_BestPPCVSL436_LT)[6] <- "NB_BestPPCVSL436_LT"
+# colnames(data_NB_WorstPPCVSL434_CT)[6] <- "NB_WorstPPCVSL434_CT"
+# colnames(data_NB_WorstPPCVSL434_LT)[6] <- "NB_WorstPPCVSL434_LT"
+# colnames(data_MB_MeanSpoilType_CT)[6] <- "MB_MeanSpoilType_CT"
+# colnames(data_MB_MeanSpoilType_LT)[6] <- "MB_MeanSpoilType_LT"
+# colnames(data_MB_BestPPCVSL436_CT)[6] <- "MB_BestPPCVSL436_CT"
+# colnames(data_MB_BestPPCVSL436_LT)[6] <- "MB_BestPPCVSL436_LT"
+# colnames(data_MB_WorstPPCVSL434_CT)[6] <- "MB_WorstPPCVSL434_CT"
+# colnames(data_MB_WorstPPCVSL434_LT)[6] <- "MB_WorstPPCVSL434_LT"
+# colnames(data_TB_MeanSpoilType_CT)[6] <- "TB_MeanSpoilType_CT"
+# colnames(data_TB_MeanSpoilType_LT)[6] <- "TB_MeanSpoilType_LT"
+# colnames(data_TB_BestPPCVSL436_CT)[6] <- "TB_BestPPCVSL436_CT"
+# colnames(data_TB_BestPPCVSL436_LT)[6] <- "TB_BestPPCVSL436_LT"
+# colnames(data_TB_WorstPPCVSL434_CT)[6] <- "TB_WorstPPCVSL434_CT"
+# colnames(data_TB_WorstPPCVSL434_LT)[6] <- "TB_WorstPPCVSL434_LT"
 # 
-# load("Buffalo_NoBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
-# load("Buffalo_MoraruBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
-# load("Buffalo_TetraPakBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+# colnames(data_NB_MeanSpoilType_CT)[4] <- "SpT_NB_MeanSpoilType_CT"
+# colnames(data_NB_MeanSpoilType_LT)[4] <- "SpT_NB_MeanSpoilType_LT"
+# colnames(data_NB_BestPPCVSL436_CT)[4] <- "SpT_NB_BestPPCVSL436_CT"
+# colnames(data_NB_BestPPCVSL436_LT)[4] <- "SpT_NB_BestPPCVSL436_LT"
+# colnames(data_NB_WorstPPCVSL434_CT)[4] <- "SpT_NB_WorstPPCVSL434_CT"
+# colnames(data_NB_WorstPPCVSL434_LT)[4] <- "SpT_NB_WorstPPCVSL434_LT"
+# colnames(data_MB_MeanSpoilType_CT)[4] <- "SpT_MB_MeanSpoilType_CT"
+# colnames(data_MB_MeanSpoilType_LT)[4] <- "SpT_MB_MeanSpoilType_LT"
+# colnames(data_MB_BestPPCVSL436_CT)[4] <- "SpT_MB_BestPPCVSL436_CT"
+# colnames(data_MB_BestPPCVSL436_LT)[4] <- "SpT_MB_BestPPCVSL436_LT"
+# colnames(data_MB_WorstPPCVSL434_CT)[4] <- "SpT_MB_WorstPPCVSL434_CT"
+# colnames(data_MB_WorstPPCVSL434_LT)[4] <- "SpT_MB_WorstPPCVSL434_LT"
+# colnames(data_TB_MeanSpoilType_CT)[4] <- "SpT_TB_MeanSpoilType_CT"
+# colnames(data_TB_MeanSpoilType_LT)[4] <- "SpT_TB_MeanSpoilType_LT"
+# colnames(data_TB_BestPPCVSL436_CT)[4] <- "SpT_TB_BestPPCVSL436_CT"
+# colnames(data_TB_BestPPCVSL436_LT)[4] <- "SpT_TB_BestPPCVSL436_LT"
+# colnames(data_TB_WorstPPCVSL434_CT)[4] <- "SpT_TB_WorstPPCVSL434_CT"
+# colnames(data_TB_WorstPPCVSL434_LT)[4] <- "SpT_TB_WorstPPCVSL434_LT"
+# 
+# df1 <- data_NB_MeanSpoilType_CT[c(1:2,4:6)]
+# df2 <- data_NB_MeanSpoilType_LT[c(1:2,4:6)]
+# df3 <- data_MB_MeanSpoilType_CT[c(1:2,4:6)]
+# df4 <- data_MB_MeanSpoilType_LT[c(1:2,4:6)]
+# df5 <- data_TB_MeanSpoilType_CT[c(1:2,4:6)]
+# df6 <- data_TB_MeanSpoilType_LT[c(1:2,4:6)]
+# df7 <- data_NB_BestPPCVSL436_CT[c(1:2,4:6)]
+# df8 <- data_NB_BestPPCVSL436_LT[c(1:2,4:6)]
+# df9 <- data_MB_BestPPCVSL436_CT[c(1:2,4:6)]
+# df10 <- data_MB_BestPPCVSL436_LT[c(1:2,4:6)]
+# df11 <- data_TB_BestPPCVSL436_CT[c(1:2,4:6)]
+# df12 <- data_TB_BestPPCVSL436_LT[c(1:2,4:6)]
+# df13 <- data_NB_WorstPPCVSL434_CT[c(1:2,4:6)]
+# df14 <- data_NB_WorstPPCVSL434_LT[c(1:2,4:6)]
+# df15 <- data_MB_WorstPPCVSL434_CT[c(1:2,4:6)]
+# df16 <- data_MB_WorstPPCVSL434_LT[c(1:2,4:6)]
+# df17 <- data_TB_WorstPPCVSL434_CT[c(1:2,4:6)]
+# df18 <- data_TB_WorstPPCVSL434_LT[c(1:2,4:6)]
+
+# df <- merge(df1,df2)
+# df <- merge(df,df3)
+# df <- merge(df,df4)
+# df <- merge(df,df5)
+# df <- merge(df,df6)
+# df <- merge(df,df7)
+# df <- merge(df,df8)
+# df <- merge(df,df9)
+# df <- merge(df,df10)
+# df <- merge(df,df11)
+# df <- merge(df,df12)
+# df <- merge(df,df13)
+# df <- merge(df,df14)
+# df <- merge(df,df15)
+# df <- merge(df,df16)
+# df <- merge(df,df17)
+# df <- merge(df,df18)
+
+data_NB_MeanSpoilType_CT$scenario <- "NB_MeanSpoilType_CT"
+data_NB_MeanSpoilType_LT$scenario <- "NB_MeanSpoilType_LT"
+data_MB_MeanSpoilType_CT$scenario <- "MB_MeanSpoilType_CT"
+data_MB_MeanSpoilType_LT$scenario <- "MB_MeanSpoilType_LT"
+data_TB_MeanSpoilType_CT$scenario <- "TB_MeanSpoilType_CT"
+data_TB_MeanSpoilType_LT$scenario <- "TB_MeanSpoilType_LT"
+data_NB_BestPPCVSL436_CT$scenario <- "NB_BestPPCVSL436_CT"
+data_NB_BestPPCVSL436_LT$scenario <- "NB_BestPPCVSL436_LT"
+data_MB_BestPPCVSL436_CT$scenario <- "MB_BestPPCVSL436_CT"
+data_MB_BestPPCVSL436_LT$scenario <- "MB_BestPPCVSL436_LT"
+data_TB_BestPPCVSL436_CT$scenario <- "TB_BestPPCVSL436_CT"
+data_TB_BestPPCVSL436_LT$scenario <- "TB_BestPPCVSL436_LT"
+data_NB_WorstPPCVSL434_CT$scenario <- "NB_WorstPPCVSL434_CT"
+data_NB_WorstPPCVSL434_LT$scenario <- "NB_WorstPPCVSL434_LT"
+data_MB_WorstPPCVSL434_CT$scenario <- "MB_WorstPPCVSL434_CT"
+data_MB_WorstPPCVSL434_LT$scenario <- "MB_WorstPPCVSL434_LT"
+data_TB_WorstPPCVSL434_CT$scenario <- "TB_WorstPPCVSL434_CT"
+data_TB_WorstPPCVSL434_LT$scenario <- "TB_WorstPPCVSL434_LT"
+
+df1 <- data_NB_MeanSpoilType_CT[c(1:2,4:6,19)]
+df2 <- data_NB_MeanSpoilType_LT[c(1:2,4:6,19)]
+df3 <- data_MB_MeanSpoilType_CT[c(1:2,4:6,19)]
+df4 <- data_MB_MeanSpoilType_LT[c(1:2,4:6,19)]
+df5 <- data_TB_MeanSpoilType_CT[c(1:2,4:6,19)]
+df6 <- data_TB_MeanSpoilType_LT[c(1:2,4:6,19)]
+df7 <- data_NB_BestPPCVSL436_CT[c(1:2,4:6,19)]
+df8 <- data_NB_BestPPCVSL436_LT[c(1:2,4:6,19)]
+df9 <- data_MB_BestPPCVSL436_CT[c(1:2,4:6,19)]
+df10 <- data_MB_BestPPCVSL436_LT[c(1:2,4:6,19)]
+df11 <- data_TB_BestPPCVSL436_CT[c(1:2,4:6,19)]
+df12 <- data_TB_BestPPCVSL436_LT[c(1:2,4:6,19)]
+df13 <- data_NB_WorstPPCVSL434_CT[c(1:2,4:6,19)]
+df14 <- data_NB_WorstPPCVSL434_LT[c(1:2,4:6,19)]
+df15 <- data_MB_WorstPPCVSL434_CT[c(1:2,4:6,19)]
+df16 <- data_MB_WorstPPCVSL434_LT[c(1:2,4:6,19)]
+df17 <- data_TB_WorstPPCVSL434_CT[c(1:2,4:6,19)]
+df18 <- data_TB_WorstPPCVSL434_LT[c(1:2,4:6,19)]
+
+df <- rbind(df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df11,df12,df13,df14,df15,df16,df17,df18)
+
+rm(list=setdiff(ls(), c("df")))
 ```
 
 ## Data Analysis   ----
 ```{r}
-data$lot_id<- as.factor(data$lot_id)
-data$day<- as.factor(data$day)
+# change numeric vars to factors
+df$lot_id<- as.factor(df$lot_id)
+df$day<- as.factor(df$day)
 
+# separate scenario
+df <- separate(data=df,scenario,c("Bactofuge","PPCFreq","Temp"),remove = FALSE)
+```
+
+```{r}
 #Calculate the mean count by day
-data %>%
-  group_by(day) %>%
-  summarise(mean = mean(count), sd = sd(count))-> mean_byDay
-mean_byDay
+df_mean_byScenario_byDay <- df %>%
+  group_by(scenario,day) %>%
+  summarize(mean = mean(count), sd = sd(count))
 
 #Calculate the mean count by day by spoilage_type
-data %>%
-  group_by(spoilage_type,day) %>%
-  summarise(mean = mean(count), sd = sd(count))-> mean_byDay_bySpoilageType
-mean_byDay_bySpoilageType
+df_mean_byScenario_byDay_bySpoilageType <- df %>%
+  group_by(spoilage_type,scenario,day) %>%
+  summarize(mean = mean(count), sd = sd(count))
+
+#Calculate the mean count by day
+df_percent_byScenario_byDay<- df %>%
+  group_by(scenario,Bactofuge,PPCFreq,Temp,day) %>%
+  summarize(n_total = n(),
+            n_exceed1000=sum(count >3),
+            per_exceed1000=n_exceed1000/n_total*100,
+            n_exceed5mill=sum(count >6.69897),
+            per_exceed5mill=n_exceed5mill/n_total*100,
+            n_exceed1mill=sum(count > 6),
+            per_exceed1mill=n_exceed1mill/n_total*100,
+            n_exceed20000=sum(count > 4.3),
+            per_exceed20000=n_exceed20000/n_total*100) 
+df_percent_byScenario_byDay <- df_percent_byScenario_byDay[c(1:5,8,10,12,14,7,9,11,13,6)]
 ```
 
 ```{r}
-# ggplot(data=data, aes(x=day,y=count))+
-#   geom_boxplot()+
-#   scale_y_continuous(limits = c(-5, 15), breaks = seq(-5, 15, by = 1))+
-#   labs(y = "Milk spore count (log MPN/mL)", x = "Day" )
-
-ggplot(data=data, aes(x=day,y=count))+
+ggplot(data=df, aes(x=day,y=count, col=spoilage_type))+
   geom_violin()+
-  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
-
-ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
-  geom_violin()+
-  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
-  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
-  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
-
-ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
-  geom_violin()+
-  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
-  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
-  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
-
-ggplot(data=data, aes(x=day,y=count, col=spoilage_type))+
-  geom_jitter(shape=3)+
-  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
-  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
-  labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )
-
-ggplot(data=data, aes(x=day,y=count, col=spoilage_type,group=lot_id))+
-  geom_jitter(shape=3)+
-  scale_x_discrete(breaks = seq(1, 24, 2), labels=seq(1, 24, 2)) +
-  scale_y_continuous(breaks = seq(-4, 10, 2),limits = c(-4,10))+
+  scale_x_discrete(breaks = seq(1, 35, 1), labels=seq(1, 35, 1)) +
+  scale_y_continuous(breaks = seq(-6, 12, 2),limits = c(-6,12))+
   labs(y = "Milk aerobic plate count (log CFU or MPN/mL)", x = "Day" )+
-  facet_wrap(~lot_id)
+  facet_grid(Temp~Bactofuge+PPCFreq)
 
+ggplot(data=df, aes(x=day,y=count, col=spoilage_type))+
+  geom_jitter(shape=3)+
+  scale_x_discrete(breaks = seq(1, 35, 1), labels=seq(1, 35, 1)) +
+  scale_y_continuous(breaks = seq(-6, 12, 2),limits = c(-6,12))+
+  labs(y = "Milk SPC (log CFU or MPN/mL)", x = "Day")+
+  facet_grid(Temp~Bactofuge+PPCFreq)
 ```
 
 
-
-```{r}
-#what percent of samples spoiled for each day in shelf life
-days <- seq(1, 24, 1)
-spoiled <- vector(mode = "logical", length(days))
-spoiled_by_day <- data.frame(days, spoiled)
-
-for (d in days) {
-  numerator <-   length(which(subset(data, data$day == d)$count>4.3))
-  denominator <- length(subset(data, data$day == d)$count)
-  
-  spoiled_by_day[spoiled_by_day$days==d,]$spoiled <- numerator / denominator * 100
-}
-
-spoiled_by_day$days <- factor(spoiled_by_day$days)
-```
 
 ```{r}
 #Plot
 # pdf(file='plot_mu_low_worstcase_summary.pdf')
-fig1 <- ggplot() + 
-  geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
-                               stat = "identity", color = "black", position = "dodge") +
-  geom_text(data = spoiled_by_day, 
-                               aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
-                               position=position_dodge(width = 1), 
-                               vjust=-0.25, size = 4)+
-  labs(y = "Percent of samples > 4.3 logMPN/mL", x = "Day" )+
-  scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
-  scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
-  ggtitle("Overall")
-fig1
-```
-
-```{r}
-#what percent of samples spoiled for each day in shelf life
-#get data
-ppc_data <- data %>%
-  filter(spoilage_type == "ppc")
-
-spore_data <- data %>%
-  filter(spoilage_type == "spore")
-
-#days
-ppc_days <- seq(1, 24, 1)
-spore_days <- seq(1, 24, 1)
-ppc_spoiled <- vector(mode = "logical", length(ppc_days))
-spore_spoiled <- vector(mode = "logical", length(spore_days))
-
-#make df
-ppc_spoiled_by_day <- data.frame(ppc_days, ppc_spoiled)
-spore_spoiled_by_day <- data.frame(spore_days, spore_spoiled)
-
-
-for (d in spore_days) {
-  spore_numerator <-   length(which(subset(spore_data, spore_data$day == d)$count>4.3))
-  spore_denominator <- length(subset(spore_data, spore_data$day == d)$count)
-  
-  spore_spoiled_by_day[spore_spoiled_by_day$spore_days==d,]$spore_spoiled <- spore_numerator / spore_denominator * 100
-}
-
-spore_spoiled_by_day$spore_days <- factor(spore_spoiled_by_day$spore_days)
-
-for (d in ppc_days) {
-  ppc_numerator <-   length(which(subset(ppc_data, ppc_data$day == d)$count>4.3))
-  ppc_denominator <- length(subset(ppc_data, ppc_data$day == d)$count)
-  
-  ppc_spoiled_by_day[ppc_spoiled_by_day$ppc_days==d,]$ppc_spoiled <- ppc_numerator / ppc_denominator * 100
-}
-
-ppc_spoiled_by_day$ppc_days <- factor(ppc_spoiled_by_day$ppc_days)
-
+# fig1 <- ggplot() + 
+#   geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+#                                stat = "identity", color = "black", position = "dodge") +
+#   geom_text(data = spoiled_by_day, 
+#                                aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+#                                position=position_dodge(width = 1), 
+#                                vjust=-0.25, size = 4)+
+#   labs(y = "Percent of samples > 4.3 logMPN/mL", x = "Day" )+
+#   scale_x_discrete(breaks = seq(1, 24, 1), labels=seq(1, 24, 1)) +
+#   scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
+#   ggtitle("Overall")
+# fig1
 ```
 
 ```{r}
 #Plot
 spore_fig1 <- ggplot() + 
-  geom_bar(aes(y = spore_spoiled_by_day$spore_spoiled, x = spore_spoiled_by_day$spore_days), data = spore_spoiled_by_day, 
-                               stat = "identity", color = "black", position = "dodge") +
+  geom_bar(aes(y = spore_spoiled_by_day$spore_spoiled, x = spore_spoiled_by_day$spore_days), data = spore_spoiled_by_day, stat = "identity", color = "black", position = "dodge") +
   geom_text(data = spore_spoiled_by_day, 
                                aes(x = spore_spoiled_by_day$spore_days, y = spore_spoiled_by_day$spore_spoiled, label = round(spore_spoiled_by_day$spore_spoiled, 2)), 
                                position=position_dodge(width = 1), 
@@ -189,56 +255,6 @@ ppc_fig1 <- ggplot() +
   scale_y_continuous(limits = c(0, 100), expand = c(0, 0))+
   ggtitle("Samples that spoiled due to PPC")
 ppc_fig1
-
-
-```
-* Summarize how many samples exceeded 20,000 CFU/mL by X day; maybe switch 24 to 35
-```{r}
-#What percent of samples spoiled by day 14?
-length(which(subset(data, data$day == 14)$count>4.3))/length(subset(data, data$day == 14)$count)
-
-#What percent of samples spoiled by day 17?
-length(which(subset(data, data$day == 17)$count>4.3))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 21?
-length(which(subset(data, data$day == 21)$count>4.3))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 24?
-length(which(subset(data, data$day == 24)$count>4.3))/length(subset(data, data$day == 24)$count)
-```
-* Summarize how many samples exceeded 5,000,000 CFU/mL by X day
-```{r}
-#What percent of samples spoiled by day 14?
-length(which(subset(data, data$day == 14)$count>6.69897))/length(subset(data, data$day == 14)$count)
-
-#What percent of samples spoiled by day 17?
-length(which(subset(data, data$day == 17)$count>6.69897))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 19?
-length(which(subset(data, data$day == 19)$count>6.69897))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 21?
-length(which(subset(data, data$day == 21)$count>6.69897))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 24?
-length(which(subset(data, data$day == 24)$count>6.69897))/length(subset(data, data$day == 24)$count)
-```
-* For the constant temp data, also report % samples more than 1000 cfu/mL on d 14
-```{r}
-#What percent of samples spoiled by day 14?
-length(which(subset(data, data$day == 14)$count>3))/length(subset(data, data$day == 14)$count)
-
-#What percent of samples spoiled by day 17?
-length(which(subset(data, data$day == 17)$count>3))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 19?
-length(which(subset(data, data$day == 19)$count>3))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 21?
-length(which(subset(data, data$day == 21)$count>3))/length(subset(data, data$day == 21)$count)
-
-#What percent of samples spoiled by day 24?
-length(which(subset(data, data$day == 24)$count>3))/length(subset(data, data$day == 24)$count)
 ```
 
 ```{r}
@@ -317,13 +333,18 @@ ggplot(data, aes(count, fill = spoilage_type)) +
 * make an animation of simulation results
 ```{r}
 library(gganimate)
-data2 <- data
-data2$day <- as.integer(data2$day)
-p <- ggplot(data2,
+df2 <- df
+df2 <- df2 %>%
+  filter(Temp=="CT") 
+  # filter(PPCFreq=="MeanSpoilType")
+df2$day <- as.integer(df2$day)
+p <- ggplot(df2,
   aes(x = count, fill = spoilage_type)) +
   geom_histogram(show.legend = TRUE, alpha = 0.7,bins=20) +
-  scale_y_continuous(breaks = seq(0,250,50))+
+  scale_y_continuous(breaks = seq(0,500,50))+
   scale_x_continuous(breaks = seq(-4, 10, 2)) +
+  facet_grid(PPCFreq~Bactofuge)+
+  # facet_grid(Temp~Bactofuge+PPCFreq)+
   transition_time(day) +
   labs(title = "Day: {frame_time}",x="Milk bacteria count (log10 MPN or CFU/mL)") +
   view_follow(fixed_y = TRUE)
