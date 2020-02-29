@@ -80,18 +80,18 @@ ppc_STfreq_import <- ppc_STfreq_import %>%
 * What's PPC for Buffalo for each VSL?
 ```{r}
 # this is how to get the average spoilage type
-# freq_spoilageType_byVSLNumber <- freq_spoilageType %>%
-#   group_by(VSLNumber,spoilagetype) %>%
-#   summarize(n=n())%>%
-#   mutate(freq = n / sum(n))
-# 
-# mean_freq_spoilageType <- freq_spoilageType_byVSLNumber %>%
-#   group_by(spoilagetype) %>%
-#   summarize(mean_freq=mean(freq),
-#             mean_freq_per=mean_freq*100)
-# 
-# PPC_freq <- expandRows(mean_freq_spoilageType,'mean_freq_per')$spoilagetype
-# PPC_freq<-as.vector(PPC_freq)
+freq_spoilageType_byVSLNumber <- freq_spoilageType %>%
+  group_by(VSLNumber,spoilagetype) %>%
+  summarize(n=n())%>%
+  mutate(freq = n / sum(n))
+
+mean_freq_spoilageType <- freq_spoilageType_byVSLNumber %>%
+  group_by(spoilagetype) %>%
+  summarize(mean_freq=mean(freq),
+            mean_freq_per=mean_freq*100)
+
+PPC_freq <- expandRows(mean_freq_spoilageType,'mean_freq_per')$spoilagetype
+PPC_freq<-as.vector(PPC_freq)
 
 # this is worst VSL for Buffalo; VSL 434
 # Worst_freq_spoilageType <- freq_spoilageType %>%
@@ -99,9 +99,9 @@ ppc_STfreq_import <- ppc_STfreq_import %>%
 # PPC_freq <- as.character(Worst_freq_spoilageType$spoilagetype)
 
 # this is the "best case" where PPC = 0
-Best_freq_spoilageType <- freq_spoilageType %>%
-  filter(VSLNumber=="436")
-PPC_freq <- as.character(Best_freq_spoilageType$spoilagetype)
+# Best_freq_spoilageType <- freq_spoilageType %>%
+#   filter(VSLNumber=="436")
+# PPC_freq <- as.character(Best_freq_spoilageType$spoilagetype)
 
 ```
 
@@ -346,6 +346,7 @@ spoilage_ppc<-as.factor(spoilage_ppc)
 levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "NotSpoiled"
 levels(spoilage_ppc)[levels(spoilage_ppc)=="2"] <- "ppc"
 levels(spoilage_ppc)[levels(spoilage_ppc)=="3"] <- "spore"
+
 data$spoilage_type <- spoilage_ppc
 
 ## (a) Reformat and add initial log10CFU & log10MPN to dataframe
@@ -382,7 +383,7 @@ data$STorAT <- with(data, ifelse( STorAT == "spore", AT, ST) )
 data$temp <- temps
 
 # OR just set what the temperature should be for all:
-# data$temp <- 7.2 # constant temp for Buffalo
+data$temp <- 7.2 # constant temp for Buffalo
 
 ```
 
@@ -395,7 +396,7 @@ data$newLag <- vector(mode="logical", n_sim * n_units * n_day)
 
 iv. join growth_import files
 ```{r}
-growth_import<-rbind(ppc_growth_import,spore_growth_import)
+growth_import <- rbind(ppc_growth_import,spore_growth_import)
 ```
 
 ## 6. Calculate log10N for each row in dataframe
@@ -474,7 +475,6 @@ data$count <- with(data, ifelse( spoilage_type == "NotSpoiled", 0, count_temp ) 
 
 ## 7. Save results
 ```{r}
-## ran this
 # data_NB_MeanSpoilType_LT <- data
 # save(data_NB_MeanSpoilType_LT,file="Baseline_Buffalo_NoBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
 
@@ -502,20 +502,32 @@ data$count <- with(data, ifelse( spoilage_type == "NotSpoiled", 0, count_temp ) 
 # data_TB_BestPPCVSL436_LT <- data
 # save(data_TB_BestPPCVSL436_LT,file="Buffalo_TetraPakBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
 
-## need to run this
-data_NB_MeanSpoilType_CT <- data
-save(data_NB_MeanSpoilType_CT,file="Baseline_Buffalo_NoBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
-# save(data,file="Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
-# save(data,file="Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
+# data_NB_MeanSpoilType_CT <- data
+# save(data_NB_MeanSpoilType_CT,file="Baseline_Buffalo_NoBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
 
-# save(data,file="Buffalo_NoBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_MoraruBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_TetraPakBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
+# data_MB_MeanSpoilType_CT <- data
+# save(data_MB_MeanSpoilType_CT,file="Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
 
-# save(data,file="Buffalo_NoBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_MoraruBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_TetraPakBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
+# data_TB_MeanSpoilType_CT <- data
+# save(data_TB_MeanSpoilType_CT,file="Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
 
+# data_NB_WorstPPCVSL434_CT <- data
+# save(data_NB_WorstPPCVSL434_CT,file="Buffalo_NoBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
+
+# data_MB_WorstPPCVSL434_CT <- data
+# save(data_MB_WorstPPCVSL434_CT,file="Buffalo_MoraruBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
+
+# data_TB_WorstPPCVSL434_CT <- data
+# save(data_TB_WorstPPCVSL434_CT,file="Buffalo_TetraPakBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
+
+# data_NB_BestPPCVSL436_CT <- data
+# save(data_NB_BestPPCVSL436_CT,file="Buffalo_NoBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
+
+# data_MB_BestPPCVSL436_CT <- data
+# save(data_MB_BestPPCVSL436_CT,file="Buffalo_MoraruBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
+
+# data_TB_BestPPCVSL436_CT <- data
+# save(data_TB_BestPPCVSL436_CT,file="Buffalo_TetraPakBactofuge_BestPPCVSL436_ConstantTemp_MCsim_result_df.RData")
 ```
 
 
