@@ -316,18 +316,18 @@ ggplot(data, aes(count, fill = spoilage_type)) +
 
 * make an animation of simulation results
 ```{r}
-# library(gganimate)
-# data2 <- data
-# data2$day <- as.integer(data2$day)
-# p <- ggplot(data2,
-#   aes(x = count, fill = spoilage_type)) +
-#   geom_histogram(show.legend = TRUE, alpha = 0.7,bins=20) +
-#   scale_y_continuous(breaks = seq(0,250,50))+
-#   scale_x_continuous(breaks = seq(-4, 10, 2)) +
-#   transition_time(day) +
-#   labs(title = "Day: {frame_time}",x="Milk bacteria count (log10 MPN or CFU/mL)") +
-#   view_follow(fixed_y = TRUE)
-# p
+library(gganimate)
+data2 <- data
+data2$day <- as.integer(data2$day)
+p <- ggplot(data2,
+  aes(x = count, fill = spoilage_type)) +
+  geom_histogram(show.legend = TRUE, alpha = 0.7,bins=20) +
+  scale_y_continuous(breaks = seq(0,250,50))+
+  scale_x_continuous(breaks = seq(-4, 10, 2)) +
+  transition_time(day) +
+  labs(title = "Day: {frame_time}",x="Milk bacteria count (log10 MPN or CFU/mL)") +
+  view_follow(fixed_y = TRUE)
+p
 ```
 
 
@@ -342,5 +342,47 @@ plot(density(d0$logCFU_init), main="Day 0 - simulated initial count data vs inpu
 lines(density(initialcount_import$log10_mean_count), col="blue")
 legend('topright',  legend = c("simulated", "actual"), 
        lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+```
+
+
+```{r}
+# data_d10_sim <- data[data$day=="10",]
+# data_d10_sim <- data_d10_sim %>%
+#   filter(spoilage_type == "ppc")
+# freq_spoilageType <- freq_spoilageType %>%
+#   filter(spoilagetype == "ppc")
+# freq_spoilageType$log10SPC_D10<- log10(freq_spoilageType$SPC_D10)
+# ks.test(data_d10_sim$count, freq_spoilageType$log10SPC_D10, alternative = c("two.sided"), exact = NULL)
+# p_ecdf_d10_sim <- ecdf(data_d10_sim$count)
+# p_ecdf_d10_actual <- ecdf(freq_spoilageType$log10SPC_D10)
+# plot(p_ecdf_d10_sim, verticals = TRUE, do.points=FALSE)
+# plot(p_ecdf_d10_actual, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+# 
+# data_d10_sim <- data[data$day=="10",]
+# freq_spoilageType$log10SPC_D10<- log10(freq_spoilageType$SPC_D10)
+# ks.test(data_d10_sim$count, freq_spoilageType$log10SPC_D10, alternative = c("two.sided"), exact = NULL)
+# p_ecdf_d10_sim <- ecdf(data_d10_sim$count)
+# p_ecdf_d10_actual <- ecdf(freq_spoilageType$log10SPC_D10)
+# plot(p_ecdf_d10_sim, verticals = TRUE, do.points=FALSE)
+# plot(p_ecdf_d10_actual, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+# 
+# data_d14_sim <- data[data$day=="14",]
+# data_d14_sim <- data_d14_sim %>%
+#   filter(spoilage_type == "ppc")
+# freq_spoilageType$log10SPC_D14<- log10(freq_spoilageType$SPC_D14)
+# ks.test(data_d14_sim$count, freq_spoilageType$log10SPC_D14, alternative = c("two.sided"), exact = NULL)
+# p_ecdf_d14_sim <- ecdf(data_d14_sim$count)
+# p_ecdf_d14_actual <- ecdf(freq_spoilageType$log10SPC_D14)
+# plot(p_ecdf_d14_sim, verticals = TRUE, do.points=FALSE)
+# plot(p_ecdf_d14_actual, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+# 
+# data_d17_sim <- data[data$day=="17",]
+# data_d17_sim <- data_d17_sim %>%
+#   filter(spoilage_type == "ppc")
+# freq_spoilageType$log10SPC_D17<- log10(freq_spoilageType$SPC_D17)
+# ks.test(data_d17_sim$count, freq_spoilageType$log10SPC_D17, alternative = c("two.sided"), exact = NULL)
+# p_ecdf_d17_sim <- plot(ecdf(data_d17_sim$count))
+# p_ecdf_d17_actual <- ecdf(freq_spoilageType$log10SPC_D17)
+
 ```
 

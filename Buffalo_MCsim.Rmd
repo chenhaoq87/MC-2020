@@ -22,6 +22,7 @@ library(tidyverse)
 library(censReg)
 library(fitdistrplus)
 library(splitstackshape)
+library(rmutil)
 
 ## load functions
 source("UtilityFunctions.R")
@@ -32,7 +33,7 @@ set.seed(1)
 
 ## 2. Load input files
 * load
-```{r}
+```{r, warning=FALSE,message=FALSE}
 # (a) AT/ST frequency data
 # spore
 spore_ATfrequency_file <- "Ariel_2017MC_SporeModel/InputFiles/ColdgrowATFreq_CrossSect.csv"
@@ -62,11 +63,6 @@ ppc_init_file <- read_csv("Sarah_UpstateBuffalo_BactofugeSimulations/micro_ppc.c
 # (e) PPC frequency data
 # source("FreqPPC.R")
 freq_spoilageType <- read_csv("Sarah_UpstateBuffalo_BactofugeSimulations/freq_spoilagetype.csv")
-
-# get PPC frequency data for 1 plant only
-# plant_freq_ppc <- df_freqPPC %>%
-#   filter(plantID=="I") #randomly chose plantID, as 40 samples
-
 ```
 
 * Change stuff so it's for Upstate Buffalo only
@@ -95,7 +91,7 @@ ppc_STfreq_import <- ppc_STfreq_import %>%
 #             mean_freq_per=mean_freq*100)
 # 
 # PPC_freq <- expandRows(mean_freq_spoilageType,'mean_freq_per')$spoilagetype
-# PPC_freq<-as.vector(PPC_freq)  
+# PPC_freq<-as.vector(PPC_freq)
 
 # this is worst VSL for Buffalo; VSL 434
 # Worst_freq_spoilageType <- freq_spoilageType %>%
@@ -171,8 +167,8 @@ start_day <- 1
 
 # (d) end_day 
 # Definition: Last time point (in days) in unit's shelf life to simulate
-end_day <- 24 
-n_day <- 24 # seems like this is the end_day, but keeping code below for now in case my interpretation is wrong
+end_day <- 35 
+n_day <- 35 # seems like this is the end_day, but keeping code below for now in case my interpretation is wrong
 ```
 
 ii. Prep vectors using defined values above
@@ -238,6 +234,7 @@ ppc_init_file$log10CFU[ppc_init_file$log10CFU < -4] <- -3
 #fit 
 ppc_fit <- fitdist(data = ppc_init_file$log10CFU,distr = "norm") #TO DO: find the best fitting distribution; not normal 
 plot(ppc_fit) #fit looks OK
+summary(ppc_fit)
 
 ppc_log10CFU_mean <- ppc_fit$estimate[1]
 ppc_log10CFU_sd <- ppc_fit$estimate[2]
@@ -320,12 +317,10 @@ for (i in 1:n_sim){
   ST <- c(ST, ST_samp)}
 
 ## (d) Sample the temperature distribution # Sarah figure out how to implement Laplace distribution
-library(rmutil)
 temps <- vector()
 for (i in 1:n_sim){
   temp_samp <- rep(rlaplace(n_units, m=4.06, s=2.31), times = n_day)
                    temps <- c(temps,temp_samp)} # probably should doublecheck before publish; https://doi.org/10.4315/0362-028X-73.2.312
-
 
 # temps <- vector()
 # for (i in 1:n_sim){
@@ -343,12 +338,14 @@ ii. Add results from sampling distribution in (i) to dataframe
 ```{r}
 ## (a) add spoilage_ppc to dataframe
 spoilage_ppc<-as.factor(spoilage_ppc)
-levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "ppc"
-levels(spoilage_ppc)[levels(spoilage_ppc)=="2"] <- "spore"
+# levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "spore"
 
-# levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "NotSpoiled"
-# levels(spoilage_ppc)[levels(spoilage_ppc)=="2"] <- "ppc"
-# levels(spoilage_ppc)[levels(spoilage_ppc)=="3"] <- "spore"
+# levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "ppc"
+# levels(spoilage_ppc)[levels(spoilage_ppc)=="2"] <- "spore"
+
+levels(spoilage_ppc)[levels(spoilage_ppc)=="1"] <- "NotSpoiled"
+levels(spoilage_ppc)[levels(spoilage_ppc)=="2"] <- "ppc"
+levels(spoilage_ppc)[levels(spoilage_ppc)=="3"] <- "spore"
 data$spoilage_type <- spoilage_ppc
 
 ## (a) Reformat and add initial log10CFU & log10MPN to dataframe
@@ -358,7 +355,7 @@ spore_MPN_init_mL <- spore_MPN_init / 1900
 #Also need to remove 0's from the data and replace with detection limit
 spore_MPN_init_mL[spore_MPN_init_mL == 0] <- 0.01;
 #Add ppc_log10CFU_init to dataframe
-data$spore_log10MPN_init <- log10(spore_MPN_init_mL)-1.30 #change this for the bactofuge; Moraru = 0.90 log reduction and TetraPak = 1.30 log reduction
+data$spore_log10MPN_init <- log10(spore_MPN_init_mL) #change this for the bactofuge; Moraru = 0.90 log reduction and TetraPak = 1.30 log reduction
 
 #(ii) ppc
 #First convert ppc_CFU_init from half-gallon to mLs
@@ -444,39 +441,70 @@ growth_import<-rbind(ppc_growth_import,spore_growth_import)
 * Run simple version (not including stages)
     *put count for spore and ppc in different columns for now since data had been hour previously for ppc
 ```{r}
-for (i in 1:(n_sim *n_units * n_day)){
-  allele_index <- which(growth_import$STorAT == data$STorAT[i]) #Find row in growth parameter data that corresponds to allele sample
-  row <- data[i, ]
+for (i in 1:(n_sim * n_units * n_day)) {
+  allele_index <- which(growth_import$STorAT == data$STorAT[i])
+  row <- data[i,]
   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
-  update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
-  data$spore_count[i] <- log10N_func(data$day[i],growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index])
-  data$ppc_count[i] <- log10N_func(data$day[i]*24,growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index])}
+  update <-
+    ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
+  data$spore_count[i] <-
+    log10N_func(
+      data$day[i],
+      growth_import$lag[allele_index],
+      growth_import$mumax[allele_index],
+      (data$logCount_init[i]), #-0.90 for Moraru; -1.30 for TetraPak
+      growth_import$LOG10Nmax[allele_index]
+    )
+  data$ppc_count[i] <-
+    log10N_func(
+      data$day[i] * 24,
+      growth_import$lag[allele_index],
+      growth_import$mumax[allele_index],
+      data$logCount_init[i],
+      growth_import$LOG10Nmax[allele_index]
+    )
+}
 ```
 * Get count data
 ```{r}
 data$count_temp <- data$spoilage_type
 data$count_temp <- with(data, ifelse( count_temp == "spore", spore_count, ppc_count ) )
 data$count <- with(data, ifelse( spoilage_type == "NotSpoiled", 0, count_temp ) )
-
 ```
 
 ## 7. Save results
 ```{r}
 ## ran this
-# save(data,file="Baseline_Buffalo_NoBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
-# save(data,file="Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
-# save(data,file="Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+# data_NB_MeanSpoilType_LT <- data
+# save(data_NB_MeanSpoilType_LT,file="Baseline_Buffalo_NoBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
 
-# save(data,file="Buffalo_NoBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_MoraruBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_TetraPakBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+# data_MB_MeanSpoilType_LT <- data
+# save(data_MB_MeanSpoilType_LT,file="Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
 
-# save(data,file="Buffalo_NoBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_MoraruBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
-# save(data,file="Buffalo_TetraPakBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+# data_TB_MeanSpoilType_LT <- data
+# save(data_TB_MeanSpoilType_LT,file="Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_LaplaceTemp_MCsim_result_df.RData")
+
+# data_NB_WorstPPCVSL434_LT <- data
+# save(data_NB_WorstPPCVSL434_LT,file="Buffalo_NoBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+
+# data_MB_WorstPPCVSL434_LT <- data
+# save(data_MB_WorstPPCVSL434_LT,file="Buffalo_MoraruBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+
+# data_TB_WorstPPCVSL434_LT <- data
+# save(data_TB_WorstPPCVSL434_LT,file="Buffalo_TetraPakBactofuge_WorstPPCVSL434_LaplaceTemp_MCsim_result_df.RData")
+
+# data_NB_BestPPCVSL436_LT <- data
+# save(data_NB_BestPPCVSL436_LT,file="Buffalo_NoBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+
+# data_MB_BestPPCVSL436_LT <- data
+# save(data_MB_BestPPCVSL436_LT,file="Buffalo_MoraruBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
+
+# data_TB_BestPPCVSL436_LT <- data
+# save(data_TB_BestPPCVSL436_LT,file="Buffalo_TetraPakBactofuge_BestPPCVSL436_LaplaceTemp_MCsim_result_df.RData")
 
 ## need to run this
-# save(data,file="Baseline_Buffalo_NoBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
+data_NB_MeanSpoilType_CT <- data
+save(data_NB_MeanSpoilType_CT,file="Baseline_Buffalo_NoBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
 # save(data,file="Baseline_Buffalo_MoraruBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
 # save(data,file="Baseline_Buffalo_TetraPakBactofuge_AverageSpoilageType_ConstantTemp_MCsim_result_df.RData")
 
