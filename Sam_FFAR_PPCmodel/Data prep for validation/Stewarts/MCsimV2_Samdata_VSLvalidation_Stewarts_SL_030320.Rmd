@@ -1,0 +1,854 @@
+---
+title: "PPC Model"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+##################################################
+#  Monte Carlo Simulation v2.0p
+##################################################
+## Project: Dairy Spoilage Model
+## Script purpose: Simulate PPC for half gallon samples of milk 
+##                 over a given number of days.
+##################################################
+## Notes: This version forks from V2.0 of the Psychrotolerant 
+##        Sporeformer Predictive Model and will be used by Samantha Lau
+##        to create a PPC model
+#Edited by SL on 03-03-20
+##################################################
+```
+
+```{r}
+
+#use a seed value for reproducibility
+seed_value = 42;    #can be any number
+```
+
++ Include all library packages that need to be downloaded and used
+```{r}
+library(splitstackshape)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(MASS)
+```
+
+
+## Utility Functions
+
++ muAtNewTemp
+    + Purpose: Calculate the new mu parameter at new temperature.
+    + Params: 
+        + newTemp: the new temperature for which we calculate mu
+        + oldMu: the previous mu value to adjust
+        + oldTemp: the temperature corresponding to previous mu
+        + T0: parameter used to calculate new mu
+        + This uses the Ratkowsky square model which describes the effect of temperature on the growth of
+          microorganisms
+        + The paper it comes from: https://www.ncbi.nlm.nih.gov/pubmed/22417595
+        + Sam checked equation and it is correct
+        + The T0 is estimate dto be -3.62C based on growth curves of Paenibacillus ordorifer obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
+```{r}
+muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) {
+  numerator <- newTemp - T0
+  denom <- oldTemp - T0
+  newMu <- ((numerator / denom)^2) * oldMu
+  
+  return(newMu)
+}
+```
+
+
+DONT HAVE ADJUSTED LAG TEMP HERE AS COMPARED TO OTHER MC model
+
+
++ lagAtNewTemp
+    + Purpose: Calculate the new lag parameter at new temperature.
+    + Params:
+        + newTemp: the new temperature for which we calculate lag
+        + oldLag: the previous lag value to adjust
+        + oldTemp: the temperature corresponding to previous lag
+        + T0: parameter used to calculate new lag
+```{r}
+lagAtNewTemp <- function (newTemp, oldLag, oldTemp = 6, T0 = -3.62) {
+  numerator <- oldTemp -T0
+  denom <- newTemp - T0
+  newLag <- ( (numerator / denom)^2) * oldLag
+  return(newLag)
+}
+
+```
+
+
++ Growth Models
+  + All equations are copied from the nlsMicrobio package in R
+  + URL: https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R
+```{r}
+buchanan_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax){
+  ans <- LOG10N0 + (t >= lag) * (t <= (lag + (LOG10Nmax - LOG10N0) *     log(10)/mumax)) * mumax * (t - lag)/log(10) + (t >= lag) * (t > (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * (LOG10Nmax - LOG10N0)
+  return(ans)
+}
+
+gompertz_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
+  ans <- LOG10N0 + (LOG10Nmax - LOG10N0) * exp(-exp(mumax * exp(1) * 
+                                                      (lag - t)/((LOG10Nmax - LOG10N0) * log(10)) + 1))
+  return(ans)
+}
+
+
+baranyi_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
+  ans <- LOG10Nmax + log10((-1 + exp(mumax * lag) + exp(mumax * t))/(exp(mumax * t) - 1 + exp(mumax * lag) * 10^(LOG10Nmax -LOG10N0)))
+  return(ans)
+}
+
+```
+
+
++ Importing the best fitting model based on CSV file that you read into it with the growth parameters
+  + The best fitting model was selected based on BIC values done in a growth model R code file
+  + The CSV file will have a column that indicates what the best fitting model (baranyi, buchanan, or gompertz) is for that isolate
+  + Since the best fitting model will be selected on the CSV, the respective equation will then be used
+```{r}
+growth_file <- "ST_percentidentity_forcedNmax_MCinput_SL_030320.csv"
+model_name<- read.csv(growth_file, stringsAsFactors = FALSE)
+colnames(model_name)[1]<-c("ST")
+model_name$modelname<-as.factor(model_name$modelname)
+#wrapper function because it calls the proper version
+log10N <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name) {
+  if (model_name == "buchanan") {
+    return(buchanan_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
+  }
+  else if(model_name == 'baranyi') {
+    return(baranyi_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
+  }
+  else if(model_name == 'gompertz') {
+    return(gompertz_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
+  }
+  else {
+    stop(paste0(model_name, " is not a valid model name. Must be one of buchanan, baranyi, gompertz"))
+  }
+}
+```
+
+
+# Data frame creation and setup   ----
+
+
++ Set up data frame to store count at each day
+```{r}
+#Size is for n_sim bulk tanks, n_half_gal half gallon lots, n_day days (14-24)
+n_sim <-100    #1000 is for testing and exploring, experiments require at least 10k
+n_halfgal <-10
+n_day <- 14
+start_day <- 1
+
+#Repeat each element of the sequence 1..n_sim.Bulk tank data (MC runs)
+BT <- rep(seq(1, n_sim), each = n_halfgal * n_day)
+#Repeat the whole sequences times # of times
+half_gal <- rep(seq(1, n_halfgal), times = n_day * n_sim)
+#Vector of FALSE
+AT <- vector(mode="logical", n_sim * n_halfgal * n_day)
+#Repeat the days for each simulation run
+day <- rep(rep(seq(start_day, start_day+n_day-1), each = n_halfgal), times = n_sim)
+count <- vector(mode = "logical", n_sim * n_halfgal * n_day)
+
+#matrix with columns:
+#  BT   half_gal    AT    day   count
+data <- data.frame(BT, half_gal, AT, day, count)
+```
+
++ Import the data from our input files and begin filling in our data frames
+```{r}
+#input files
+frequency_file <- "Frequency_ALLISOLATES_021120.csv"
+growth_file <- "ST_percentidentity_MCinput_SL_021920.csv"
+init_file <- "Initialmicro_stewarts_MCinput_030220.csv"
+```
+
++ Troubleshooting
+  + ST 13 and 23 have growth rates that are much higher than all the other ST
+  + May be contributing to why samples are spoiling so early on
+```{r}
+#input files
+frequency_file <- "Frequency_ALLISOLATES_021120.csv"
+growth_file <- "ST_percentidentity_forcedNmax_MCinput_SL_030320.csv"
+init_file <- "Initialmicro_stewarts_MCinput_030220.csv"
+```
+
++ Troubleshooting
+  + Frequency from only plant
+```{r}
+#input files
+frequency_file <- "Frequency_Stewarts_030420.csv"
+growth_file <- "ST_percentidentity_forcedNmax_MCinput_SL_030320.csv"
+init_file <- "Initialmicro_stewarts_MCinput_030220.csv"
+```
+
+
+
++ Import frequency data and get the 16S sequence type
+```{r}
+
+freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
+freq_data = freq_import$X16S_ST
+freq_vec<-as.vector(freq_data) #before running sensitivity analysis (below) put a hashtag in front of this
+
+```
+
++ Frequency sensitivity analysis
+  + Currently with ST 13 as 30
+```{r}
+#make dataframe that has all the frequency data
+freq_df1 <- as.data.frame(freq_data)
+
+#whatever proportion you want to increase it to
+#change prop a , 0.4 is not 40%
+prop_a <- 0.0 #organize data this way so we can easily change it for sensitivity analysis
+
+#make a dataframe that only has the desired sequence type in it there
+freq_df_a <- freq_df1 %>%
+  filter(freq_df1$freq_data==13) #change sequence type here 
+
+#frequency table for a which is the ST of interest
+prop_freq_df_a <- as.data.frame(prop.table(table(freq_df_a)))
+prop_freq_df_a$Freq2 <- prop_freq_df_a$Freq*prop_a*100 #so now the ST is at the designated frequency you want
+names(prop_freq_df_a)[1] <- "ST"
+
+#do same for freq b
+#keep everything but ST 13
+freq_df_b <- freq_df1 %>%
+ filter(freq_df1$freq_data!=13) #change sequence type here 
+prop_freq_df_b <- as.data.frame(prop.table(table(freq_df_b)))
+
+
+# #you know you want sequence type 13 to be 40%
+# #you want the rest to be 60%
+# #you want the 60% relative to the proportion we had before
+# #force it to be 60%
+prop_freq_df_b$Freq2 <- prop_freq_df_b$Freq*(1-prop_a)*100
+names(prop_freq_df_b)[1] <- "ST"
+
+sum(prop_freq_df_b$Freq2) #this should be 60
+
+#bind rows together
+prop_freq_df_ab <-rbind(prop_freq_df_a,prop_freq_df_b)
+#sum(prop_freq_df_ab) #should be 100
+
+#dont understand what's going on here
+
+#takes whatever you had in the relative proportion
+#IT HAS TO BE GREATER THAN 1
+#IF ITS LESS THAN 1, you would have to multiply it by a number
+#you can expand the rows to 1000 if you have a frequency that is less than 1
+freq_df <- expandRows(prop_freq_df_ab,'Freq2')$ST
+# 
+freq_vec<-as.vector(freq_df)
+rm(freq_df_a,freq_df_b,freq_df1,freq_import,prop_freq_df_a,prop_freq_df_ab,prop_freq_df_b)
+```
+
++ Import growth and initial count parameter
+```{r}
+#Import growth parameter data
+growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
+colnames(growth_import)[1]<-c("ST")
+
+#Import initial count logMPN data
+initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
+#MPN Column
+initialcount_data = initialcount_import[,2]
+#LOG MPN Column
+initialcountlog_data = initialcount_import[,3]
+```
+
+## Calculate samples used in the monte carlo
+
++ Now sample the initial concentration distributions 
+```{r}
+mean(initialcount_import$LOG.initial)
+sd(initialcount_import$LOG.initial)
+logMPN_mean <- c(0.4275544) #day initial
+logMPN_sd <- c(1.349259) #day initial
+logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd)
+MPN_samp = 10^logMPN_samp
+MPN_samp_halfgal = MPN_samp * 1900 #MPN per half gallon (1892.71 mL in half gallon)
+#how the logMPN_mean and logMPN_sd was calculated for initial microbial concentration data
+#mean(day7counts$count)
+#sd(day7counts$count)
+#mean(day10counts$count)
+#sd(day10counts$count)
+```
+
++ Sample temperature from normal distribution
+```{r}
+#temp_mean and temp_sd will be 6.0 and 0.0, respectively, WHEN VALIDATING AGAINST VSL DATA
+#data from Consumer Phase Risk Assessment for Listeria monocytogenes in Deli Meats (2006)
+#temp_mean <- 4.096
+#temp_sd <-   2.381
+temp_mean <- 6.0
+temp_sd <-   0.0
+temp_sample <- rnorm((n_sim), temp_mean, temp_sd)
+```
+
++ Generate initial concentation for each half gallon from Poisson distribution
+```{r}
+#Also sample ST for each half gallon
+MPN_init<-vector()
+allele <- vector()
+for (i in 1:n_sim){
+  MPN_init_samp <-rep(rpois(n_halfgal, MPN_samp_halfgal[i]), times = n_day)
+  MPN_init<-c(MPN_init, MPN_init_samp)
+  allele_samp <- rep(sample(freq_vec, n_halfgal, replace = T), times = n_day) 
+  allele <- c(allele, allele_samp)
+}
+
+#Convert MPN_init from half-gallon to mLs
+MPN_init_mL <- MPN_init / 1900
+#remove 0's from the data and replace with detection limit
+MPN_init_mL[MPN_init_mL == 0] <- 0.01;
+
+#EDIT THIS SO I CAN TRY TO MATCH THE VSL DATA AS CLOSELY AS POSSIBLE
+#TAKE THIS OUT LATER, used so the initial microbial concentration would be at log -1
+#MPN_init_mL<-0.004
+
+data$logMPN_init <- log10(MPN_init_mL) #Add initial logMPN to data frame
+```
+
++ Sensitivity analysis for initial microbial concentration
+  + To change the initial microbial concentration you need to add or subtract the desired log
+  + Ex: If you want to + 1 log to your initial microbial concentration, the code would look like
+        data$logMPN_init <- log10(MPN_init_mL)+1
+  + Ex: If you want to start at 1 log lower than your stated initial microbial concentration, the code would
+        be data$logMPN_init <- log10(MPN_init_mL)-1
+```{r}
+data$logMPN_init <- log10(MPN_init_mL)-2 #Add initial logMPN to data frame
+```
+
+```{r}
+
+data$AT<-allele #Add in AT data
+
+##Now we will calculate the log10N for each row in the data frame
+##Get the AT and day from the data frame, get growth parameters depending on the AT
+```
+
+
+# Simulation   ----
+```{r}
+#growth_import$ST<-as.factor(growth_import$ST)
+#df<-as.data.frame(data)
+#data$AT<-as.factor(data$AT)
+for (i in 1:(n_sim *n_halfgal * n_day)){
+  #Find row in growth parameter data that corresponds to allele sample
+  allele_index <- which(growth_import$ST == data$AT[i]) 
+  
+  #calculate the new growth parameters using the square root model and our
+  #sampled temperature
+  newT <- temp_sample[data$BT[i]]
+  newLag <- lagAtNewTemp(newT, growth_import$lag[allele_index])
+  newMu <-  muAtNewTemp(newT, growth_import$mu[allele_index])
+  
+  #Calculate the log10N count using our new growth parameters
+  #multiply log10N(data$day[i] by 24 since I did it in hours, not days, and ariel did it in days
+  data$count[i] <- log10N(data$day[i]*24, newLag, newMu,data$logMPN_init[i],growth_import$Nmax[allele_index],growth_import$modelname[allele_index])
+
+}
+```
+
++ Sensitivity analysis for lag and mu
+  + To change lag or mu, you need to multiply it by the desired percent change
+  + Ex: if you wanted to increase lag by 20%, you would multiply newLag by 1.2
+  + Ex: if you wanted to decrease lag by 20%, you would multiply newLag by 0.8
+  + Ex: if you wanted to increase mu by 20%, you would multiply newMu by 1.2
+  + Ex: if you wanted to decrease mu by 20%, you would multiply newMu by 0.8
+  + Ex: if you didn't want a lag phase, you would multiply newLag by 0
+```{r}
+for (i in 1:(n_sim *n_halfgal * n_day)){
+  #Find row in growth parameter data that corresponds to allele sample
+  allele_index <- which(growth_import$ST == data$AT[i]) 
+  
+  #calculate the new growth parameters using the square root model and our
+  #sampled temperature
+  newT <- temp_sample[data$BT[i]]
+  newLag <- lagAtNewTemp(newT, growth_import$lag[allele_index])
+  newMu <-  muAtNewTemp(newT, growth_import$mu[allele_index])
+  
+  data$count[i] <- log10N(data$day[i]*24, newLag*1.2, newMu,data$logMPN_init[i],growth_import$Nmax[allele_index],growth_import$modelname[allele_index])
+}
+  
+```
+
+
+# Data Analysis   ----
+
++ Calculate the mean count by day
+```{r}
+data %>%
+  group_by(day) %>%
+  summarise(Mean = mean(count, na.rm=TRUE), SD = sd(count,na.rm=TRUE))-> mean_by_day
+```
+
++ Make a ggplot bar chart
+```{r}
+#A ggplot Bar Chart
+fig_ssc <- ggplot() + geom_bar(aes(y = Mean, x = day), data = mean_by_day, 
+                               stat = "identity", color = "black", position = "dodge")
+  
+#Add the number above the bar plot                            
+fig_ssc <- fig_ssc + geom_text(data = mean_by_day, 
+            aes(x = day, y = Mean, label = round(Mean, 2)), 
+            position=position_dodge(width = 1), 
+            vjust=-0.25, size = 4)
+  
+##Some optional stuff that shows how to customize the look of the plot
+fig_ssc <- fig_ssc + scale_fill_grey(start = 0.8, end = 0.0) + theme_bw() +
+  theme(legend.title = element_blank(), legend.position = "right",
+        plot.title = element_text(face = "bold", size = 18,hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.x = element_text(size = 14 ),
+        axis.text.y = element_text(size = 10),
+        axis.title.y = element_text(size = 14),
+        axis.ticks.x.bottom = element_blank())
+
+## Set up the title of the graphs and the way the x and y axes are handled
+fig_ssc <- fig_ssc + labs(y = "Mean Bacteria Count (log cfu/ml)", x = "Day" )+
+        scale_x_discrete(breaks = seq(1, 14, 1)) +
+        scale_y_continuous(limits = c(-1, 9), expand = c(0, 0)) +
+        ggtitle("Mean Bacteria Per Day")
+
+#type the name to display it
+fig_ssc
+```
+
++ Plotting actual counts from day 7, 10, etc from VSL data
+  + The actual counts came from VSL data and is in a separate CSV file that gets called in
+  + Use this to create histograms to see what VSL data looks like
+```{r}
+#VSL Data for day 7 and day 10
+day7andday10<-read.csv("LOGday7and10_stewarts_030220.csv")
+
+#create a histogram/distribution just for the VSL data 
+logday7<-day7andday10$LOG.D7
+newlogday7<-as.numeric(logday7) #use the log day 7 column from VSL data
+logday10<-day7andday10$LOG.D10
+newlogday10<-as.numeric(logday10) #use the log day 10 column from VSL data
+
+#histogram with proportions for day 7
+hist(newlogday7, 10, col="black", main="Day 7 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,8), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(newlogday7)))
+
+# plot density plot for day 7
+plot(density(na.omit(newlogday7)), main="Day 7 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,8), ylim=c(0,0.8))
+
+#histogram with proportions for day 10
+hist(newlogday10, 10, col="black", main="Day 10 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(newlogday10)))
+
+# plot density plot for day 10
+plot(density(na.omit(newlogday10)), main="Day 10 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim=c(0,0.8))
+
+shapiro.test(newlogday7)
+qqnorm(newlogday7)
+shapiro.test(newlogday10)
+qqnorm(newlogday10)
+
+```
+
++ Simulating data for day 7
+```{r}
+#created a new table data2 just because I don't want to mess with original data
+data2<-data
+
+#Make a df only including day and count 
+data2_counts <- data2[c(4,5)]
+
+#Make df of day 7 only 
+#Note: You want to change this to day==3 when the initial mean and SD is set using the day 7 data instead of initial
+#should this be 6 since day initial is day 1????? or 7
+day7counts<- data2_counts[data2_counts$day=="7",] 
+
+#only using the count data
+day7counts_sim<-day7counts$count
+
+#making a numeric factor
+day7counts_sim<-as.numeric(day7counts_sim)
+
+#histogram with simulated day 7
+hist(day7counts_sim, 10, col="black", main="Day 7 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,12), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(day7counts_sim)))
+
+#density plot with day 7 simulated 
+plot(density(na.omit(day7counts_sim)), main="Day 7 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(1,12), ylim=c(0,0.8))
+```
+
++ Comparing simulated and VSL data for day 7
+```{r}
+#create a histogram with both the simulated and the VSL data
+plot(density(na.omit(day7counts_sim)), main="Day 7 simulated vs VSL", 
+     xlab="LOG CFU/mL", xlim=c(-2,12), ylim=c(0,0.8))
+lines(density(na.omit(newlogday7)), col="blue")
+legend('topright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+shapiro.test(day7counts_sim)
+qqnorm(day7counts_sim)
+
+wilcox.test(newlogday7, day7counts_sim, paired = FALSE)
+
+p=ecdf(day7counts_sim)
+p2=ecdf(newlogday7)
+plot(p, verticals = TRUE, do.points=FALSE,  xlab="LOG10 CFU/mL", main="Day 7 simulated vs VSL", ylab = "Density", xlim=c(-2,10))
+plot(p2, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+legend('bottomright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+
+
+
+
+```
+
++ Running Kolmogorov-Smirnov test for day 7
+  + Purpose: Want to compare the distributions of the VSL versus simulated
+```{r}
+#perform Kolmogorov-Smirnov test
+ks.test(day7counts_sim, newlogday7, alternative = c("two.sided"), exact = NULL)
+
+#x <- day7counts_sim[!is.na(day7counts_sim)]
+#n <- length(x)
+#ks.test.critical.value(n, 0.95, alternative = "two.sided")
+
+#install.packages("BoutrosLab.plotting.general")
+#library(BoutrosLab.plotting.general)
+#install.packages("KScorrect")
+
+#calculating critical value
+x <- day7counts_sim[!is.na(day7counts_sim)]
+n <- length(x)
+  y <- newlogday7[!is.na(newlogday7)]
+  n.y <- length(y)
+
+#5%level significance
+a=1.35810
+day7critvalue5<-1.35810*((n+n.y)/(n*n.y))^0.5
+day7critvalue5
+
+#10%level significance
+a=1.22385
+day7critvalue10<-1.22385*((n+n.y)/(n*n.y))^0.5
+day7critvalue10
+
+
+#20%level significance
+a=1.07275
+day7critvalue20<-1.07275*((n+n.y)/(n*n.y))^0.5
+day7critvalue20
+
+
+alternative <- "two.sided"
+x <- day7counts_sim[!is.na(day7counts_sim)]
+n <- length(x)
+  y <- newlogday7[!is.na(newlogday7)]
+  n.x <- as.double(n)
+  n.y <- length(y)
+  w <- c(x, y)
+  z <- cumsum(ifelse(order(w) <= n.x, 1/n.x, -1/n.y))
+  z <- z[c(which(diff(sort(w)) != 0), n.x + n.y)] #exclude ties
+  STATISTIC <- switch(alternative, two.sided = max(abs(z)), 
+                      greater = max(z), less = -min(z))
+  STATISTIC
+
+```
+
+RANDOM BOXPLOT JUNK SAM WROTE, DON'T RUN THIS
+```{r}
+#boxplot of day 7 simulated histogram
+boxplot(na.omit(day7counts_sim), ylab="LOG CFU/mL", ylim=c(2,10), main="Day 7 Simulated Boxplot")
+
+#boxplot of day 7 VSL data histogram
+boxplot(na.omit(newlogday7), ylab="LOG CFU/mL", ylim=c(0,8), main="Day 7 VSL data Boxplot")
+
+#combining box plots AND making it horizontal
+boxplot(na.omit(newlogday7), xlab="LOG CFU/mL", ylim=c(0,10), col="blue", main="Day 7 Combined Boxplot", horizontal = TRUE)
+boxplot(na.omit(day7counts_sim), ylim=c(0,8), horizontal = TRUE, add = TRUE)
+legend('topright',  legend = c("VSL", "simulated"), 
+       lty=1, col=c('blue', 'black'), bty='n', cex=.75)
+
+#combine histogram with boxplot
+#this doesn't work
+plot(density(na.omit(day7counts_sim)), main="Day 7 simulated vs VSL", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim=c(0,0.8))
+lines(density(na.omit(newlogday7)), col="blue")
+legend('topright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+boxplot(na.omit(day7counts_sim), ylim=c(0,8), horizontal = TRUE, add = TRUE)
+
+
+```
+
++ Simulating data for day 10
+```{r}
+#Make df of day 10 only 
+#Note: change this to day==4 when the initial mean and SD is set using the day 7 data instead of initial
+day10counts<- data2_counts[data2_counts$day=="10",] 
+
+#only using the count data
+day10counts_sim<-day10counts$count
+
+#making a numeric factor
+day10counts_sim<-as.numeric(day10counts_sim)
+
+#day10factor
+day10countfactor<-as.factor(day10counts_sim)
+```
+
++ Comparing simulated and VSL data for day 10
+```{r}
+#histogram with simulated day 10
+hist(day10counts_sim, 10, col="black", main="Day 10 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(-2,12), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(day10counts_sim)))
+
+#plot with day 10 simulated histogram
+plot(density(na.omit(day10counts_sim)), main="Day 10 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(1,12), ylim=c(0,0.8))
+
+#create a histogram with both the simulated and the VSL data
+plot(density(na.omit(day10counts_sim)), main="Day 10 simulated vs VSL", 
+     xlab="LOG CFU/mL", xlim=c(-2,12), ylim=c(0,1.2))
+lines(density(na.omit(newlogday10)), col="blue")
+legend('topright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+
+#make ECDF for day 10
+q=ecdf(day10counts_sim)
+q2=ecdf(newlogday10)
+plot(q, verticals = TRUE, do.points=FALSE,  xlab="LOG10 CFU/mL", main="Day 10 simulated vs VSL", ylab = "Density", xlim=c(-2,10))
+plot(q2, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+legend('bottomright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+```
+
++ Comparing day 7 and day 10 concentrations for VSL and simulated
+```{r}
+# plot density plot of day 10 and day 7
+plot(density(na.omit(newlogday10)), main="Day 7 vs 10 VSL/Simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(-2,12), ylim=c(0,1.0))
+lines(density(na.omit(newlogday7)), col="red", lty=1) #VSL day 7 data
+lines(density(na.omit(day10counts_sim)), col="black", lty=2) #simulated day 10 data
+lines(density(na.omit(day7counts_sim)), col="red", lty=2) #simulated day 10 data
+legend('topright',  legend = c("7 VSL", "10 VSL", "7 sim", "10 sim"), 
+       lty=c(1,1,2,2), col=c('red', 'black','red', 'black'), bty='n', cex=.55)
+```
+
++ Running Kolmogorov-Smirnov test for day 10
+  + Purpose: Want to compare the distributions of the VSL versus simulated
+```{r}
+ks.test(day10counts_sim, newlogday10, alternative = c("two.sided"), exact = NULL)
+
+
+#calculating critical value
+x <- day10counts_sim[!is.na(day10counts_sim)]
+n <- length(x)
+  y <- newlogday10[!is.na(newlogday10)]
+  n.y <- length(y)
+
+a=1.36
+day10critvalue<-1.36*((n+n.y)/(n*n.y))^0.5
+day10critvalue
+
+#5%level significance
+a=1.35810
+day10critvalue5<-1.35810*((n+n.y)/(n*n.y))^0.5
+day10critvalue5
+
+#10%level significance
+a=1.22385
+day10critvalue10<-1.22385*((n+n.y)/(n*n.y))^0.5
+day10critvalue10
+
+
+#20%level significance
+a=1.07275
+day10critvalue20<-1.07275*((n+n.y)/(n*n.y))^0.5
+day10critvalue20
+
+
+```
+
+DONT RUN THIS
+```{r}
+#this is with day 7 set as the initial to extrapolate day 10
+length(which(subset(day10counts_sim, day10counts_sim$day == 4)$count>6))/length(subset(day10counts_sim, day10counts_sim$day == 4)$count)
+#length(which(subset(data, data$day == 10)$count>6))/length(subset(data, data$day == 10)$count)
+
+```
+
+
++ Calculate proportion of samples that have spoiled
+  + Set count to desired log value
+  + Ex: If I want to see proportions of samples that reach 1,000,000 CFU/mL, set count>6
+  + Ex: If I wanted to see proportions of samples that reach 20,000 CFU/mL, set count>4.3
+  + Proportion= samples that reach X log for Y day/ total samples for Y day
+```{r}
+length(which(subset(data, data$day == 7)$count>4.3))/length(subset(data, data$day == 7)$count)
+length(which(subset(data, data$day == 10)$count>4.3))/length(subset(data, data$day == 10)$count)
+length(which(subset(data, data$day == 14)$count>4.3))/length(subset(data, data$day == 14)$count)
+```
+
++ Calculate the spoilage per day
+  + You can change the starting and end day by changing days
+  + Ex: If you want to look at spoilage from days 1 to 14, set days <- seq(1, 14, 1)
+  + Ex: If you want to look at spoilage from days 3 to 17, days <- seq(3, 17, 1)
+  + The third one is because you want the days to increase by 1
+```{r}
+#create a dataframe of day and a vector that will eventually hold the percentage of spoiled samples
+#mode=logical means you set it to false
+days <- seq(1, 14, 1)
+spoiled <- vector(mode = "logical", length(days))
+spoiled_by_day <- data.frame(days, spoiled)
+
+#now fill in the empty vector with the proper percentage
+#gives you percentage of days greater than 4.3 log
+for (d in days) {
+  numerator <-   length(which(subset(data, data$day == d)$count>4.3))
+  denominator <- length(subset(data, data$day == d)$count)
+  
+  spoiled_by_day[spoiled_by_day$days==d,]$spoiled <- numerator / denominator * 100
+}
+
+spoiled_by_day$days <- factor(spoiled_by_day$days)
+
+```
+
+
+```{r}
+
+#TAKE THIS OUT IF IT THIS DOESN'T WORK
+fig_SBD <- ggplot() + geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge")
+
+#print to see what the plot looks like
+fig_SBD
+
+#Add the number above the bar plot                            
+fig_SBD <- fig_SBD + geom_text(data = spoiled_by_day, 
+                               aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+                               position=position_dodge(width = 1), 
+                               vjust=-0.25, size = 4)
+
+fig_SBD
+
+##Some optional stuff that shows how to customize the look of the plot
+fig_SBD <- fig_SBD + scale_fill_grey(start = 0.8, end = 0.0) + theme_bw() +
+  theme(legend.title = element_blank(), legend.position = "right",
+       plot.title = element_text(face = "bold", size = 18,hjust = 0.5),
+       panel.grid.major.x = element_blank(),
+       panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+        axis.text.x = element_text(size = 14 ),
+        axis.text.y = element_text(size = 10),
+       axis.title.y = element_text(size = 14),
+        axis.ticks.x.bottom = element_blank())
+
+fig_SBD
+## Set up the title of the graphs and the way the x and y axes are handled
+fig_SBD <- fig_SBD + labs(y = "Percentage > 4.3log", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 14, 1), labels=seq(1, 14, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+  ggtitle("Percent of samples spoiled by day")    
+
+#type the name to display it
+fig_SBD
+
+```
+
++ Creating plots when doing sensitivity analysis
+  + Purpose: This will print out the PDF version of the plot when you change a parameter
+```{r}
+pdf(file='plot_original_fixed_frequency13decreaseto0_summary.pdf')
+fig_SBD <- ggplot() + geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge")+
+  geom_text(data = spoiled_by_day, 
+              aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+              position=position_dodge(width = 1), 
+              vjust=-0.25, size = 4)+
+  labs(y = "Percentage > 4.3log", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 14, 1), labels=seq(1, 14, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+  ggtitle("Percent of samples spoiled by day") 
+
+#print to see what the plot looks like
+fig_SBD
+
+dev.off()
+
+  
+```
+
+
+
+
+
+
+
+More random plots, DON'T RUN
+```{r}
+
+  #Simple scatter plot
+  plot(spoiled_by_day$days, spoiled_by_day$spoiled)
+  #line plot
+  #type = L MAKES IT A LINE PLOT
+  plot(spoiled_by_day$days, spoiled_by_day$spoiled, type = 'l')
+  #bar plot
+  barplot(spoiled_by_day$spoiled, names.arg = spoiled_by_day$days, 
+          ylim = c(0, 100))
+
+  #bar plot with more options
+  xbarplot<-barplot(spoiled_by_day$spoiled, names.arg = spoiled_by_day$days, 
+          xlab = "Day", 
+          ylab = "Percentage > 4.3",
+          ylim = c(0, 100),  xlim=c(1,14), 
+          main = "Percent of samples spoiled by day")
+  
+  xbarplot
+  
+  #only works for GG plot, can't combine diff codes
+  #text(x = xbarplot, y = spoiled_by_day, label = spoiled_by_day, pos = 3, cex = 0.8, col = "red")
+  
+  #xbarplot <- xbarplot + geom_text(data = spoiled_by_day, 
+                                # aes(x = day, y = spoiled_by_day, label = spoiled_by_day), 
+                                # position=position_dodge(width = 1), 
+                                # vjust=-0.25, size = 4)
+ # xbarplot
+  
+  #same as a horizontal plot
+  barplot(spoiled_by_day$spoiled, names.arg = spoiled_by_day$days, 
+          horiz = TRUE,
+          ylab = "Day",
+          xlab = "Percentage > 4.3",
+          xlim = c(0, 50),
+          main = "Percent of samples spoiled by day")
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
