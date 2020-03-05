@@ -1,0 +1,11 @@
+"","FSL#","ID","PlantID","Plant Name","Genus","Species","Gram Status","Enterobacteriaceae","VSL Number","SampleID","Day","Test","Milk Type","Size","Container","16S ST","id3","milkType","id2"
+"1","R10-0192",64,"36-3661","Byrne Dairy","Pseudomonas","fragi_deceptionensis_sl","-",FALSE,"434","62-1","D14","CVTA","2%","Gal","Plastic",NA,"6","2","1"
+"2","R10-0193",64,"36-3661","Byrne Dairy","Pseudomonas","deceptionensis_fragi_sl","-",FALSE,"434","62-1","D14","CVTA","2%","Gal","Plastic",NA,"6","2","1"
+"3","R10-0379",86,"36-2151","Stewart's","Raoultella/Kluyvera","ornithinolytica_ascorbata_cryocrescens_sl","-",TRUE,"435","12-1","D21","EB","2%","Gal","Plastic",NA,"1","2","1"
+"4","R10-0405",88,"36-2151","Stewart's","Hafnia","paralvei","-",TRUE,"435","13-1","D17","EB","Skim","Gal","Plastic",NA,"1","3","1"
+"5","R10-1293",267,"36-3661","Byrne Dairy","Pseudomonas","libanensis_poae_lurida_sl","-",FALSE,"439","52-2","D14","SPC","2%","1/2 Pint","Paper",NA,"5","2","2"
+"6","R10-1552",301,"36-8185","Garelick Farms","Comamonas","cf_koreensis","-",FALSE,"440","42","D21","CVTA","2%","1/2 Gal","Plastic",NA,"4","2",NA
+"7","R10-1839",342,"36-1880","Upstate Rochester","Chryseobacterium","shigense","-",FALSE,"441","83","D14","CVTA","Skim","Gal","Plastic",NA,"8","3",NA
+"8","R10-2049",361,"36-3661","Byrne Dairy","Pseudomonas","orientalis_trivialis_sl","-",FALSE,"442","23-2","D17","SPC","Skim","1/2 Pint","Paper",NA,"2","3","2"
+"9","A6-1352",53,"36-4739","Upstate Buffalo","Pseudomonas","brassicacearum_migulae_sl","-",FALSE,"434","32","D17","SPC","2%","1/2 Gal","Plastic",NA,"3","2",NA
+"10","A6-1485",54,"36-4739","Upstate Buffalo","Pseudomonas","rhizosphaerae","-",FALSE,"434","33","D14","CVTA","Skim","1/2 Gal","Plastic",NA,"3","3",NA
