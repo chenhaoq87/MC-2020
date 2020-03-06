@@ -170,16 +170,6 @@ df <- separate(data=df,scenario,c("Bactofuge","PPCFreq","Temp"),remove = FALSE)
 
 ```{r}
 #Calculate the mean count by day
-df_mean_byScenario_byDay <- df %>%
-  group_by(scenario,day) %>%
-  summarize(mean = mean(count), sd = sd(count))
-
-#Calculate the mean count by day by spoilage_type
-df_mean_byScenario_byDay_bySpoilageType <- df %>%
-  group_by(spoilage_type,scenario,day) %>%
-  summarize(mean = mean(count), sd = sd(count))
-
-#Calculate the mean count by day
 df_percent_byScenario_byDay<- df %>%
   group_by(scenario,Bactofuge,PPCFreq,Temp,day) %>%
   summarize(n_total = n(),
@@ -189,9 +179,45 @@ df_percent_byScenario_byDay<- df %>%
             per_exceed5mill=n_exceed5mill/n_total*100,
             n_exceed1mill=sum(count > 6),
             per_exceed1mill=n_exceed1mill/n_total*100,
+            n_exceed10mill=sum(count > 7),
+            per_exceed10mill=n_exceed10mill/n_total*100,
+            n_exceed20mill=sum(count > 7.3),
+            per_exceed20mill=n_exceed20mill/n_total*100,
+            n_exceed30mill=sum(count > 7.47),
+            per_exceed30mill=n_exceed30mill/n_total*100,
+            n_exceed40mill=sum(count > 7.6),
+            per_exceed40mill=n_exceed20mill/n_total*100,
             n_exceed20000=sum(count > 4.3),
             per_exceed20000=n_exceed20000/n_total*100) 
-df_percent_byScenario_byDay <- df_percent_byScenario_byDay[c(1:5,8,10,12,14,7,9,11,13,6)]
+df_percent_byScenario_byDay <- df_percent_byScenario_byDay[c(1:5,8,10,12,14,16,18,20,22,7,9,11,13,15,17,19,21,6)]
+
+#Calculate the mean count by day
+df_mean_byScenario_byDay <- df %>%
+  group_by(scenario,day) %>%
+  summarize(mean = mean(count), sd = sd(count))
+
+#Calculate the mean above 20,000 CFU
+df_mean_byScenario_byDaybyLot <- df %>%
+  group_by(scenario,day,lot_id) %>%
+  summarize(mean = mean(count), sd = sd(count))
+
+# test <- df %>% # this shows us that we need more simulations
+#   group_by(scenario,Bactofuge,PPCFreq,Temp,lot_id,day) %>%
+#   summarize(n_total = n(),
+#             n_exceed1000=sum(count >3),
+#             per_exceed1000=n_exceed1000/n_total*100) %>%
+#   ungroup()%>%
+#   group_by(scenario,Bactofuge,PPCFreq,Temp,day)%>%
+#   summarize(ntot=n(),
+#             mean_perexceed1000=mean(per_exceed1000),
+#             sd_perexceed1000=sd(per_exceed1000))
+
+#Calculate the mean count by day by spoilage_type
+df_mean_byScenario_byDay_bySpoilageType <- df %>%
+  group_by(spoilage_type,scenario,day) %>%
+  summarize(mean = mean(count), sd = sd(count))
+
+# find the day in shelf life where the mean of 
 
 # Save df as .csv
 write.csv(df_mean_byScenario_byDay, "df_mean_byScenario_byDay_Buffalo.csv")
