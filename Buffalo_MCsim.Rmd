@@ -80,18 +80,18 @@ ppc_STfreq_import <- ppc_STfreq_import %>%
 * What's PPC for Buffalo for each VSL?
 ```{r}
 # this is how to get the average spoilage type
-freq_spoilageType_byVSLNumber <- freq_spoilageType %>%
-  group_by(VSLNumber,spoilagetype) %>%
-  summarize(n=n())%>%
-  mutate(freq = n / sum(n))
-
-mean_freq_spoilageType <- freq_spoilageType_byVSLNumber %>%
-  group_by(spoilagetype) %>%
-  summarize(mean_freq=mean(freq),
-            mean_freq_per=mean_freq*100)
-
-PPC_freq <- expandRows(mean_freq_spoilageType,'mean_freq_per')$spoilagetype
-PPC_freq<-as.vector(PPC_freq)
+# freq_spoilageType_byVSLNumber <- freq_spoilageType %>%
+#   group_by(VSLNumber,spoilagetype) %>%
+#   summarize(n=n())%>%
+#   mutate(freq = n / sum(n))
+# 
+# mean_freq_spoilageType <- freq_spoilageType_byVSLNumber %>%
+#   group_by(spoilagetype) %>%
+#   summarize(mean_freq=mean(freq),
+#             mean_freq_per=mean_freq*100)
+# 
+# PPC_freq <- expandRows(mean_freq_spoilageType,'mean_freq_per')$spoilagetype
+# PPC_freq<-as.vector(PPC_freq)
 
 # this is worst VSL for Buffalo; VSL 434
 # Worst_freq_spoilageType <- freq_spoilageType %>%
@@ -99,9 +99,9 @@ PPC_freq<-as.vector(PPC_freq)
 # PPC_freq <- as.character(Worst_freq_spoilageType$spoilagetype)
 
 # this is the "best case" where PPC = 0
-# Best_freq_spoilageType <- freq_spoilageType %>%
-#   filter(VSLNumber=="436")
-# PPC_freq <- as.character(Best_freq_spoilageType$spoilagetype)
+Best_freq_spoilageType <- freq_spoilageType %>%
+  filter(VSLNumber=="436")
+PPC_freq <- as.character(Best_freq_spoilageType$spoilagetype)
 
 ```
 
@@ -317,10 +317,10 @@ for (i in 1:n_sim){
   ST <- c(ST, ST_samp)}
 
 ## (d) Sample the temperature distribution # Sarah figure out how to implement Laplace distribution
-temps <- vector()
-for (i in 1:n_sim){
-  temp_samp <- rep(rlaplace(n_units, m=4.06, s=2.31), times = n_day)
-                   temps <- c(temps,temp_samp)} # probably should doublecheck before publish; https://doi.org/10.4315/0362-028X-73.2.312
+# temps <- vector()
+# for (i in 1:n_sim){
+#   temp_samp <- rep(rlaplace(n_units, m=4.06, s=2.31), times = n_day)
+#                    temps <- c(temps,temp_samp)} # probably should doublecheck before publish; https://doi.org/10.4315/0362-028X-73.2.312
 
 # temps <- vector()
 # for (i in 1:n_sim){
@@ -380,10 +380,10 @@ data$STorAT <- data$spoilage_type
 data$STorAT <- with(data, ifelse( STorAT == "spore", AT, ST) )
 
 ## (c) #Add temp to dataframe
-data$temp <- temps
+# data$temp <- temps
 
 # OR just set what the temperature should be for all:
-# data$temp <- 7.2 # constant temp for Buffalo
+data$temp <- 7.2 # constant temp for Buffalo
 
 ```
 
@@ -403,92 +403,92 @@ growth_import <- rbind(ppc_growth_import,spore_growth_import)
 ```{r}
 ##Get the ST or AT and day from the data frame, get growth parameters depending on the ST or AT
 # Simulation   ----
-for (i in 1:(n_sim * n_units * n_day)) {
-  #Find row in growth parameter data that corresponds to allele sample
-  allele_index <- which(growth_import$STorAT == data$STorAT[i])
-  row <- data[i,]
-  prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
-  update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
-  
-  #calculate the new growth parameters using the square root model and our sampled temperature
-  newT <- row$temp
-  newLag <- ifelse(update,
-                   lagAtNewTemp(row$day, newT, growth_import$lag[allele_index]),
-                   prev_row$newLag)
-  old_lag <- ifelse(row$day == 1, newLag, prev_row$newLag)
-  # newLag <- ifelse(update & row$day <= old_lag & row$day > 1,
-  #                  adjustLag(row$day, old_lag, newLag),
-  #                  old_lag)
-  newLag <- ifelse(update & row$day > 1,
-                   adjustLag(row$day, old_lag, newLag, restartExp = F),
-                   old_lag)
-  newMu <-  ifelse(update,
-                   muAtNewTemp(newT, growth_import$mumax[allele_index]),
-                   prev_row$newMu)
-  data$newTemp[i] <- newT
-  data$newLag[i] <- newLag
-  data$newMu[i] <- newMu
-  
-  #Calculate the log10N count using our new growth parameters
-  new_spore_count <-
-    log10N_func(row$day,
-                newLag,
-                newMu,
-                (data$logCount_init[i]),  #-0.90 for Moraru; -1.30 for TetraPak
-                growth_import$LOG10Nmax[allele_index])
-  old_spore_count <-
-    log10N_func(row$day - 1,
-                newLag,
-                newMu,
-                (data$logCount_init[i]),  #-0.90 for Moraru; -1.30 for TetraPak
-                growth_import$LOG10Nmax[allele_index])
-  data$spore_count[i] <- ifelse(row$day == 1, new_spore_count,
-                          prev_row$spore_count + (new_spore_count - old_spore_count))
-  #Calculate the log10N ppc_count using our new growth parameters
-  new_ppc_count <-
-    log10N_func(row$day*24,
-                newLag,
-                newMu,
-                data$logCount_init[i],
-                growth_import$LOG10Nmax[allele_index])
-  old_ppc_count <-
-    log10N_func((row$day - 1)*24,
-                newLag,
-                newMu,
-                data$logCount_init[i],
-                growth_import$LOG10Nmax[allele_index])
-  data$ppc_count[i] <- ifelse(row$day == 1, new_ppc_count,
-                          prev_row$ppc_count + (new_ppc_count - old_ppc_count))
-}
+# for (i in 1:(n_sim * n_units * n_day)) {
+#   #Find row in growth parameter data that corresponds to allele sample
+#   allele_index <- which(growth_import$STorAT == data$STorAT[i])
+#   row <- data[i,]
+#   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
+#   update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
+#   
+#   #calculate the new growth parameters using the square root model and our sampled temperature
+#   newT <- row$temp
+#   newLag <- ifelse(update,
+#                    lagAtNewTemp(row$day, newT, growth_import$lag[allele_index]),
+#                    prev_row$newLag)
+#   old_lag <- ifelse(row$day == 1, newLag, prev_row$newLag)
+#   # newLag <- ifelse(update & row$day <= old_lag & row$day > 1,
+#   #                  adjustLag(row$day, old_lag, newLag),
+#   #                  old_lag)
+#   newLag <- ifelse(update & row$day > 1,
+#                    adjustLag(row$day, old_lag, newLag, restartExp = F),
+#                    old_lag)
+#   newMu <-  ifelse(update,
+#                    muAtNewTemp(newT, growth_import$mumax[allele_index]),
+#                    prev_row$newMu)
+#   data$newTemp[i] <- newT
+#   data$newLag[i] <- newLag
+#   data$newMu[i] <- newMu
+#   
+#   #Calculate the log10N count using our new growth parameters
+#   new_spore_count <-
+#     log10N_func(row$day,
+#                 newLag,
+#                 newMu,
+#                 (data$logCount_init[i]),  #-0.90 for Moraru; -1.30 for TetraPak
+#                 growth_import$LOG10Nmax[allele_index])
+#   old_spore_count <-
+#     log10N_func(row$day - 1,
+#                 newLag,
+#                 newMu,
+#                 (data$logCount_init[i]),  #-0.90 for Moraru; -1.30 for TetraPak
+#                 growth_import$LOG10Nmax[allele_index])
+#   data$spore_count[i] <- ifelse(row$day == 1, new_spore_count,
+#                           prev_row$spore_count + (new_spore_count - old_spore_count))
+#   #Calculate the log10N ppc_count using our new growth parameters
+#   new_ppc_count <-
+#     log10N_func(row$day*24,
+#                 newLag,
+#                 newMu,
+#                 data$logCount_init[i],
+#                 growth_import$LOG10Nmax[allele_index])
+#   old_ppc_count <-
+#     log10N_func((row$day - 1)*24,
+#                 newLag,
+#                 newMu,
+#                 data$logCount_init[i],
+#                 growth_import$LOG10Nmax[allele_index])
+#   data$ppc_count[i] <- ifelse(row$day == 1, new_ppc_count,
+#                           prev_row$ppc_count + (new_ppc_count - old_ppc_count))
+# }
 
 ```
 
 * Run simple version (not including stages)
     *put count for spore and ppc in different columns for now since data had been hour previously for ppc
 ```{r}
-# for (i in 1:(n_sim * n_units * n_day)) {
-#   allele_index <- which(growth_import$STorAT == data$STorAT[i])
-#   row <- data[i,]
-#   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
-#   update <-
-#     ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
-#   data$spore_count[i] <-
-#     log10N_func(
-#       data$day[i],
-#       growth_import$lag[allele_index],
-#       growth_import$mumax[allele_index],
-#       (data$logCount_init[i]), #-0.90 for Moraru; -1.30 for TetraPak
-#       growth_import$LOG10Nmax[allele_index]
-#     )
-#   data$ppc_count[i] <-
-#     log10N_func(
-#       data$day[i] * 24,
-#       growth_import$lag[allele_index],
-#       growth_import$mumax[allele_index],
-#       data$logCount_init[i],
-#       growth_import$LOG10Nmax[allele_index]
-#     )
-# }
+for (i in 1:(n_sim * n_units * n_day)) {
+  allele_index <- which(growth_import$STorAT == data$STorAT[i])
+  row <- data[i,]
+  prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
+  update <-
+    ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
+  data$spore_count[i] <-
+    log10N_func(
+      data$day[i],
+      growth_import$lag[allele_index],
+      growth_import$mumax[allele_index],
+      (data$logCount_init[i]), #-0.90 for Moraru; -1.30 for TetraPak
+      growth_import$LOG10Nmax[allele_index]
+    )
+  # data$ppc_count[i] <-
+  #   log10N_func(
+  #     data$day[i] * 24,
+  #     growth_import$lag[allele_index],
+  #     growth_import$mumax[allele_index],
+  #     data$logCount_init[i],
+  #     growth_import$LOG10Nmax[allele_index]
+  #   )
+}
 ```
 * Get count data
 ```{r}
@@ -538,7 +538,7 @@ data$count <- with(data, ifelse( spoilage_type == "NotSpoiled", 0, count_temp ) 
 
 # data_NB_WorstPPCVSL434_CT <- data
 # save(data_NB_WorstPPCVSL434_CT,file="Buffalo_NoBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
-
+# 
 # data_MB_WorstPPCVSL434_CT <- data
 # save(data_MB_WorstPPCVSL434_CT,file="Buffalo_MoraruBactofuge_WorstPPCVSL434_ConstantTemp_MCsim_result_df.RData")
 

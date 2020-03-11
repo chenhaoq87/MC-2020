@@ -220,9 +220,9 @@ df_mean_byScenario_byDay_bySpoilageType <- df %>%
 # find the day in shelf life where the mean of 
 
 # Save df as .csv
-write.csv(df_mean_byScenario_byDay, "df_mean_byScenario_byDay_Buffalo.csv")
-write.csv(df_mean_byScenario_byDay_bySpoilageType, "df_mean_byScenario_byDay_bySpoilageType_Buffalo.csv")
-write.csv(df_percent_byScenario_byDay, "df_percent_byScenario_byDay_Buffalo.csv")
+# write.csv(df_mean_byScenario_byDay, "df_mean_byScenario_byDay_Buffalo.csv")
+# write.csv(df_mean_byScenario_byDay_bySpoilageType, "df_mean_byScenario_byDay_bySpoilageType_Buffalo.csv")
+# write.csv(df_percent_byScenario_byDay, "df_percent_byScenario_byDay_Buffalo.csv")
 ```
 
 ```{r}
@@ -291,33 +291,46 @@ ppc_fig1
 ```{r}
 ##
 #Make df of data by day
-d0<-data[c(1:4,9)]
+d0<-df[c(1:4,9)]
 d0<-unique(d0)
-d1<- data[data$day=="1",] 
-d2<- data[data$day=="2",] 
-d3<- data[data$day=="3",] 
-d4<- data[data$day=="4",] 
-d5<- data[data$day=="5",] 
-d6<- data[data$day=="6",] 
-d7<- data[data$day=="7",] 
-d8<- data[data$day=="8",] 
-d9<- data[data$day=="9",] 
-d10<- data[data$day=="10",]
-d11<- data[data$day=="11",] 
-d12<- data[data$day=="12",] 
-d13<- data[data$day=="13",] 
-d14<- data[data$day=="14",] 
-d15<- data[data$day=="15",]
-d16<- data[data$day=="16",]
-d17<- data[data$day=="17",]
-d18<- data[data$day=="18",]
-d19<- data[data$day=="19",]
-d20<- data[data$day=="20",]
-d21<- data[data$day=="21",]
-d22<- data[data$day=="22",]
-d23<- data[data$day=="23",]
-d24<- data[data$day=="24",]
+d1<- df[df$day=="1",] 
+d2<- df[df$day=="2",] 
+d3<- df[df$day=="3",] 
+d4<- df[df$day=="4",] 
+d5<- df[df$day=="5",] 
+d6<- df[df$day=="6",] 
+d7<- df[df$day=="7",] 
+d8<- df[df$day=="8",] 
+d9<- df[df$day=="9",] 
+d10<- df[df$day=="10",]
+d11<- df[df$day=="11",] 
+d12<- df[df$day=="12",] 
+d13<- df[df$day=="13",] 
+d14<- df[df$day=="14",] 
+d15<- df[df$day=="15",]
+d16<- df[df$day=="16",]
+d17<- df[df$day=="17",]
+d18<- df[df$day=="18",]
+d19<- df[df$day=="19",]
+d20<- df[df$day=="20",]
+d21<- df[df$day=="21",]
+d22<- df[df$day=="22",]
+d23<- df[df$day=="23",]
+d24<- df[df$day=="24",]
 
+```
+
+```{r}
+df8_14 <- d14 %>%
+  filter(scenario=="NB_BestPPCVSL436_CT") %>%
+  group_by(lot_id,day)%>%
+  summarize(count=mean(count))
+hist(df8_14$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 14",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,10),breaks=20, col="gray")
+
+# df7$count<- as.numeric(df7$count)
+# df7_14 <- df7 %>%
+#   filter(day=="14")
+# hist(df7_14$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 14",  xlab=expression('Log'['10']*'MPN/mL'), xlim=c(-4,8), ylim=c(0,500),breaks=20, col="gray")
 ```
 
 ```{r}
