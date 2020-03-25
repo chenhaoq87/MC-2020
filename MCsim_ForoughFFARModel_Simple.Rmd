@@ -158,7 +158,7 @@ for (i in 1:(n_sim *n_units * n_day)){
     4. MCsim_result_df_F4 is for logCount_init = -0.201
     5. MCsim_result_df_F5 is for logCount_init = 0.549
 ```{r}
-save(data,file="MCsim_result_df_F1.RData")
+# save(data,file="MCsim_result_df_F1.RData")
 # save(data,file="MCsim_result_df_F2.RData")
 # save(data,file="MCsim_result_df_F3.RData")
 # save(data,file="MCsim_result_df_F4.RData")
