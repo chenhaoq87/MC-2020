@@ -148,9 +148,8 @@ iv. Use given value for spore_MPN_init
 ```{r}
 for (i in 1:(n_sim *n_units * n_day)){
   allele_index <- which(spore_growth_import$STorAT == data$STorAT[i]) 
-  data$count[i] <- log10N_func(data$day[i],spore_growth_import$lag[allele_index],spore_growth_import$mumax[allele_index],-1.989,spore_growth_import$LOG10Nmax[allele_index])}
+  data$count[i] <- log10N_func(data$day[i],spore_growth_import$lag[allele_index],spore_growth_import$mumax[allele_index], 0.549,spore_growth_import$LOG10Nmax[allele_index])}
 ```
-
 ## 7. Save results
     1. MCsim_result_df_F1 is for logCount_init = -1.989
     2. MCsim_result_df_F2 is for logCount_init = -1.239
