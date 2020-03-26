@@ -33,6 +33,12 @@ df_F5 <- data
 data<-rbind(df_F1,df_F2,df_F3,df_F4,df_F5)
 ```
 
+```{r}
+#write example .csv file
+# write.csv(data, "data_032620.csv")
+```
+
+
 ## Data Analysis   ----
 ```{r}
 data$lot_id<- as.factor(data$lot_id)
