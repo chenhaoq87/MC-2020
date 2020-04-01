@@ -30,24 +30,24 @@ library(ggplot2)
 #df_F5 <- data
 
 
-load("MCsim_result_df_new6.RData")
-data$logCount_init  <- -2.802 #change for each of 5 rounds here & in next chunk
+load("MCsim_result_df_new10.RData")
+#data$logCount_init  <- -2.802 #change for each of 5 rounds here & in next chunk
 df_F1 <- data
 
-load("MCsim_result_df_new7.RData")
-data$logCount_init  <- -2.677 #change for each of 5 rounds here & in next chunk
+load("MCsim_result_df_new11.RData")
+#data$logCount_init  <- -2.677 #change for each of 5 rounds here & in next chunk
 df_F2 <- data
 
-load("MCsim_result_df_new8.RData")
-data$logCount_init  <- -2.376 #change for each of 5 rounds here & in next chunk
+load("MCsim_result_df_new12.RData")
+#data$logCount_init  <- -2.376 #change for each of 5 rounds here & in next chunk
 df_F3 <- data
 
-load("MCsim_result_df_new9.RData")
-data$logCount_init  <- -1.802 #change for each of 5 rounds here & in next chunk
+load("MCsim_result_df_new13.RData")
+#data$logCount_init  <- 0.309 #change for each of 5 rounds here & in next chunk
 df_F4 <- data
 
-load("MCsim_result_df_new10.RData")
-data$logCount_init  <- 0.908  #change for each of 5 rounds here & in next chunk
+load("MCsim_result_df_new14.RData")
+#data$logCount_init  <- -6.8  #change for each of 5 rounds here & in next chunk
 df_F5 <- data
 
 #join files
@@ -120,19 +120,19 @@ fig1
 #what percent of samples spoiled for each day in shelf life
 #get data
 data1 <- data %>%
-  filter(logCount_init == "-2.802")
+  filter(logCount_init == "0.908")
 
 data2 <- data %>%
-  filter(logCount_init == "-2.677")
+  filter(logCount_init == "-6.8")
 
 data3 <- data %>%
-  filter(logCount_init == "-2.376")
+  filter(logCount_init == "-2.978")
 
 data4 <- data %>%
-  filter(logCount_init == "0.309")
+  filter(logCount_init == "-7.3")
 
 data5 <- data %>%
-  filter(logCount_init == "0.908")
+  filter(logCount_init == "-10")
 
 #days
 days1 <- seq(1, 35, 1)
