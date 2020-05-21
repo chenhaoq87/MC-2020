@@ -52,15 +52,11 @@ spore_init_file <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_R
 # ppc
 ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput_SL_021420.csv")
 
-# (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
-# temp_stages_file <- "temp_stages.csv"
-# temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
-
-# (e) PPC frequency data
+# (d) PPC frequency data
 source("FreqPPC.R")
-# get PPC frequency data for 1 plant only
-plant_freq_ppc <- df_freqPPC %>%
-  filter(plantID=="I") #randomly chose plantID, as 40 samples
+# # to get PPC frequency data for 1 plant only:
+# plant_freq_ppc <- df_freqPPC %>%
+#   filter(plantID=="I") 
 ```
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
@@ -156,7 +152,7 @@ data <- data.frame(lot_id, milk_unit, STorAT, spoilage_type, day, count)
 ## 4. Prepare distributions using input data
 a. Initial contamination: logMPN normal distribution
 b. Frequency of allelic types
-c. Temperature distribution for each stage 
+c. Temperature distribution  
 d. Frequency of PPC (i.e., spoilage_type)
 ```{r}
 ## (a) Initial contamination: logMPN normal distribution (note: How is the initialcount_import data used? Where did logMPN_mean and logMPN_sd come from?)
