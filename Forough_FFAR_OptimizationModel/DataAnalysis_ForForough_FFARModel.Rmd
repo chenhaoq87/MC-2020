@@ -18,24 +18,52 @@ library(splitstackshape)
 library(ggplot2)
 
 #load data
-load("MCsim_result_df_F1.RData")
+#load("MCsim_result_df_F1.RData")
+#df_F1 <- data
+#load("MCsim_result_df_F2.RData")
+#df_F2 <- data
+#load("MCsim_result_df_F3.RData")
+#df_F3 <- data
+#load("MCsim_result_df_F4.RData")
+#df_F4 <- data
+#load("MCsim_result_df_F5.RData")
+#df_F5 <- data
+
+
+load("MCsim_result_df_new10.RData")
+#data$logCount_init  <- -2.802 #change for each of 5 rounds here & in next chunk
 df_F1 <- data
-load("MCsim_result_df_F2.RData")
+
+load("MCsim_result_df_new11.RData")
+#data$logCount_init  <- -2.677 #change for each of 5 rounds here & in next chunk
 df_F2 <- data
-load("MCsim_result_df_F3.RData")
+
+load("MCsim_result_df_new12.RData")
+#data$logCount_init  <- -2.376 #change for each of 5 rounds here & in next chunk
 df_F3 <- data
-load("MCsim_result_df_F4.RData")
+
+load("MCsim_result_df_new13.RData")
+#data$logCount_init  <- 0.309 #change for each of 5 rounds here & in next chunk
 df_F4 <- data
-load("MCsim_result_df_F5.RData")
+
+load("MCsim_result_df_new14.RData")
+#data$logCount_init  <- -6.8  #change for each of 5 rounds here & in next chunk
 df_F5 <- data
 
 #join files
 data<-rbind(df_F1,df_F2,df_F3,df_F4,df_F5)
+#data<-rbind(df_F1,df_F2,df_F3,df_F4,df_F5)
 ```
 
-## Data Analysis   ----
 ```{r}
-data$lot_id<- as.factor(data$lot_id)
+#write example .csv file
+#write.csv(data, "data_033020.csv")
+```
+
+
+## Data Analysis   ---- 
+```{r}
+data$lot_id<- as.factor(data$lot_id) 
 data$day<- as.factor(data$day)
 data$logCount_init<- as.factor(data$logCount_init)
 
@@ -92,19 +120,19 @@ fig1
 #what percent of samples spoiled for each day in shelf life
 #get data
 data1 <- data %>%
-  filter(logCount_init == "-1.989")
+  filter(logCount_init == "0.908")
 
 data2 <- data %>%
-  filter(logCount_init == "-1.239")
+  filter(logCount_init == "-6.8")
 
 data3 <- data %>%
-  filter(logCount_init == "-0.72")
+  filter(logCount_init == "-2.978")
 
 data4 <- data %>%
-  filter(logCount_init == "-0.201")
+  filter(logCount_init == "-7.3")
 
 data5 <- data %>%
-  filter(logCount_init == "0.549")
+  filter(logCount_init == "-10")
 
 #days
 days1 <- seq(1, 35, 1)

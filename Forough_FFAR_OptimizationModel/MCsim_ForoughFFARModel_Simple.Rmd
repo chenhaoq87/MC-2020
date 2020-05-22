@@ -140,7 +140,7 @@ iv. Use given value for spore_MPN_init
 
 ```{r}
 #Add spore_log10CFU_init to dataframe
-data$logCount_init  <- 0.549 #change for each of 5 rounds here & in next chunk
+data$logCount_init  <- -2.5 #change for each of 5 rounds here & in next chunk
 ```
 
 ## 6. Calculate log10N for each row in dataframe
@@ -148,21 +148,29 @@ data$logCount_init  <- 0.549 #change for each of 5 rounds here & in next chunk
 ```{r}
 for (i in 1:(n_sim *n_units * n_day)){
   allele_index <- which(spore_growth_import$STorAT == data$STorAT[i]) 
-  data$count[i] <- log10N_func(data$day[i],spore_growth_import$lag[allele_index],spore_growth_import$mumax[allele_index],0.549,spore_growth_import$LOG10Nmax[allele_index])}
+  data$count[i] <- log10N_func(data$day[i],spore_growth_import$lag[allele_index], spore_growth_import$mumax[allele_index], -2.5, spore_growth_import$LOG10Nmax[allele_index])}
 ```
-
 ## 7. Save results
     1. MCsim_result_df_F1 is for logCount_init = -1.989
     2. MCsim_result_df_F2 is for logCount_init = -1.239
     3. MCsim_result_df_F3 is for logCount_init = -0.720
     4. MCsim_result_df_F4 is for logCount_init = -0.201
-    5. MCsim_result_df_F5 is for logCount_init = 0.549
+    5. MCsim_result_df_F5 is for logCount_init = 0.549 
 ```{r}
 # save(data,file="MCsim_result_df_F1.RData")
 # save(data,file="MCsim_result_df_F2.RData")
 # save(data,file="MCsim_result_df_F3.RData")
 # save(data,file="MCsim_result_df_F4.RData")
-# save(data,file="MCsim_result_df_F5.RData")
+# save(data,file="MCsim_result_df_F5.RData") 
+#save(data,file="MCsim_result_df_new6.RData")
+#save(data,file="MCsim_result_df_new7.RData")
+#save(data,file="MCsim_result_df_new8.RData")
+#save(data,file="MCsim_result_df_new9.RData")
+#save(data,file="MCsim_result_df_new10.RData")
+#save(data,file="MCsim_result_df_new11.RData")
+#save(data,file="MCsim_result_df_new12.RData")
+save(data,file="MCsim_result_df_new13.RData")
+#save(data,file="MCsim_result_df_new14.RData")
 
 ```
 

@@ -1,27 +1,24 @@
 ---
 title: "MCsim"
 author: "Sarah I. Murphy, Samantha Lau, Timothy Lott, Aljosa Trmcic"
-date: "2/14/2020"
+date: "5/21/2020"
 output: pdf_document
 ---
 
 The authors listed above are current contributors to this file. Earlier versions were the work of Ariel Buehler and Michael Phillips. Review README.md [https://github.com/FSL-MQIP/MC-2020/blob/master/README.md] for more information.
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ## 1. Set-up environment
 * load packages
 * load functions
 * set seed for reproducibilty
-```{r}
+```{r knitr_options , include=FALSE}
 ## load packages
 library(readr)
 library(tidyverse)
 library(censReg)
 library(fitdistrplus)
 library(splitstackshape)
+library(rmutil)
 
 ## load functions
 source("UtilityFunctions.R")
@@ -55,16 +52,11 @@ spore_init_file <- read.csv("Ariel_2017MC_SporeModel/InputFiles/CrossSectional_R
 # ppc
 ppc_init_file <- read_csv("Sam_FFAR_PPCmodel/InputFiles/Initialmicrodata_MCinput_SL_021420.csv")
 
-# (d) temperature data for each stage (Note for Sarah to fix temp_stages format)
-# temp_stages_file <- "temp_stages.csv"
-# temp_by_stage <- read.csv(temp_stages_file, stringsAsFactors = F, comment.char = "#")
-
-# (e) PPC frequency data
+# (d) PPC frequency data
 source("FreqPPC.R")
-# get PPC frequency data for 1 plant only
-plant_freq_ppc <- df_freqPPC %>%
-  filter(plantID=="I") #randomly chose plantID, as 40 samples
-
+# # to get PPC frequency data for 1 plant only:
+# plant_freq_ppc <- df_freqPPC %>%
+#   filter(plantID=="I") 
 ```
 
 * Check input files for spore & ppc have the same structure and then modify here as necessary to match
@@ -160,7 +152,7 @@ data <- data.frame(lot_id, milk_unit, STorAT, spoilage_type, day, count)
 ## 4. Prepare distributions using input data
 a. Initial contamination: logMPN normal distribution
 b. Frequency of allelic types
-c. Temperature distribution for each stage 
+c. Temperature distribution  
 d. Frequency of PPC (i.e., spoilage_type)
 ```{r}
 ## (a) Initial contamination: logMPN normal distribution (note: How is the initialcount_import data used? Where did logMPN_mean and logMPN_sd come from?)
@@ -195,9 +187,7 @@ AT_freq <- spore_ATfreq_import$ClosestAT
 # (ii) ppc data
 ST_freq <- ppc_STfreq_import$ClosestST 
 
-## (c) Temperature distribution for each stage (Note for Sarah to fix)
-#Here, the distribution and parameters are currently already written into the input file
-# temp_by_stage
+# (c) See below for temps
 
 ## (d) Frequency of PPC
 PPC_freq <- as.character(df_freqPPC$exceed20000_d10) #can change this to change by samplings or plants (or can rewrite code below)
@@ -209,7 +199,7 @@ i. Sample distributions
     a. Sample MPN_init from the initial MPN
     b. Sample whether PPC from PPC_freq
     c. Sample AT from AT_freq
-    d. Sample temp from temp_by_stage
+    d. Sample temp from Laplace distribution (or skip, if want to set constant temp)
 ```{r}
 ## (a) Sample init_count from both the spore & ppc data
 # (i) spore
@@ -263,17 +253,14 @@ for (i in 1:n_sim){
  ST_samp <- rep(sample(ST_freq, n_units, replace = T), times = n_day)
   ST <- c(ST, ST_samp)}
 
-## (d) Sample the temperature distribution
-# temps <- vector()
-# for (i in 1:n_sim){
-#   for (j in 1:nrow(temp_by_stage)){
-#     stage_row <- temp_by_stage[j, ]
-#     n_times <- stage_row$endTime - stage_row$beginTime + 1
-#     params <- as.numeric(unlist(strsplit(stage_row$parameters, " ")))
-#     temp_mean <- params[[1]]
-#     temp_sd <- params[[2]]
-#     temp_sample <- rep(rnorm(n_units, temp_mean, temp_sd), times = n_times)
-#     temps <- c(temps, temp_sample)}}
+## (d) Temperature
+# (i) Sample the temperature distribution 
+temps <- vector()
+for (i in 1:n_sim){
+  temp_samp <- rep(rlaplace(m=4.06, s=2.31), times = n_day*n_units)
+                   temps <- c(temps,temp_samp)} #https://doi.org/10.4315/0362-028X-73.2.312 (source)
+
+# (ii) If want to set a constant temperature skip (block out (i))
 ```
 
 ii. Add results from sampling distribution in (i) to dataframe
@@ -314,12 +301,12 @@ data$ST <- ST
 data$STorAT <- data$spoilage_type
 data$STorAT <- with(data, ifelse( STorAT == "spore", AT, ST) )
 
-## (c) #Add temp to dataframe
-# data$temp <- temps 
+## (c) #Add temp to dataframe 
+# (i) If from Laplace distribution above, do this:
+data$temp <- temps 
 
-# OR just set what the temperature should be for all:
-data$temp <- 6
-
+# (ii) If want to set a constant temp, block out (i) and do this instead:
+# data$temp <- 6
 ```
 
 iii. Prepare empty vectors for newTemp, newMu, newLag with length n_sim * n_units * n_day
@@ -377,13 +364,30 @@ growth_import<-rbind(ppc_growth_import,spore_growth_import)
 * Run simple version (not including stages)
     *put count for spore and ppc in different columns for now since data had been hour previously for ppc
 ```{r}
-for (i in 1:(n_sim *n_units * n_day)){
-  allele_index <- which(growth_import$STorAT == data$STorAT[i]) #Find row in growth parameter data that corresponds to allele sample
-  row <- data[i, ]
+for (i in 1:(n_sim * n_units * n_day)) {
+  allele_index <-
+    which(growth_import$STorAT == data$STorAT[i]) #Find row in growth parameter data that corresponds to allele sample
+  row <- data[i,]
   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
-  update <- ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
-  data$spore_count[i] <- log10N_func(data$day[i],growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index]) 
-  data$ppc_count[i] <- log10N_func(data$day[i]*24,growth_import$lag[allele_index],growth_import$mumax[allele_index],data$logCount_init[i],growth_import$LOG10Nmax[allele_index])}
+  update <-
+    ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
+  data$spore_count[i] <-
+    log10N_func(
+      data$day[i],
+      growth_import$lag[allele_index],
+      growth_import$mumax[allele_index],
+      data$logCount_init[i],
+      growth_import$LOG10Nmax[allele_index]
+    )
+  data$ppc_count[i] <-
+    log10N_func(
+      data$day[i] * 24,
+      growth_import$lag[allele_index],
+      growth_import$mumax[allele_index],
+      data$logCount_init[i],
+      growth_import$LOG10Nmax[allele_index]
+    )
+}
 ```
 * Get count data
 ```{r}
