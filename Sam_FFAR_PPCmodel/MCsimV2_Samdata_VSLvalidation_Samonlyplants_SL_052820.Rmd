@@ -1,0 +1,806 @@
+---
+title: "PPC Model"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+##################################################
+#  Monte Carlo Simulation v2.0p
+##################################################
+## Project: Dairy Spoilage Model
+## Script purpose: Simulate PPC for half gallon samples of milk 
+##                 over a given number of days.
+##################################################
+## Notes: This version forks from V2.0 of the Psychrotolerant 
+##        Sporeformer Predictive Model and will be used by Samantha Lau
+##        to create a PPC model
+#Edited by SL on 05-29-20
+##################################################
+```
+
+There are 12 parts in this model
+## 1. Set-up environment
+## 2. Utility Functions
+## 3. Load import files
+## 4. Set-up data frame 
+## 5. Prepare distributions using input data
+## 6. Sensitivity analysis and what-if analysis for initial microbial concentration
+## 7. Simulation
+## 8. Sensitivity analysis for lag and mu
+## 9. Data Analysis  
+## 10. Validation WITH VSL DATA FOR DAY 7 AND 10
+## 11. What if analysis of ST and frequency
+
+## 1. Set-up environment
+* load packages
+* set seed for reproducibilty
+
++ Include all library packages that need to be downloaded and used
+```{r}
+library(splitstackshape)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(MASS)
+library(EnvStats)
+library(lhs)
+library(rmutil)
+library(tidyverse)
+library(censReg)
+library(fitdistrplus)
+library(splitstackshape)
+library(rmutil)
+
+```
+
+```{r knitr_options , include=FALSE}
+set.seed(42)
+```
+
+
+## 2. Utility Functions
+i. muAtNewTemp
+ii. lagAtNewTemp
+iii.  Growth Models Equations
+iv. Importing the best fitting model
+
+i. muAtNewTemp
+    + Purpose: Calculate the new mu parameter at new temperature.
+    + Params: 
+        + newTemp: the new temperature for which we calculate mu
+        + oldMu: the previous mu value to adjust
+        + oldTemp: the temperature corresponding to previous mu
+        + T0: parameter used to calculate new mu
+        + This uses the Ratkowsky square model which describes the effect of temperature on the growth of
+          microorganisms
+        + The paper it comes from: https://www.ncbi.nlm.nih.gov/pubmed/22417595
+        + Sam checked equation and it is correct
+        + The T0 is estimate dto be -3.62C based on growth curves of Paenibacillus ordorifer obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
+```{r}
+muAtNewTemp <- function(newTemp, oldMu, oldTemp = 6, T0 = -3.62) {
+  numerator <- newTemp - T0
+  denom <- oldTemp - T0
+  newMu <- ((numerator / denom)^2) * oldMu
+  
+  return(newMu)
+}
+```
+
+ii. lagAtNewTemp
+    + Purpose: Calculate the new lag parameter at new temperature.
+    + Params:
+        + newTemp: the new temperature for which we calculate lag
+        + oldLag: the previous lag value to adjust
+        + oldTemp: the temperature corresponding to previous lag
+        + T0: parameter used to calculate new lag
+```{r}
+lagAtNewTemp <- function (newTemp, oldLag, oldTemp = 6, T0 = -3.62) {
+  numerator <- oldTemp -T0
+  denom <- newTemp - T0
+  newLag <- ( (numerator / denom)^2) * oldLag
+  return(newLag)
+}
+
+```
+
+
+iii. Growth Models Equations
+  + All equations are copied from the nlsMicrobio package in R
+  + URL: https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R
+```{r}
+buchanan_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax){
+  ans <- LOG10N0 + (t >= lag) * (t <= (lag + (LOG10Nmax - LOG10N0) *     log(10)/mumax)) * mumax * (t - lag)/log(10) + (t >= lag) * (t > (lag + (LOG10Nmax - LOG10N0) * log(10)/mumax)) * (LOG10Nmax - LOG10N0)
+  return(ans)
+}
+
+gompertz_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
+  ans <- LOG10N0 + (LOG10Nmax - LOG10N0) * exp(-exp(mumax * exp(1) * 
+                                                      (lag - t)/((LOG10Nmax - LOG10N0) * log(10)) + 1))
+  return(ans)
+}
+
+
+baranyi_log10N = function(t,lag,mumax,LOG10N0,LOG10Nmax) {
+  ans <- LOG10Nmax + log10((-1 + exp(mumax * lag) + exp(mumax * t))/(exp(mumax * t) - 1 + exp(mumax * lag) * 10^(LOG10Nmax -LOG10N0)))
+  return(ans)
+}
+
+```
+
+
+iv. Importing the best fitting model 
+  + Purpose: Use the correct equation based on which of the three models (Baranyi, Buchanan or Gompertz) is best fitting for the isolate
+  + The best fitting model was selected based on BIC values done in a growth model R code file
+
+```{r}
+growth_file <- "ST_percentidentity_MCinput_SL_032420.csv"
+model_name<- read.csv(growth_file, stringsAsFactors = FALSE)
+colnames(model_name)[1]<-c("ST")
+model_name$modelname<-as.factor(model_name$modelname)
+#wrapper function because it calls the proper version
+log10N <- function(t, lag, mumax, LOG10N0, LOG10Nmax, model_name) {
+  if (model_name == "buchanan") {
+    return(buchanan_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
+  }
+  else if(model_name == 'baranyi') {
+    return(baranyi_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
+  }
+  else if(model_name == 'gompertz') {
+    return(gompertz_log10N(t, lag, mumax, LOG10N0, LOG10Nmax) )
+  }
+  else {
+    stop(paste0(model_name, " is not a valid model name. Must be one of buchanan, baranyi, gompertz"))
+  }
+}
+```
+
+
+## 3. Load import files
+i, Import the data from our input files and begin filling in our data frames
+ii. Import frequency data and get the 16S sequence type
+
+i. Import the data from our input files and begin filling in our data frames
+```{r}
+#input files
+frequency_file <- "Frequency_ALLISOLATES_021120.csv"
+growth_file <- "ST_percentidentity_MCinput_SL_032420.csv"
+init_file <- "Initialmicrodata_SamplantsONLY_MCinput_SL_022720.csv"
+```
+
+ii. Import frequency data and get the 16S sequence type
+```{r}
+
+freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
+freq_data = freq_import$X16S_ST
+freq_vec<-as.vector(freq_data) #before running sensitivity analysis (below) put a hashtag in front of this
+
+```
+
+
+## 4. Set-up data frame 
+i. Set up data frame to store count at each day
+ii. Import growth and initial count parameter
+
+i. Set up data frame to store count at each day
+```{r}
+#Size is for n_sim bulk tanks, n_half_gal half gallon lots, n_day days (14-24)
+n_sim <-100    #1000 is for testing and exploring, experiments require at least 10k
+n_halfgal <-10
+n_day <- 14
+start_day <- 1
+
+#Repeat each element of the sequence 1..n_sim.Bulk tank data (MC runs)
+BT <- rep(seq(1, n_sim), each = n_halfgal * n_day)
+#Repeat the whole sequences times # of times
+half_gal <- rep(seq(1, n_halfgal), times = n_day * n_sim)
+#Vector of FALSE
+AT <- vector(mode="logical", n_sim * n_halfgal * n_day)
+#Repeat the days for each simulation run
+day <- rep(rep(seq(start_day, start_day+n_day-1), each = n_halfgal), times = n_sim)
+count <- vector(mode = "logical", n_sim * n_halfgal * n_day)
+
+#matrix with columns:
+#  BT   half_gal    AT    day   count
+data <- data.frame(BT, half_gal, AT, day, count)
+```
+
+ii. Import growth and initial count parameter
+```{r}
+#Import growth parameter data
+growth_import <-read.csv(growth_file, stringsAsFactors = FALSE)
+colnames(growth_import)[1]<-c("ST")
+
+#Import initial count logMPN data
+initialcount_import <- read.csv(init_file, stringsAsFactors = FALSE)
+#MPN Column
+initialcount_data = initialcount_import[,2]
+#LOG MPN Column
+initialcountlog_data = initialcount_import[,3]
+```
+
+## 5. Prepare distributions using input data
+i. Temperature distribution
+ii. Temperature distribution if you are doing VALIDATION
+ii. Initial contamination: logMPN normal distribution
+
+i. Temperature distribution
+```{r}
+#temp_mean and temp_sd will be 6.0 and 0.0, respectively, WHEN VALIDATING AGAINST VSL DATA
+#data from Consumer Phase Risk Assessment for Listeria monocytogenes in Deli Meats (2006)
+#temp_mean <- 4.096
+#temp_sd <-   2.381
+#temp_mean <- 6.0
+#temp_sd <-   0.0
+#temp_sample <- rnorm((n_sim), temp_mean, temp_sd)
+
+temps <- vector()
+for (i in 1:n_sim){
+  temp_sample <- rep(rlaplace(m=4.06, s=2.31), times = n_day*n_halfgal)
+                   temps <- c(temps,temp_sample)} #https://doi.org/10.4315/0362-028X-73.2.312 (source)
+
+```
+
+ii. Temperature distribution if you are doing VALIDATION
+```{r}
+temp_mean <- 6.0
+temp_sd <-   0.0
+temp_sample <- rnorm((n_sim), temp_mean, temp_sd)
+```
+
+
+iii. Initial contamination
+```{r}
+logMPN_mean <- c(0.3817872) #day initial
+logMPN_sd <- c(1.810983) #day initial
+logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd)
+MPN_samp = 10^logMPN_samp
+MPN_samp_halfgal = MPN_samp * 1900 #MPN per half gallon (1892.71 mL in half gallon)
+```
+
+## 6. Sample distributions
+```{r}
+
+#Also sample ST for each half gallon
+MPN_init<-vector()
+allele <- vector()
+for (i in 1:n_sim){
+  MPN_init_samp <-rep(rpois(n_halfgal, MPN_samp_halfgal[i]), times = n_day)
+  MPN_init<-c(MPN_init, MPN_init_samp)
+  allele_samp <- rep(sample(freq_vec, n_halfgal, replace = T), times = n_day) 
+  allele <- c(allele, allele_samp)
+}
+
+#Convert MPN_init from half-gallon to mLs
+MPN_init_mL <- MPN_init / 1900
+#remove 0's from the data and replace with detection limit
+MPN_init_mL[MPN_init_mL == 0] <- 0.01;
+
+#EDIT THIS SO I CAN TRY TO MATCH THE VSL DATA AS CLOSELY AS POSSIBLE
+#TAKE THIS OUT LATER, used so the initial microbial concentration would be at log -1
+#MPN_init_mL<-0.004
+
+data$logMPN_init <- log10(MPN_init_mL) #Add initial logMPN to data frame
+data$AT<-allele #Add in AT data
+```
+
+## 6. Sensitivity analysis and what-if analysis for initial microbial concentration
+   + For the sensitivity analysis, initial microbial concentration was adjusted by a decrease in 20%, 40%, and 60% and an increase in 20%, 40%, and 60%. 
+****** The initial concentration is on a log scale and the percent reduction is applied to the log value ***
+  + Ex: If you want to increase the initial microbial concentration by 20%, the code would
+        be data$logMPN_init <- log10(MPN_init_mL)*1.2
+  + Ex: If you want to decrease the initial microbial concentration by 20%, the code would
+        be data$logMPN_init <- log10(MPN_init_mL)*0.8
+ 
+  + For the what-if analysis, to change the initial microbial concentration you need to add or subtract the desired log
+  + Ex: If you want to + 1 log to your initial microbial concentration, the code would look like
+        data$logMPN_init <- log10(MPN_init_mL)+1
+  + Ex: If you want to start at 1 log lower than your stated initial microbial concentration, the code would
+        be data$logMPN_init <- log10(MPN_init_mL)-1
+
+```{r}
+data$logMPN_init <- log10(MPN_init_mL)-3
+data$AT<-allele #Add in AT data
+
+```
+
+## 7. Simulation   
++ BASE MODEL
+```{r}
+#growth_import$ST<-as.factor(growth_import$ST)
+#df<-as.data.frame(data)
+#data$AT<-as.factor(data$AT)
+for (i in 1:(n_sim *n_halfgal * n_day)){
+  
+  #Find row in growth parameter data that corresponds to allele sample
+  allele_index <- which(growth_import$ST == data$AT[i]) 
+  
+  #calculate the new growth parameters using the square root model and our
+  #sampled temperature
+ # newT <- temp_sample[data$BT[i]]
+  #newLag <- lagAtNewTemp(newT, growth_import$lag[allele_index])
+ # newMu <-  muAtNewTemp(newT, growth_import$mu[allele_index])
+  
+  #Prepare empty vectors for newT, newLag, newMu
+  newT <- temp_sample[data$BT[i]]
+  newLag <- growth_import$lag[allele_index]
+  newMu <-  growth_import$mu[allele_index]
+  
+  #Calculate the log10N count using our new growth parameters
+  #multiply log10N(data$day[i] by 24 since I did it in hours, not days, and ariel did it in days
+  data$count[i] <- log10N(data$day[i]*24, newLag, newMu*0.523,data$logMPN_init[i],growth_import$Nmax[allele_index],growth_import$modelname[allele_index])
+  
+}
+```
+
+## 8. Sensitivity analysis for lag and mu
+  + To change lag or mu, you need to multiply it by the desired percent change
+  + Ex: if you wanted to increase lag by 20%, you would multiply newLag by 1.2
+  + Ex: if you wanted to decrease lag by 20%, you would multiply newLag by 0.8
+  + Ex: if you wanted to increase mu by 20%, you would multiply newMu by 1.2
+  + Ex: if you wanted to decrease mu by 20%, you would multiply newMu by 0.8
+  + Ex: if you didn't want a lag phase, you would multiply newLag by 0
+```{r}
+#seed_value = 42
+for (i in 1:(n_sim *n_halfgal * n_day)){
+
+
+  #Find row in growth parameter data that corresponds to allele sample
+  allele_index <- which(growth_import$ST == data$AT[i]) 
+  
+  
+  #Prepare empty vectors for newT, newLag, newMu
+  newT <- temp_sample[data$BT[i]]
+  newLag <- growth_import$lag[allele_index]
+  newMu <-  growth_import$mu[allele_index]
+  
+  
+  data$count[i] <- log10N(data$day[i]*24, newLag, newMu*0.314,data$logMPN_init[i],growth_import$Nmax[allele_index],growth_import$modelname[allele_index])
+}
+
+```
+
+
+
+## 9. Data Analysis  
+i. Calculate the mean count by day
+ii. Calculate proportion of samples that have spoiled
+iii. Calculate the spoilage per day
+iv. Creating plots that show percent of samples spoiled by day 
+
+i. Calculate the mean count by day
+```{r}
+data %>%
+  group_by(day) %>%
+  summarise(Mean = mean(count, na.rm=TRUE), SD = sd(count,na.rm=TRUE))-> mean_by_day
+```
+
+
+ii. Calculate proportion of samples that have spoiled
+  + Set count to desired log value
+  + Ex: If I want to see proportions of samples that reach 1,000,000 CFU/mL, set count>6
+  + Ex: If I wanted to see proportions of samples that reach 20,000 CFU/mL, set count>4.3
+  + Proportion= samples that reach X log for Y day/ total samples for Y day
+```{r}
+length(which(subset(data, data$day == 7)$count>4.3))/length(subset(data, data$day == 7)$count)
+length(which(subset(data, data$day == 10)$count>4.3))/length(subset(data, data$day == 10)$count)
+length(which(subset(data, data$day == 14)$count>4.3))/length(subset(data, data$day == 14)$count)
+```
+
+iii. Calculate the spoilage per day
+  + You can change the starting and end day by changing days
+  + Ex: If you want to look at spoilage from days 1 to 14, set days <- seq(1, 14, 1)
+  + Ex: If you want to look at spoilage from days 3 to 17, days <- seq(3, 17, 1)
+  + The third one is because you want the days to increase by 1
+```{r}
+#create a dataframe of day and a vector that will eventually hold the percentage of spoiled samples
+#mode=logical means you set it to false
+days <- seq(1, 14, 1)
+spoiled <- vector(mode = "logical", length(days))
+spoiled_by_day <- data.frame(days, spoiled)
+
+#now fill in the empty vector with the proper percentage
+#gives you percentage of days greater than 4.3 log
+for (d in days) {
+  numerator <-   length(which(subset(data, data$day == d)$count>4.3))
+  denominator <- length(subset(data, data$day == d)$count)
+  
+  spoiled_by_day[spoiled_by_day$days==d,]$spoiled <- numerator / denominator * 100
+}
+
+spoiled_by_day$days <- factor(spoiled_by_day$days)
+
+```
+
+iv. Creating plots that show percent of samples spoiled by day 
+  + Purpose: This will print out the PDF version of the plot when you run the base model or when you do sensitivity analysis and change a parameter
+```{r}
+pdf(file='plot_mu_high_best_summary.pdf')
+fig_SBD <- ggplot() + geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge")+
+  geom_text(data = spoiled_by_day, 
+              aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+              position=position_dodge(width = 1), 
+              vjust=-0.25, size = 4)+
+  labs(y = "Percentage > 4.3log", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 14, 1), labels=seq(1, 14, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+  ggtitle("Percent of samples spoiled by day") 
+
+#print to see what the plot looks like
+fig_SBD
+
+dev.off()
+
+  
+```
+
+
+## 10. Validation WITH VSL DATA FOR DAY 7 AND 10
+***** MAKE SURE TO RUN ## 5 PART ii before simulating data*****
+
+i. Importing VSL data
+ii. Plotting VSL data on histogram
+iii. Simulating data for day 7
+iv. Simulating data for day 10
+v. Comparing simulated and VSL data for day 7
+vi. Comparing simulated and VSL data for day 10
+vii. Comparing day 7 and day 10 concentrations for VSL and simulated
+
+i. Importing data
++ This data is from 2018 onwards, after Sam R's project
+```{r}
+#VSL Data for day 7 and day 10
+day7andday10<-read.csv("Log microbial count__VSL2018onwardsONLY_validation_MCinput_032520.csv")
+```
+
+ii. Plotting data on histogram
+```{r}
+
+#create a histogram/distribution just for the VSL data 
+logday7<-day7andday10$LOG.D7
+newlogday7<-as.numeric(logday7) #use the log day 7 column from VSL data
+logday10<-day7andday10$LOG.D10
+newlogday10<-as.numeric(logday10) #use the log day 10 column from VSL data
+
+#histogram with proportions for day 7
+hist(newlogday7, 10, col="black", main="Day 7 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,8), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(newlogday7)))
+
+# plot density plot for day 7
+plot(density(na.omit(newlogday7)), main="Day 7 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,8), ylim=c(0,0.8))
+
+#histogram with proportions for day 10
+hist(newlogday10, 10, col="black", main="Day 10 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(newlogday10)))
+
+# plot density plot for day 10
+plot(density(na.omit(newlogday10)), main="Day 10 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim=c(0,0.8))
+
+shapiro.test(newlogday7)
+qqnorm(newlogday7)
+shapiro.test(newlogday10)
+qqnorm(newlogday10)
+
+```
+
+iii. Simulating data for day 7
+(a) Simulating data 
+(b) Plotting data on histogram
+```{r}
+#### (a) Simulating data 
+#created a new table data2 just because I don't want to mess with original data
+data2<-data
+
+#Make a df only including day and count 
+data2_counts <- data2[c(4,5)]
+
+#Make df of day 7 only 
+#Note: You want to change this to day==3 when the initial mean and SD is set using the day 7 data instead of initial
+#should this be 6 since day initial is day 1????? or 7
+day7counts<- data2_counts[data2_counts$day=="7",] 
+
+#only using the count data
+day7counts_sim<-day7counts$count
+
+#making a numeric factor
+day7counts_sim<-as.numeric(day7counts_sim)
+
+
+#### (b) Plotting data on histogram
+#histogram with simulated day 7
+hist(day7counts_sim, 10, col="black", main="Day 7 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(day7counts_sim)))
+
+#density plot with day 7 simulated 
+plot(density(na.omit(day7counts_sim)), main="Day 7 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(1,10), ylim=c(0,0.8))
+```
+
+iv. Simulating data for day 10
+(a) Simulating data 
+(b) Plotting data on histogram
+```{r}
+#### (a) Simulating data 
+#Make df of day 10 only 
+#Note: change this to day==4 when the initial mean and SD is set using the day 7 data instead of initial
+day10counts<- data2_counts[data2_counts$day=="10",] 
+
+#only using the count data
+day10counts_sim<-day10counts$count
+
+#making a numeric factor
+day10counts_sim<-as.numeric(day10counts_sim)
+
+#day10factor
+day10countfactor<-as.factor(day10counts_sim)
+
+#### (b) Plotting data on histogram
+#histogram with simulated day 10
+hist(day10counts_sim, 10, col="black", main="Day 10 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(-4,10), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(day10counts_sim)))
+
+#plot with day 10 simulated histogram
+plot(density(na.omit(day10counts_sim)), main="Day 10 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(1,10), ylim=c(0,0.8))
+
+```
+
+v. Comparing simulated and VSL data for day 7
+(a) Plot histograms to compare simulated and VSL
+(b) Running Kolmogorov-Smirnov test
+  + Purpose: Want to compare the distributions of the VSL versus simulated
+```{r}
+####(a) Plot histograms to compare simulated and VSL
+
+#create a histogram with both the simulated and the VSL data
+plot(density(na.omit(day7counts_sim)), main="Day 7 simulated vs VSL", 
+     xlab="LOG CFU/mL", xlim=c(-4,10), ylim=c(0,0.8))
+lines(density(na.omit(newlogday7)), col="blue")
+legend('topright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+# Cumulative distribution function plot (the one used in Ariel's paper)
+p=ecdf(day7counts_sim)
+p2=ecdf(newlogday7)
+plot(p, verticals = TRUE, do.points=FALSE,  xlab="LOG10 CFU/mL", main="Day 7 simulated vs VSL", ylab = "Density", xlim=c(-4,10))
+plot(p2, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+legend('bottomright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+mean(as.numeric(na.omit(day7counts_sim)))
+mean(as.numeric(na.omit(newlogday7)))
+
+####(b) Running Kolmogorov-Smirnov test
+
+#perform Kolmogorov-Smirnov test
+ks.test(day7counts_sim, newlogday7, alternative = c("two.sided"), exact = NULL)
+
+#calculating critical value
+x <- day7counts_sim[!is.na(day7counts_sim)]
+n <- length(x)
+  y <- newlogday7[!is.na(newlogday7)]
+  n.y <- length(y)
+
+#Critical value for 5%level significance
+a=1.35810
+day7critvalue5<-1.35810*((n+n.y)/(n*n.y))^0.5
+print(paste("Critical value for 5% significance:", day7critvalue5))
+
+#Critical value for 10%level significance
+a=1.22385
+day7critvalue10<-1.22385*((n+n.y)/(n*n.y))^0.5
+print(paste("Critical value for 10% significance:", day7critvalue10))
+
+#Critical value for 20%level significance
+a=1.07275
+day7critvalue20<-1.07275*((n+n.y)/(n*n.y))^0.5
+print(paste("Critical value for 20% significance:", day7critvalue20))
+
+
+
+
+```
+
+vi. Comparing simulated and VSL data for day 10
+(a) Plot histograms to compare simulated and VSL
+(b) Running Kolmogorov-Smirnov test
+  + Purpose: Want to compare the distributions of the VSL versus simulated
+  
+```{r}
+
+####(a) Plot histograms to compare simulated and VSL
+
+#create a histogram with both the simulated and the VSL data
+plot(density(na.omit(day10counts_sim)), main="Day 10 simulated vs VSL", 
+     xlab="LOG CFU/mL", xlim=c(-2,10), ylim=c(0,1.2))
+lines(density(na.omit(newlogday10)), col="blue")
+legend('topright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+
+# Cumulative distribution function plot (the one used in Ariel's paper)
+q=ecdf(day10counts_sim)
+q2=ecdf(newlogday10)
+plot(q, verticals = TRUE, do.points=FALSE,  xlab="LOG10 CFU/mL", main="Day 10 simulated vs VSL", ylab = "Density", xlim=c(-2,10))
+plot(q2, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+legend('bottomright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+mean(newlogday10)
+mean(day10counts_sim)
+
+
+#### (b) Running Kolmogorov-Smirnov test
+ks.test(day10counts_sim, newlogday10, alternative = c("two.sided"), exact = NULL)
+
+#calculating critical value
+x <- day10counts_sim[!is.na(day10counts_sim)]
+n <- length(x)
+  y <- newlogday10[!is.na(newlogday10)]
+  n.y <- length(y)
+
+
+#Critical value for 5%level significance
+a=1.35810
+day10critvalue5<-1.35810*((n+n.y)/(n*n.y))^0.5
+print(paste("Critical value for 5% significance:", day10critvalue5))
+
+#Critical value for 10%level significance
+a=1.22385
+day10critvalue10<-1.22385*((n+n.y)/(n*n.y))^0.5
+print(paste("Critical value for 10% significance:", day10critvalue10))
+
+#Critical value for 20%level significance
+a=1.07275
+day10critvalue20<-1.07275*((n+n.y)/(n*n.y))^0.5
+print(paste("Critical value for 20% significance:", day10critvalue20))
+
+
+```
+
+vii. Comparing day 7 and day 10 concentrations for VSL and simulated
+```{r}
+# plot density plot of day 10 and day 7
+plot(density(na.omit(newlogday10)), main="Day 7 vs 10 VSL/Simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(-4,10), ylim=c(0,1.0))
+lines(density(na.omit(newlogday7)), col="red", lty=1) #VSL day 7 data
+lines(density(na.omit(day10counts_sim)), col="black", lty=2) #simulated day 10 data
+lines(density(na.omit(day7counts_sim)), col="red", lty=2) #simulated day 10 data
+legend('topright',  legend = c("7 VSL", "10 VSL", "7 sim", "10 sim"), 
+       lty=c(1,1,2,2), col=c('red', 'black','red', 'black'), bty='n', cex=.55)
+```
+
+
+## 11. What if analysis of ST and frequency
+i. Eliminate ST
+(a) Remove ST 13
+(b) Set final conc of ST 13 as zero
+(C) Remove ST 13 and 9
+(d) Set final conc of ST 13 and 9 as zero
+ii. Reducing frequency of contamination
+
+i. Eliminating ST
+(a) Calculate proportion of samples that have spoiled WHEN removing ST 13, the highest growth rate, from the dataset
++ Remove ST 13, the ST with the highest growth rate by completing eliminating them from dataset
++ This will change the proportions of the other ST. When these STs are removed, the other STs will have a higher percentage
+```{r}
+# Remove ST 13 from the dataframe
+data2<-data
+data3<-data2[!(data2$AT=="13"),]
+frame$twohouses <- ifelse(frame$data>=2, 2, 1)
+
+#Calculate proportion of samples that have spoiled
+length(which(subset(data3, data3$day == 7)$count>4.3))/length(subset(data3, data3$day == 7)$count)
+length(which(subset(data3, data3$day == 10)$count>4.3))/length(subset(data3, data3$day == 10)$count)
+length(which(subset(data3, data3$day == 14)$count>4.3))/length(subset(data3, data3$day == 14)$count)
+
+```
+
+(b) Calculate proportion of samples that have spoiled WHEN Remove ST 13, the ST with the highest growth rate by setting final conc as 0
++ The proportions of the other ST will remain unchanged
+```{r}
+#Set the final concentration of ST 13 as zero
+data2<-data
+data2$count <- ifelse(data2$AT=="13",0,data2$count)
+
+length(which(subset(data2, data2$day == 7)$count>4.3))/length(subset(data2, data2$day == 7)$count)
+length(which(subset(data2, data2$day == 10)$count>4.3))/length(subset(data2, data2$day == 10)$count)
+length(which(subset(data2, data2$day == 14)$count>4.3))/length(subset(data2, data2$day == 14)$count)
+```
+
+(c) Calculate proportion of samples that have spoiled WHEN REMOVING 2 MOST FREQUENT ST, ST 13 and 9
++ This will change the proportions of the other ST. When these STs are removed, the other STs will have a higher percentage
+```{r}
+#ST 13 and 9 are the two most frequent ST, they will be removed from dataframe
+data2<-data
+data4<-data2[!(data2$AT=="13"),]
+data4<-data4[!(data4$AT=="9"),]
+
+#Calculate proportion of samples that have spoiled
+length(which(subset(data4, data4$day == 7)$count>4.3))/length(subset(data4, data4$day == 7)$count)
+length(which(subset(data4, data4$day == 10)$count>4.3))/length(subset(data4, data4$day == 10)$count)
+length(which(subset(data4, data4$day == 14)$count>4.3))/length(subset(data4, data4$day == 14)$count)
+```
+
+(d) Calculate proportion of samples when setting the final concentration of ST 13 and 9 as 0
++ The proportions of the other ST will remain unchanged
+```{r}
+#set final concentration of ST 13 and 9 as zero, the two most frequent ST
+data5<-data
+data5$count <- ifelse(data5$AT=="13",0,data5$count)
+data5$count <- ifelse(data5$AT=="9",0,data5$count)
+
+#Calculate proportion of samples that have spoiled
+length(which(subset(data5, data5$day == 7)$count>4.3))/length(subset(data5, data5$day == 7)$count)
+length(which(subset(data5, data5$day == 10)$count>4.3))/length(subset(data5, data5$day == 10)$count)
+length(which(subset(data5, data5$day == 14)$count>4.3))/length(subset(data5, data5$day == 14)$count)
+
+
+```
+
+ii. Reducing frequency
++ Calculating proportion of spoiled samples when reducing frequency from 100% to 50% and from 100% to 10%
+```{r}
+#make a duplicate of simulations
+data2<-data
+
+n_units = n_sim*n_halfgal 
+
+sampleKey <- data2[c(1,2)] %>%
+  unique(.)
+
+# sample n_units times at defined frequency of contamination
+#(c,1,0) means it will assign one or zero to n units, n units is bulk tanks * half gallons which is equivalent 
+#to simulations times half gallons, n unit= unique samples
+#replace=true means you dont have a string of values
+contam_BySample_freq100 <- sample(c(1,0), n_units, replace=TRUE, prob = c(1,0)) # prob = 1 for contaminated (i.e., 1), prob = 0 for not contaminated (i.e., 0) 
+contam_BySample_freq50<- sample(c(1,0), n_units, replace=TRUE, prob = c(0.50,0.50)) # prob = 0.5 for contaminated (i.e., 1), prob = 0.5 for not contaminated (i.e., 0) 
+contam_BySample_freq10  <- sample(c(1,0), n_units, replace=TRUE, prob = c(0.10,0.90)) # prob = 0.1 for contaminated (i.e., 1), prob = 0.9 for not contaminated (i.e., 0) 
+
+# bind your the string of values as a column to the sampleKey dataframe
+cbind(sampleKey, contam_BySample_freq100) -> temp1
+cbind(sampleKey, contam_BySample_freq50) -> temp2
+cbind(sampleKey, contam_BySample_freq10) -> temp3
+
+# merge your temporary dataframes with your full dataframe
+merge(temp1,data2,by=c("BT","half_gal")) -> data3
+merge(temp2,data3,by=c("BT","half_gal")) -> data3
+merge(temp3,data3,by=c("BT","half_gal")) -> data3
+
+# get updated count columns by multiplying value in contam_BySample_freqX by count
+data3$count_freq100 <- data3$count*data3$contam_BySample_freq100 # should be the same as "count"
+data3$count_freq50 <- data3$count*data3$contam_BySample_freq50 # should be the same as "count"
+data3$count_freq10 <- data3$count*data3$contam_BySample_freq10 # should be the same as "count"
+
+
+# Calculate proportion of samples that have spoiled WHEN ADJUSTING FREQUENCY TO 50%
+length(which(subset(data3, data3$day == 7)$count_freq50>4.3))/length(subset(data3, data3$day == 7)$count_freq50)
+length(which(subset(data3, data3$day == 10)$count_freq50>4.3))/length(subset(data3, data3$day == 10)$count_freq50)
+length(which(subset(data3, data3$day == 14)$count_freq50>4.3))/length(subset(data3, data3$day == 14)$count_freq50)
+
+# Calculate proportion of samples that have spoiled WHEN ADJUSTING FREQUENCY TO 10%
+length(which(subset(data3, data3$day == 7)$count_freq10>4.3))/length(subset(data3, data3$day == 7)$count_freq10)
+length(which(subset(data3, data3$day == 10)$count_freq10>4.3))/length(subset(data3, data3$day == 10)$count_freq10)
+length(which(subset(data3, data3$day == 14)$count_freq10>4.3))/length(subset(data3, data3$day == 14)$count_freq10)
+
+```
+
+
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
