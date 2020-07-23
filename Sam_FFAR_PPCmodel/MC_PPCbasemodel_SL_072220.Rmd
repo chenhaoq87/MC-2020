@@ -39,6 +39,7 @@ library(splitstackshape)
 library(dplyr)
 library(readr)
 library(truncnorm)
+library(rmutil)
 
 #check which packages are in your file
 #list.functions.in.file("Z:\\sl2763_Samantha Lau\\Projects\\2019 FFAR project\\Data prep for validation\\Model\\MCsimV2_Samdata_Samonlyplants_VALIDATION_SL_061220.R", alphabetic = TRUE)
