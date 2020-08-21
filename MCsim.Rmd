@@ -7,6 +7,8 @@ output: pdf_document
 
 The authors listed above are current contributors to this file. Earlier versions were the work of Ariel Buehler and Michael Phillips. Review README.md [https://github.com/FSL-MQIP/MC-2020/blob/master/README.md] for more information.
 
+This is another test
+
 ## 1. Set-up environment
 * load packages
 * load functions
