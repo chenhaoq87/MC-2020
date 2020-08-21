@@ -1,7 +1,6 @@
 
 # MC-2020
 
-This is a test for notifications. 
 
 ## Purpose: 
 This repository is for Milk-MC team to work on modeling projects. 
