@@ -1,7 +1,7 @@
 ---
-title: "MCsim_TimESLModel"
+title: "MCsim_nyATassign1"
 author: "Tim Lott, Sarah I. Murphy"
-date: "9/21/2020"
+date: "9/24/2020"
 output: pdf_document
 ---
 
