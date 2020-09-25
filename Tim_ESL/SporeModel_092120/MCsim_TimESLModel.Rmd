@@ -40,13 +40,13 @@ set.seed(1)
 # (a) AT/ST frequency data (from Ariel_2017MC_SporeModel on MC-2020 on GitHub)
 # spore
 ## 1. For experiment, you will change AT freq data here
-spore_ATfrequency_file <- "InputFiles/ColdgrowATFreq_CrossSect.csv"
+spore_ATfrequency_file <- "~/Github/Lab/MC-2020/Tim_ESL/ColdgrowATFreq_CrossSect_NGATs.csv"
 spore_ATfreq_import <- read.csv(spore_ATfrequency_file, stringsAsFactors = FALSE, header = TRUE)
 
 # (b) growth parameter data; make sure this contains growth parameters & growth model name
 # spore (from Ariel_2017MC_SporeModel on MC-2020 on GitHub)
 ## 2. For experiment, you will change the growth parameter data
-spore_growth_file <- "InputFiles/GrowthParameters.csv" 
+spore_growth_file <- "~/Github/Lab/MC-2020/Tim_ESL/GrowthParameters_NoGrowthATs.csv" 
 spore_growth_import <-read.csv(spore_growth_file, stringsAsFactors = FALSE)
 
 # (c) initial microbial count data (from Ariel_2017MC_SporeModel on MC-2020 on GitHub)
@@ -57,7 +57,7 @@ spore_init_file <- read.csv("InputFiles/CrossSectional_RawMPN_3.6.17.csv")
 * Modify naming in input files to be consistent across all MC-2020 model files
 ```{r}
 spore_ATfreq_import$temp <- "AT"
-spore_ATfreq_import$ClosestAT <- paste(spore_ATfreq_import$temp,spore_ATfreq_import$ClosestAT,sep="_")
+spore_ATfreq_import$ClosestAT <- paste(spore_ATfreq_import$temp,spore_ATfreq_import$PreviousAT,sep="_")
 
 spore_growth_import <- spore_growth_import %>%
   .[c(1:5)]%>%
@@ -316,10 +316,10 @@ save(data_intervention, file = "data_intervention.RData")
 
 ## 7. Save results
 ```{r}
-data_no_intervention <- data2
+ATassign1 <- data2
 # data_intervention <- data2
 
-save(data_no_intervention, file = "data_no_intervention.RData")
+save(ATassign1, file = "ATassign1.RData")
 # save(data_intervention, file = "data_intervention.RData")
 
 ```
