@@ -1,7 +1,7 @@
 ---
-title: "Results_091720"
-author: "Sarah I. Murphy"
-date: "9/17/2020"
+title: "Results_nyAT_093020"
+author: "Timothy Lott, Sarah I. Murphy"
+date: "9/30/2020"
 output: html_document
 ---
 
@@ -18,13 +18,9 @@ library(ggplot2)
 
 Load data
 ```{r}
-load("Results_091020/data_intervention.RData")
-intervention <- data_intervention
-# intervention <- read_csv("~/Desktop/intervention.csv")
+GrowATs <- ATassign1
 
-load("Results_091020/data_no_intervention.RData")
-no_intervention <- data_no_intervention
-# no_intervention <- read_csv("~/Desktop/no_intervention.csv")
+AllATs <- ATassign2
 ```
 
 Set anything with <1 cfu/hg to zero (since in cfu/mL; replace < -3.278 log10 cfu/g w/ < -3.278 log10 cfu/g which is very close to 0 if back calculate 10^-3.278*1900 = 1.002)
@@ -32,24 +28,24 @@ Set anything with <1 cfu/hg to zero (since in cfu/mL; replace < -3.278 log10 cfu
 # if inital count (i.e., spore_log10MPN_init_mL) was < -3.278 log10 cfu/g, then no grow during shelf life
 
 #no intervention
-no_intervention$count_original <- no_intervention$count
-no_intervention$count <- ifelse(no_intervention$spore_log10MPN_init_mL < -3.278, -3.278, no_intervention$count_original)
+GrowATs$count_original <- GrowATs$count
+GrowATs$count <- ifelse(GrowATs$spore_log10MPN_init_mL < -3.278, -3.278, GrowATs$count_original)
 
 #intervention
-intervention$count_original <- intervention$count
-intervention$count <- ifelse(intervention$spore_log10MPN_init_mL < -3.278, -3.278, intervention$count_original)
+AllATs$count_original <- AllATs$count
+AllATs$count <- ifelse(AllATs$spore_log10MPN_init_mL < -3.278, -3.278, AllATs$count_original)
 ```
 
 How many samples were below 1 log10 cfu/hg for day 1?
 ```{r}
-## no intervention
-temp <- no_intervention[no_intervention$day=="1",]
+## ONly ATs that grow at 6C
+temp <- GrowATs[GrowATs$day=="1",]
 temp$count2 <- as.factor(temp$count)
 # n = 730
 730/10000*100 # so 7.30% were below 1 log10 cfu/hg for day 1
 
-## intervention
-temp2 <- intervention[intervention$day=="1",]
+## All ATs
+temp2 <- AllATs[AllATs$day=="1",]
 temp2$count2 <- as.factor(temp2$count)
 # n = 735
 735/10000*100 # so 7.35% were below 1 log10 cfu/hg for day 1
@@ -58,26 +54,26 @@ temp2$count2 <- as.factor(temp2$count)
 Summarize data
 ```{r}
 #Number of samples > 20,000 by day as well as percent samples > 20,000 by day
-df_exceed20000byDay_intervention <- intervention %>%
+df_exceed20000byDay_GrowATs <- GrowATs %>%
   group_by(day) %>%
   summarize(n_total = n(),
             n_exceed20000=sum(count > 4.3),
             per_exceed20000=n_exceed20000/n_total*100) 
 
-df_exceed20000byDay_nointervention <- no_intervention %>%
+df_exceed20000byDay_AllATs <- AllATs %>%
   group_by(day) %>%
   summarize(n_total = n(),
             n_exceed20000=sum(count > 4.3),
             per_exceed20000=n_exceed20000/n_total*100) 
 
 # Mean and sd by day
-df_summary_intervention <- intervention%>%
+df_summary_GrowATs <- GrowATs%>%
   group_by(day)%>%
   summarise(mean=mean(count),
             sd=sd(count),
             n=length(count)) # number of total unique milk units & lots (so 1 unit from a lot = unique)
 
-df_summary_no_intervention <- no_intervention%>%
+df_summary_AllATs <- AllATs%>%
   group_by(day)%>%
   summarise(mean=mean(count),
             sd=sd(count),
@@ -91,84 +87,84 @@ df_summary_no_intervention <- no_intervention%>%
 
 Make df of data by day
 ```{r}
-# for intervention 
-d1<- intervention [intervention $day=="1",] 
-d2<- intervention [intervention $day=="2",] 
-d3<- intervention [intervention $day=="3",] 
-d4<- intervention [intervention $day=="4",] 
-d5<- intervention [intervention $day=="5",] 
-d6<- intervention [intervention $day=="6",] 
-d7<- intervention [intervention $day=="7",] 
-d8<- intervention [intervention $day=="8",] 
-d9<- intervention [intervention $day=="9",] 
-d10<- intervention [intervention $day=="10",]
-d11<- intervention [intervention $day=="11",] 
-d12<- intervention [intervention $day=="12",] 
-d13<- intervention [intervention $day=="13",] 
-d14<- intervention [intervention $day=="14",] 
-d15<- intervention [intervention $day=="15",]
-d16<- intervention [intervention $day=="16",]
-d17<- intervention [intervention $day=="17",]
-d18<- intervention [intervention $day=="18",]
-d19<- intervention [intervention $day=="19",]
-d20<- intervention [intervention $day=="20",]
-d21<- intervention [intervention $day=="21",]
-d22<- intervention [intervention $day=="22",]
-d23<- intervention [intervention $day=="23",]
-d24<- intervention [intervention $day=="24",]
-d25<- intervention [intervention $day=="25",]
-d26<- intervention [intervention $day=="26",] 
-d27<- intervention [intervention $day=="27",] 
-d28<- intervention [intervention $day=="28",] 
-d29<- intervention [intervention $day=="29",] 
-d30<- intervention [intervention $day=="30",] 
-d31<- intervention [intervention $day=="31",] 
-d32<- intervention [intervention $day=="32",] 
-d33<- intervention [intervention $day=="33",] 
-d34<- intervention [intervention $day=="34",] 
-d35<- intervention [intervention $day=="35",] 
+# for grow ATs 
+d1<- GrowATs [GrowATs $day=="1",] 
+d2<- GrowATs [GrowATs $day=="2",] 
+d3<- GrowATs [GrowATs $day=="3",] 
+d4<- GrowATs [GrowATs $day=="4",] 
+d5<- GrowATs [GrowATs $day=="5",] 
+d6<- GrowATs [GrowATs $day=="6",] 
+d7<- GrowATs [GrowATs $day=="7",] 
+d8<- GrowATs [GrowATs $day=="8",] 
+d9<- GrowATs [GrowATs $day=="9",] 
+d10<- GrowATs [GrowATs $day=="10",]
+d11<- GrowATs [GrowATs $day=="11",] 
+d12<- GrowATs [GrowATs $day=="12",] 
+d13<- GrowATs [GrowATs $day=="13",] 
+d14<- GrowATs [GrowATs $day=="14",] 
+d15<- GrowATs [GrowATs $day=="15",]
+d16<- GrowATs [GrowATs $day=="16",]
+d17<- GrowATs [GrowATs $day=="17",]
+d18<- GrowATs [GrowATs $day=="18",]
+d19<- GrowATs [GrowATs $day=="19",]
+d20<- GrowATs [GrowATs $day=="20",]
+d21<- GrowATs [GrowATs $day=="21",]
+d22<- GrowATs [GrowATs $day=="22",]
+d23<- GrowATs [GrowATs $day=="23",]
+d24<- GrowATs [GrowATs $day=="24",]
+d25<- GrowATs [GrowATs $day=="25",]
+d26<- GrowATs [GrowATs $day=="26",] 
+d27<- GrowATs [GrowATs $day=="27",] 
+d28<- GrowATs [GrowATs $day=="28",] 
+d29<- GrowATs [GrowATs $day=="29",] 
+d30<- GrowATs [GrowATs $day=="30",] 
+d31<- GrowATs [GrowATs $day=="31",] 
+d32<- GrowATs [GrowATs $day=="32",] 
+d33<- GrowATs [GrowATs $day=="33",] 
+d34<- GrowATs [GrowATs $day=="34",] 
+d35<- GrowATs [GrowATs $day=="35",] 
 
 # for no_intervention 
-id1<- no_intervention [no_intervention $day=="1",] 
-id2<- no_intervention [no_intervention $day=="2",] 
-id3<- no_intervention [no_intervention $day=="3",] 
-id4<- no_intervention [no_intervention $day=="4",] 
-id5<- no_intervention [no_intervention $day=="5",] 
-id6<- no_intervention [no_intervention $day=="6",] 
-id7<- no_intervention [no_intervention $day=="7",] 
-id8<- no_intervention [no_intervention $day=="8",] 
-id9<- no_intervention [no_intervention $day=="9",] 
-id10<- no_intervention [no_intervention $day=="10",]
-id11<- no_intervention [no_intervention $day=="11",] 
-id12<- no_intervention [no_intervention $day=="12",] 
-id13<- no_intervention [no_intervention $day=="13",] 
-id14<- no_intervention [no_intervention $day=="14",] 
-id15<- no_intervention [no_intervention $day=="15",]
-id16<- no_intervention [no_intervention $day=="16",]
-id17<- no_intervention [no_intervention $day=="17",]
-id18<- no_intervention [no_intervention $day=="18",]
-id19<- no_intervention [no_intervention $day=="19",]
-id20<- no_intervention [no_intervention $day=="20",]
-id21<- no_intervention [no_intervention $day=="21",]
-id22<- no_intervention [no_intervention $day=="22",]
-id23<- no_intervention [no_intervention $day=="23",]
-id24<- no_intervention [no_intervention $day=="24",]
-id25<- no_intervention [no_intervention $day=="25",]
-id26<- no_intervention [no_intervention $day=="26",] 
-id27<- no_intervention [no_intervention $day=="27",] 
-id28<- no_intervention [no_intervention $day=="28",] 
-id29<- no_intervention [no_intervention $day=="29",] 
-id30<- no_intervention [no_intervention $day=="30",] 
-id31<- no_intervention [no_intervention $day=="31",] 
-id32<- no_intervention [no_intervention $day=="32",] 
-id33<- no_intervention [no_intervention $day=="33",] 
-id34<- no_intervention [no_intervention $day=="34",] 
-id35<- no_intervention [no_intervention $day=="35",] 
+id1<- AllATs [AllATs $day=="1",] 
+id2<- AllATs [AllATs $day=="2",] 
+id3<- AllATs [AllATs $day=="3",] 
+id4<- AllATs [AllATs $day=="4",] 
+id5<- AllATs [AllATs $day=="5",] 
+id6<- AllATs [AllATs $day=="6",] 
+id7<- AllATs [AllATs $day=="7",] 
+id8<- AllATs [AllATs $day=="8",] 
+id9<- AllATs [AllATs $day=="9",] 
+id10<- AllATs [AllATs $day=="10",]
+id11<- AllATs [AllATs $day=="11",] 
+id12<- AllATs [AllATs $day=="12",] 
+id13<- AllATs [AllATs $day=="13",] 
+id14<- AllATs [AllATs $day=="14",] 
+id15<- AllATs [AllATs $day=="15",]
+id16<- AllATs [AllATs $day=="16",]
+id17<- AllATs [AllATs $day=="17",]
+id18<- AllATs [AllATs $day=="18",]
+id19<- AllATs [AllATs $day=="19",]
+id20<- AllATs [AllATs $day=="20",]
+id21<- AllATs [AllATs $day=="21",]
+id22<- AllATs [AllATs $day=="22",]
+id23<- AllATs [AllATs $day=="23",]
+id24<- AllATs [AllATs $day=="24",]
+id25<- AllATs [AllATs $day=="25",]
+id26<- AllATs [AllATs $day=="26",] 
+id27<- AllATs [AllATs $day=="27",] 
+id28<- AllATs [AllATs $day=="28",] 
+id29<- AllATs [AllATs $day=="29",] 
+id30<- AllATs [AllATs $day=="30",] 
+id31<- AllATs [AllATs $day=="31",] 
+id32<- AllATs [AllATs $day=="32",] 
+id33<- AllATs [AllATs $day=="33",] 
+id34<- AllATs [AllATs $day=="34",] 
+id35<- AllATs [AllATs $day=="35",] 
 ```
 
 Plot each day simulated histogram
 ```{r}
-pdf(file='plots_091720.pdf')
+pdf(file='plots_nyAT_090320.pdf')
 hist(d1$spore_log10MPN_init_mL, main="Histogram of simulated milk spore count over shelf-life\n Day = 0",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-4,8), ylim=c(0,50000),breaks=20, col=rgb(1,0,0,0.5))
 hist(id1$spore_log10MPN_init_mL, col=rgb(0,0,1,0.5),add=T)
 box()
