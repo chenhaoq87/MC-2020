@@ -318,6 +318,7 @@ data$checkLagPhase_S <- ifelse(data$t_T/data$Lag_T <1, 1, 0)
 
 # determine if (T_S) is within 25% of old temp (T_T); implement rules 1 & 2 above 
 # **Tim - for now, I just used temperature from previous stage (T_T) for comparison to T_S, but we need to decide if should use temperature used (information in "CheckTemp_FtoT" column) instead (since in some cases, when T_T was within 25% of T_F, then retained parameters)
+# ***Sarah - I think when we switch stages, we should compare to the temperature used for growth parameters. So if we switch to 4 to 4.5 from Facility to Transport, we continue to use growth paramters for 4. So we should compare to 4 when switching to school. If the school is 5, we use new lag phase. If we switch to 4.5, we continue to use lag phase at 4. 
 data$adjLag_S <- ifelse(data$T_S >= data$T_T*0.75 & data$T_S <= data$T_T*1.25, data$Lag_T-data$t_T, (data$newLag_S*(data$t_T/data$Lag_T)) + (data$newLag_S*0.25))
 
 #finally, assign the appropriate lag to use (i.e., Lag_S)
