@@ -9,7 +9,7 @@
 # Parameters: Same for (1) buchanan, (2) gompertz, and (3) barayani
 # (i) t: time in hours
 # (ii) lag: length of lag phase
-# (iii) mumax: growth rate (LOG10 CFU/mL per hour)
+# (iii) mumax: growth rate (ln/hour)
 # (iv) LOG10N0: initial microbial concentration 
 # (v) LOG10Nmax: carrying capacity
 
