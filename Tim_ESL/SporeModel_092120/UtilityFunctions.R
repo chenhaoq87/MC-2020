@@ -1,5 +1,5 @@
 ## Utility Functions
-# Last edited: 022120
+# Last edited: 120820
 
 ## (1) buchanan_log10N, (2) gompertz_log10N, (3) baranyi_log10N
 # Source: All equations for the 3 models below are copied from the Nlms package in R (https://rdrr.io/cran/nlsMicrobio/src/R/growthmodels.R)
@@ -9,7 +9,7 @@
 # Parameters: Same for (1) buchanan, (2) gompertz, and (3) barayani
 # (i) t: time in hours
 # (ii) lag: length of lag phase
-# (iii) mumax: growth rate (LOG10 CFU/mL per hour)
+# (iii) mumax: growth rate (ln CFU/mL per hour)
 # (iv) LOG10N0: initial microbial concentration 
 # (v) LOG10Nmax: carrying capacity
 
