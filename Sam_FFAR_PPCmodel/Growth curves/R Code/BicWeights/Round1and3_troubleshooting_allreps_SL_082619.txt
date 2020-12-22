@@ -1,0 +1,44 @@
+"Isolate R10-0056"
+Model selection based on BIC:
+
+         K    BIC Delta_BIC BICWt Cum.Wt     LL
+Gompertz 5 105.25      0.00  0.76   0.76 -41.55
+Baryani  5 107.56      2.31  0.24   1.00 -42.70
+Buchanan 5 167.01     61.76  0.00   1.00 -72.43
+
+
+"Isolate R10-0084"
+Model selection based on BIC:
+
+         K   BIC Delta_BIC BICWt Cum.Wt     LL
+Gompertz 5 37.26      0.00     1      1  -7.38
+Baryani  5 53.64     16.38     0      1 -15.57
+Buchanan 5 64.46     27.20     0      1 -20.98
+
+
+"Isolate R10-0701"
+Model selection based on BIC:
+
+         K    BIC Delta_BIC BICWt Cum.Wt    LL
+Baryani  5 -78.71      0.00  0.86   0.86 50.61
+Gompertz 5 -75.13      3.59  0.14   1.00 48.81
+Buchanan 5 -64.68     14.03  0.00   1.00 43.59
+
+
+"Isolate R10-0908"
+Model selection based on BIC:
+
+         K   BIC Delta_BIC BICWt Cum.Wt     LL
+Gompertz 5 67.33      0.00  0.99   0.99 -22.59
+Baryani  5 76.13      8.80  0.01   1.00 -26.99
+Buchanan 5 89.51     22.18  0.00   1.00 -33.68
+
+
+ "Isolate R10-1432"
+Model selection based on BIC:
+
+         K   BIC Delta_BIC BICWt Cum.Wt     LL
+Gompertz 5 23.49      0.00     1      1  -0.50
+Baryani  5 40.76     17.26     0      1  -9.13
+Buchanan 5 61.52     38.03     0      1 -19.51
+

@@ -1,0 +1,8 @@
+Model selection based on BIC:
+
+Isolate R10-1587
+
+         K   BIC Delta_BIC BICWt Cum.Wt     LL
+Gompertz 5 30.81      0.00  0.99   0.99  -3.57
+Baryani  5 39.92      9.11  0.01   1.00  -8.12
+Buchanan 5 55.39     24.58  0.00   1.00 -15.86
