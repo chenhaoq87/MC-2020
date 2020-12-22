@@ -183,17 +183,24 @@ init_file <- "Initialmicro_upstatebuffalo_MCinput_030220.csv"
   + Frequency of only plant
 ```{r}
 #input files
-frequency_file <-"Z:/sl2763_Samantha Lau/Projects/2019 FFAR project/Data prep for validation/Upstate Buffalo/Frequency_UpstateBuffalo_030420.csv"
+#frequency_file <-"Sam_FFAR_PPCmodel/Data prep for validation/Upstate Buffalo/Frequency_UpstateBuffalo_030420.csv"
+frequency_file <-"freq_16S_ppc.csv"
 growth_file <- "ST_percentidentity_forcedNmax_MCinput_SL_030320.csv"
 init_file <- "Initialmicro_upstatebuffalo_MCinput_030220.csv"
 ```
 
+```{r}
+
+```
 
 
 + Import frequency data and get the 16S sequence type
 ```{r}
 freq_import <- read.csv(frequency_file, stringsAsFactors = FALSE, header = TRUE)
-freq_data = freq_import$X16S_ST
+freq_import <- freq_import %>%
+  filter(X16S.ST!=42)
+# freq_data = freq_import$X16S_ST
+freq_data = freq_import$X16S.ST
 freq_vec<-as.vector(freq_data) #before running sensitivity analysis (below) put a hashtag in front of this
 
 ```
@@ -267,8 +274,18 @@ initialcountlog_data = initialcount_import[,3]
 
 + Now sample the initial concentration distributions 
 ```{r}
+#fit 
+library(fitdistrplus)
+ppc_fit <- fitdist(data = initialcount_import$LOG.initial,distr = "norm") #TO DO: find the best fitting distribution; not normal 
+plot(ppc_fit) #fit looks OK
+summary(ppc_fit)
+
+ppc_log10CFU_mean <- ppc_fit$estimate[1]
+ppc_log10CFU_sd <- ppc_fit$estimate[2]
+
 mean(initialcount_import$LOG.initial)
 sd(initialcount_import$LOG.initial)
+
 logMPN_mean <- c(0.4191862) #day initial
 logMPN_sd <- c(0.8497558) #day initial
 logMPN_samp = rnorm(n_sim, logMPN_mean, logMPN_sd)
@@ -300,7 +317,7 @@ allele <- vector()
 for (i in 1:n_sim){
   MPN_init_samp <-rep(rpois(n_halfgal, MPN_samp_halfgal[i]), times = n_day)
   MPN_init<-c(MPN_init, MPN_init_samp)
-  allele_samp <- rep(sample(freq_vec, n_halfgal, replace = T), times = n_day) 
+  allele_samp <- rep(sample(freq_vec, n_halfgal, replace = T), times = n_day)
   allele <- c(allele, allele_samp)
 }
 
@@ -346,13 +363,13 @@ for (i in 1:(n_sim *n_halfgal * n_day)){
   
   #calculate the new growth parameters using the square root model and our
   #sampled temperature
-  newT <- temp_sample[data$BT[i]]
-  newLag <- lagAtNewTemp(newT, growth_import$lag[allele_index])
-  newMu <-  muAtNewTemp(newT, growth_import$mu[allele_index])
-  
+  # newT <- temp_sample[data$BT[i]]
+  # newLag <- lagAtNewTemp(newT, growth_import$lag[allele_index])
+  # newMu <-  muAtNewTemp(newT, growth_import$mu[allele_index])
+  # 
   #Calculate the log10N count using our new growth parameters
   #multiply log10N(data$day[i] by 24 since I did it in hours, not days, and ariel did it in days
-  data$count[i] <- log10N(data$day[i]*24, newLag, newMu,data$logMPN_init[i],growth_import$Nmax[allele_index],growth_import$modelname[allele_index])
+  data$count[i] <- log10N(data$day[i]*24, growth_import$lag[allele_index], growth_import$mu[allele_index],data$logMPN_init[i],growth_import$Nmax[allele_index],growth_import$modelname[allele_index])
 
 }
 ```
