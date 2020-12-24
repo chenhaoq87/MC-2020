@@ -21,6 +21,7 @@ Load data
 load("data_v1.RData")
 load("data_v2.RData")
 load("data_v3.RData")
+load("data_v4.RData")
 ```
 
 Set anything with <1 cfu/hg to zero (since in cfu/mL; replace < -3.278 log10 cfu/g w/ -6 log10 cfu/g which is very close to 0 if back calculate 10^-6*1900 = 0.0019)
@@ -38,6 +39,10 @@ data_v2$count <- ifelse(data_v2$spore_log10MPN_init_mL < -3.278, -6, data_v2$cou
 #v3
 data_v3$count_original <- data_v3$count
 data_v3$count <- ifelse(data_v3$spore_log10MPN_init_mL < -3.278, -6, data_v3$count_original)
+
+#v4
+data_v4$count_original <- data_v4$count
+data_v4$count <- ifelse(data_v4$spore_log10MPN_init_mL < -3.278, -6, data_v4$count_original)
 ```
 
 How many samples were below 1 log10 cfu/hg for day 1?
@@ -59,6 +64,12 @@ temp3 <- data_v3[data_v3$day=="1",]
 temp3$count2 <- as.factor(temp3$count)
 # n = 1154
 1154/10000*100 # so 11.54% were below 1 log10 cfu/hg for day 1
+
+## v4
+temp4 <- data_v4[data_v4$day=="1",]
+temp4$count2 <- as.factor(temp4$count)
+# n = 1115
+1115/10000*100 # so 11.15% were below 1 log10 cfu/hg for day 1
 ```
 
 Summarize data
@@ -77,6 +88,12 @@ df_exceed20000byDay_v2 <- data_v2%>%
             per_exceed20000=n_exceed20000/n_total*100) 
 
 df_exceed20000byDay_v3 <- data_v3 %>%
+  group_by(day) %>%
+  summarize(n_total = n(),
+            n_exceed20000=sum(count > 4.3),
+            per_exceed20000=n_exceed20000/n_total*100)
+
+df_exceed20000byDay_v4 <- data_v4 %>%
   group_by(day) %>%
   summarize(n_total = n(),
             n_exceed20000=sum(count > 4.3),
@@ -101,14 +118,22 @@ df_summary_v3 <- data_v3 %>%
             sd=sd(count),
             n=length(count))
 
+df_summary_v4 <- data_v4 %>%
+  group_by(day)%>%
+  summarise(mean=mean(count),
+            sd=sd(count),
+            n=length(count))
+
 # save as .csv
 # write.csv(df_exceed20000byDay_v1, "df_exceed20000byDay_v1.csv")
 # write.csv(df_exceed20000byDay_v2, "df_exceed20000byDay_v2.csv")
 # write.csv(df_exceed20000byDay_v3, "df_exceed20000byDay_v3.csv")
+# write.csv(df_exceed20000byDay_v4, "df_exceed20000byDay_v4.csv")
 # 
 # write.csv(df_summary_v1, "df_summary_v1.csv")
 # write.csv(df_summary_v2, "df_summary_v2.csv")
 # write.csv(df_summary_v3, "df_summary_v3.csv")
+# write.csv(df_summary_v4, "df_summary_v4.csv")
 ```
 
 Make df of data by day
@@ -223,6 +248,43 @@ i2d32<- data_v3 [data_v3 $day=="32",]
 i2d33<- data_v3 [data_v3 $day=="33",] 
 i2d34<- data_v3 [data_v3 $day=="34",] 
 i2d35<- data_v3 [data_v3 $day=="35",] 
+
+# for data_v4 
+i3d1<- data_v4 [data_v4 $day=="1",] 
+i3d2<- data_v4 [data_v4 $day=="2",] 
+i3d3<- data_v4 [data_v4 $day=="3",] 
+i3d4<- data_v4 [data_v4 $day=="4",] 
+i3d5<- data_v4 [data_v4 $day=="5",] 
+i3d6<- data_v4 [data_v4 $day=="6",] 
+i3d7<- data_v4 [data_v4 $day=="7",] 
+i3d8<- data_v4 [data_v4 $day=="8",] 
+i3d9<- data_v4 [data_v4 $day=="9",] 
+i3d10<- data_v4 [data_v4 $day=="10",]
+i3d11<- data_v4 [data_v4 $day=="11",] 
+i3d12<- data_v4 [data_v4 $day=="12",] 
+i3d13<- data_v4 [data_v4 $day=="13",] 
+i3d14<- data_v4 [data_v4 $day=="14",] 
+i3d15<- data_v4 [data_v4 $day=="15",]
+i3d16<- data_v4 [data_v4 $day=="16",]
+i3d17<- data_v4 [data_v4 $day=="17",]
+i3d18<- data_v4 [data_v4 $day=="18",]
+i3d19<- data_v4 [data_v4 $day=="19",]
+i3d20<- data_v4 [data_v4 $day=="20",]
+i3d21<- data_v4 [data_v4 $day=="21",]
+i3d22<- data_v4 [data_v4 $day=="22",]
+i3d23<- data_v4 [data_v4 $day=="23",]
+i3d24<- data_v4 [data_v4 $day=="24",]
+i3d25<- data_v4 [data_v4 $day=="25",]
+i3d26<- data_v4 [data_v4 $day=="26",] 
+i3d27<- data_v4 [data_v4 $day=="27",] 
+i3d28<- data_v4 [data_v4 $day=="28",] 
+i3d29<- data_v4 [data_v4 $day=="29",] 
+i3d30<- data_v4 [data_v4 $day=="30",] 
+i3d31<- data_v4 [data_v4 $day=="31",] 
+i3d32<- data_v4 [data_v4 $day=="32",] 
+i3d33<- data_v4 [data_v4 $day=="33",] 
+i3d34<- data_v4 [data_v4 $day=="34",] 
+i3d35<- data_v4 [data_v4 $day=="35",] 
 
 ```
 
@@ -674,6 +736,157 @@ box()
 
 hist(id35$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 35",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
 hist(i2d35$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+dev.off()
+
+```
+
+v1v4
+```{r}
+pdf(file='plots_v1red_v4blue_122320.pdf')
+hist(d1$spore_log10MPN_init_mL, main="Histogram of simulated milk spore count over shelf-life\n Day = 0",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d1$spore_log10MPN_init_mL, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d1$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 1",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d1$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d2$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 2",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d2$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d3$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 3",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d3$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d4$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 4",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d4$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d5$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 5",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d5$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d6$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 6",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d6$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d7$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 7",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d7$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d8$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 8",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d8$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d9$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 9",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d9$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d10$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 10",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d10$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d11$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 11",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d11$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d12$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 12",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d12$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d13$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 13",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d13$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d14$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 14",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d14$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d15$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 15",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d15$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d16$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 16",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d16$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d17$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 17",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d17$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d18$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 18",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d18$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d19$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 19",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d19$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d20$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 20",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d20$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d21$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 21",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d21$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d22$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 22",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d22$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d23$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 23",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d23$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d24$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 24",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d24$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d25$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 25",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d25$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d26$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 26",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d26$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d27$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 27",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d27$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d28$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 28",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d28$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d29$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 29",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d29$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d30$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 30",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d30$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d31$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 31",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d31$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d32$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 32",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d32$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d33$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 33",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d33$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d34$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 34",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d34$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
+box()
+
+hist(d35$count, main="Histogram of simulated milk spore count over shelf-life\n Day = 35",  xlab=expression('Log'['10']*'CFU/mL'), xlim=c(-6,8), ylim=c(0,30000),breaks=20, col=rgb(1,0,0,0.5))
+hist(i3d35$count, col=rgb(0,0,1,0.5),xlim=c(-6,8), ylim=c(0,30000),breaks=20,add=T)
 box()
 
 dev.off()

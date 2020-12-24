@@ -1,7 +1,7 @@
 ---
 title: "MCsim_AlSCCSporeModel"
 author: "Sarah I. Murphy"
-date: "12/22/2020"
+date: "12/23/2020"
 output: pdf_document
 ---
 
@@ -13,6 +13,9 @@ The three subsets to be prepared from the original file "RawMilkSCC_vs_ColdToler
 (iii) Subset with only data remaining after you remove the 10 farms with the highest SCC. 
 
 The authors listed above are current contributors to this file. Additional authors of MCsim.Rmd include Samantha Lau, Timothy Lott, and Aljosa Trmcic. Earlier versions were the work of Ariel Buehler and Michael Phillips. Review README.md [https://github.com/FSL-MQIP/MC-2020/blob/master/README.md] for more information.
+#
+
+Revised 12/23/2020, per Al's request, Sarah wrote code & ran for v4 where exclude farms w/ greater than 400,000 SCC
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -62,6 +65,8 @@ spore_init_file <- read.csv("InputFiles/RawMilkSCC_vs_ColdTolerantSpores_Cleaned
 spore_init_file2 <- spore_init_file[spore_init_file$SCC %in%  head(sort(spore_init_file$SCC),10),] #lowest 10 SCC only
 
 spore_init_file3 <- spore_init_file[spore_init_file$SCC %in% head(sort(spore_init_file$SCC),82),] #remove highest 10 SCC (result = lowest 82)
+
+spore_init_file4 <- spore_init_file[spore_init_file$SCC <= 400000,] #exclude farms w/ SCC > 400,000 
 
 ```
 
@@ -140,6 +145,7 @@ c. Temperature distribution for each stage
 ## (a) Initial contamination: logMPN normal distribution
 # spore_init_file <- spore_init_file2
 # spore_init_file <- spore_init_file3
+spore_init_file <- spore_init_file4
 spore_init_file$log10left <- log10(spore_init_file$left)
 spore_init_file$log10right <- log10(spore_init_file$right)
 spore_init_file$log10MPN <- log10(spore_init_file$MPN)
@@ -307,43 +313,17 @@ for (i in 1:(n_sim *n_units * n_day)){
 }
 
 ## save results 
-data_v1 <- data2 #original dataset
-save(data_v1, file = "data_v1.RData")
+# data_v1 <- data2 #original dataset
+# save(data_v1, file = "data_v1.RData")
 
-# data_v2 <- data2 #original dataset
+# data_v2 <- data2 
 # save(data_v2, file = "data_v2.RData") #lowest 10 SCC only
 
 # data_v3 <- data2 #
 # save(data_v3, file = "data_v3.RData") #remove highest 10 SCC (result = lowest 82)
-```
 
-```{r}
-## Old code as of 8/7/20; Rachel needs to re-run analysis using updated code
-
-# for (i in 1:(n_sim * n_units * n_day)) {
-#   allele_index <-
-#     which(spore_growth_import$STorAT == data$STorAT[i]) #Find row in growth parameter data that corresponds to allele sample
-#   row <- data[i,]
-#   prev_row <- getPrevRow(data, row$lot_id, row$milk_unit, row$day)
-#   update <-
-#     ifelse(nrow(prev_row) == 0 || row$temp != prev_row$temp, T, F)
-#   data$count[i] <-
-#     log10N_func(
-#       data$day[i],
-#       spore_growth_import$lag[allele_index],
-#       spore_growth_import$mumax[allele_index],
-#       data$spore_log10MPN_init_mL[i],
-#       spore_growth_import$LOG10Nmax[allele_index])}
-```
-
-## 7. Save results
-```{r}
-# data_no_intervention <- data2
-# # data_intervention <- data2
-# 
-# save(data_no_intervention, file = "data_no_intervention.RData")
-# # save(data_intervention, file = "data_intervention.RData")
-
+data_v4 <- data2
+save(data_v4, file= "data_v4.RData") #exclude farms with SCC > 400,000 per EU reg
 ```
 
 
