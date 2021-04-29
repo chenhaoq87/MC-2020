@@ -1,9 +1,11 @@
 ---
 title: "SpoilageTyping_Prep"
 author: "Sarah I. Murphy"
-date: "1/28/2021"
+date: "4/29/2021"
 output: html_document
 ---
+1/28/21 - Sarah Murphy created RmD file for prepping data for spoilage typing
+4/29/21 - Sarah Murphy edited code since got updated VSL dataset from Tim Lott named "VSL_Jul18toMay19.xlsx"; there are still some issues with the dataset Tim sent me (e.g., dataset doesn't include CVTA data) so emailed to ask for updated dataset 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -11,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(readxl)
-df <- read_excel("VSL_Jul18-May19_Micro.xlsx") 
+df <- read_excel("VSL_Jul18toMay19.xlsx")
 ```
 
 ```{r}
@@ -37,12 +39,15 @@ dfw <- df %>%
 # prep dfw
 dfw$VSLNumber_SampleID <- paste(dfw$VSLNumber,dfw$sampleID,sep="_")
 dfw$Test_Day <- paste(dfw$test,dfw$day,sep="_")
-# dfw$Plant_VSLNumber_SampleID <- paste(dfw$Plant,dfw$VSLNumber_SampleID,sep="_") #to do after get updated dataset from Tim
-dfw$countability[is.na(dfw$countability)==TRUE] <- "OK"
-dfw <- dfw %>%
-  filter(countability!="M") #need to doublecheck what M stands for; assume all others are OK to include even if "E" (estimated) or "S" (spreading?)
 
-# # convert dates to appropriate format (to do after get updated dataset from Tim)
+dfw$Plant_VSLNumber_SampleID <- paste(dfw$plantID,dfw$VSLNumber_SampleID,sep="_")
+dfw$countability[is.na(dfw$countability)==TRUE] <- "OK"
+
+# dfw$countability <- as.factor(dfw$countability)
+# summary(dfw$countability)
+#reviewed countability; all were either OK, "E" (estimated), "S" (spreader) or "SE" (spreader/estimated) so keep all
+
+# # convert dates to appropriate format (this requires Tim send updated dataset with Date Collected...OK for now since idk if need it)
 # dfw$`Date Collected` <- as.Date(dfw$`Date Collected`,'%m/%d/%Y')
 # dfw$`Date Processed`<- as.Date(dfw$`Date Processed`,'%m/%d/%Y')
 # dfw$Day_Initial_Actual<- difftime(dfw$`Date Collected`,dfw$`Date Processed`, units = "days") # days
@@ -53,20 +58,14 @@ dfw$count_type[dfw$greaterThanLessThan=="<"]<-"belowLOD"
 dfw$count_type[dfw$greaterThanLessThan==">"]<-"aboveLOD"
 dfw$count_type[is.na(dfw$greaterThanLessThan)==TRUE]<-"OK"
 
-##START HERE, handle LOD and then prepare for expanding dataset and then can do the filtering stuff
-dfw2<-dfw[c(12,13,6,14)]
+##There are issues I found in the dataset that Tim sent me; emailed him to fix, START HERE next time. 
 
-#temp
-# dfw$log10count<- log10(as.numeric(dfw$`Count Value`))
-# colnames(dfw)[9]<-"greaterThanLessThan"
-# dfw2 <- dfw[c(16,19,17)] %>%
-#   spread(.,Test_Day,log10count)"
-
-dfw2 <- dfw[c(12,13,6)] %>%
-  spread(.,Test_Day,dataValue)
+##handle LOD and then prepare for expanding dataset and then can do the filtering stuff
+dfw2<-dfw[c(19,20,13,21)]%>%
+  spread(.,Test_Day,dataValue, drop=FALSE)
 
 dfw2 <- dfw[c(16,10,17)] %>%
-  spread(.,Test_Day,dataValue)
+  spread(.,Test_Day,`Count Value`)
 dfw2[is.na(dfw2)==TRUE] <- "NotTested"
 
 dfw$LODtemp <- "LOD"
@@ -79,8 +78,6 @@ temp <- unique(dfw[c(17,18)])
 dfw2_merged2 <- merge(dfw2_merged,temp,by="Plant_VSLNumber_SampleID")
 dfw2_merged2<- separate(data=dfw2_merged2, Plant_VSLNumber_SampleID,c("Plant", "VSLNumber", "SampleID"),sep="_")
 dfw2_merged2 <- dfw2_merged2[c(1:3,28,4:27)]
-# write.csv(dfw2_merged2,"dfw2_merged_022720.csv")
-
 
 
 #replace "NA" in "dataValue" column with "NT"
