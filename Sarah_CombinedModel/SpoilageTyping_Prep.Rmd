@@ -1,0 +1,96 @@
+---
+title: "SpoilageTyping_Prep"
+author: "Sarah I. Murphy"
+date: "1/28/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+df <- read_excel("VSL_Jul18-May19_Micro.xlsx") 
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+```
+
+```{r}
+#rename projectNumber to VSLNumber
+colnames(df)[1] <- "VSLNumber"
+
+# only use pasteurized fluid white milk; thus, sampleID should be either 1, 2, 3, or 4 from the right (after removing "-" to the left)
+df$sampleID<- trimws(df$sampleID, which = c("both")) #make sure no whitespace
+df$temp <- df$sampleID
+df <- df %>%
+  separate(temp,c("id1","id2"),sep="-")
+df <- df %>%
+  separate(id1,c("id3","milkType"),sep=-1)
+dfw <- df %>%
+  filter(milkType == "1"|milkType == "2"|milkType == "3"|milkType == "4") #only include white milk
+
+# prep dfw
+dfw$VSLNumber_SampleID <- paste(dfw$VSLNumber,dfw$sampleID,sep="_")
+dfw$Test_Day <- paste(dfw$test,dfw$day,sep="_")
+# dfw$Plant_VSLNumber_SampleID <- paste(dfw$Plant,dfw$VSLNumber_SampleID,sep="_") #to do after get updated dataset from Tim
+dfw$countability[is.na(dfw$countability)==TRUE] <- "OK"
+dfw <- dfw %>%
+  filter(countability!="M") #need to doublecheck what M stands for; assume all others are OK to include even if "E" (estimated) or "S" (spreading?)
+
+# # convert dates to appropriate format (to do after get updated dataset from Tim)
+# dfw$`Date Collected` <- as.Date(dfw$`Date Collected`,'%m/%d/%Y')
+# dfw$`Date Processed`<- as.Date(dfw$`Date Processed`,'%m/%d/%Y')
+# dfw$Day_Initial_Actual<- difftime(dfw$`Date Collected`,dfw$`Date Processed`, units = "days") # days
+
+#add count_type based on greaterThanLessThan
+dfw$count_type <- dfw$greaterThanLessThan
+dfw$count_type[dfw$greaterThanLessThan=="<"]<-"belowLOD"
+dfw$count_type[dfw$greaterThanLessThan==">"]<-"aboveLOD"
+dfw$count_type[is.na(dfw$greaterThanLessThan)==TRUE]<-"OK"
+
+##START HERE, handle LOD and then prepare for expanding dataset and then can do the filtering stuff
+dfw2<-dfw[c(12,13,6,14)]
+
+#temp
+# dfw$log10count<- log10(as.numeric(dfw$`Count Value`))
+# colnames(dfw)[9]<-"greaterThanLessThan"
+# dfw2 <- dfw[c(16,19,17)] %>%
+#   spread(.,Test_Day,log10count)"
+
+dfw2 <- dfw[c(12,13,6)] %>%
+  spread(.,Test_Day,dataValue)
+
+dfw2 <- dfw[c(16,10,17)] %>%
+  spread(.,Test_Day,dataValue)
+dfw2[is.na(dfw2)==TRUE] <- "NotTested"
+
+dfw$LODtemp <- "LOD"
+dfw$LOD_Test_Day <- paste(dfw$LODtemp,dfw$Test_Day,sep="_")
+dfw2b <- dfw[c(17,9,20)] %>%
+  spread(.,LOD_Test_Day,greaterThanLessThan)
+dfw2b[is.na(dfw2b)==TRUE] <- "OK"
+dfw2_merged <- merge(dfw2,dfw2b,by="Plant_VSLNumber_SampleID")
+temp <- unique(dfw[c(17,18)])
+dfw2_merged2 <- merge(dfw2_merged,temp,by="Plant_VSLNumber_SampleID")
+dfw2_merged2<- separate(data=dfw2_merged2, Plant_VSLNumber_SampleID,c("Plant", "VSLNumber", "SampleID"),sep="_")
+dfw2_merged2 <- dfw2_merged2[c(1:3,28,4:27)]
+# write.csv(dfw2_merged2,"dfw2_merged_022720.csv")
+
+
+
+#replace "NA" in "dataValue" column with "NT"
+vsl_2018bTo2018a$dataValue[is.na(vsl_2018bTo2018a$dataValue) == TRUE] <- "NT"
+
+#remove rows of data for samples that were not tested
+vsl_2018bTo2018a <- vsl_2018bTo2018a %>%
+  filter(dataValue!="NT") #remove rows where "NT" (i.e., not tested)
+
+#convert dataValue into log10
+vsl_2015aTo2017b$log10SPC <- log10(as.numeric(vsl_2015aTo2017b$dataValue))
+```
+
