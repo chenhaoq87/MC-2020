@@ -1,11 +1,12 @@
 ---
 title: "SpoilageTyping_Prep"
 author: "Sarah I. Murphy"
-date: "4/29/2021"
+date: "5/5/2021"
 output: html_document
 ---
 1/28/21 - Sarah Murphy created RmD file for prepping data for spoilage typing
 4/29/21 - Sarah Murphy edited code since got updated VSL dataset from Tim Lott named "VSL_Jul18toMay19.xlsx"; there are still some issues with the dataset Tim sent me (e.g., dataset doesn't include CVTA data) so emailed to ask for updated dataset 
+5/5/21 - Sarah Murphy uploaded revised VSL dataset from Tim Lott named "Jul18-May19VSL_050321.xlsx". Wrote code here for spoilage typing, based in part by code from "SpoilageTypeAssignments" (old file). Next step is to go through the 8 samples that need to "REVIEW" in order to assign spoilage type and then ask others to review code.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -13,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(readxl)
-df <- read_excel("VSL_Jul18toMay19.xlsx")
+df <- read_excel("Jul18-May19VSL_050421.xlsx")
 ```
 
 ```{r}
@@ -30,7 +31,7 @@ colnames(df)[1] <- "VSLNumber"
 df$sampleID<- trimws(df$sampleID, which = c("both")) #make sure no whitespace
 df$temp <- df$sampleID
 df <- df %>%
-  separate(temp,c("id1","id2"),sep="-")
+  separate(temp,c("id1","id2"),sep="-") #ignore warning, for some there is no "-" so it's OK 
 df <- df %>%
   separate(id1,c("id3","milkType"),sep=-1)
 dfw <- df %>%
@@ -38,19 +39,23 @@ dfw <- df %>%
 
 # prep dfw
 dfw$VSLNumber_SampleID <- paste(dfw$VSLNumber,dfw$sampleID,sep="_")
-dfw$Test_Day <- paste(dfw$test,dfw$day,sep="_")
+dfw$Test_Day <- paste(dfw$test,dfw$Day,sep="_")
 
 dfw$Plant_VSLNumber_SampleID <- paste(dfw$plantID,dfw$VSLNumber_SampleID,sep="_")
 dfw$countability[is.na(dfw$countability)==TRUE] <- "OK"
 
-# dfw$countability <- as.factor(dfw$countability)
-# summary(dfw$countability)
-#reviewed countability; all were either OK, "E" (estimated), "S" (spreader) or "SE" (spreader/estimated) so keep all
+dfw$countability <- as.factor(dfw$countability)
+summary(dfw$countability)
+#reviewed countability; all were either OK, "E" (estimated), "S" (spreader) or "L" (lab error); filter out "lab error" 
+dfw <- dfw %>%
+  filter(countability!="L")
 
-# # convert dates to appropriate format (this requires Tim send updated dataset with Date Collected...OK for now since idk if need it)
-# dfw$`Date Collected` <- as.Date(dfw$`Date Collected`,'%m/%d/%Y')
-# dfw$`Date Processed`<- as.Date(dfw$`Date Processed`,'%m/%d/%Y')
-# dfw$Day_Initial_Actual<- difftime(dfw$`Date Collected`,dfw$`Date Processed`, units = "days") # days
+# # convert dates to appropriate format 
+dfw$dateCollected <- as.Date(dfw$dateCollected,'%Y-%m-%d')
+dfw$dateProcessed<- as.Date(dfw$dateProcessed,'%Y-%m-%d')
+dfw$Day_Initial_Actual<- difftime(dfw$dateCollected,dfw$dateProcessed, units = "days") # days
+dfw <-separate(data=dfw, Day, c("D", "day"), sep = 1, remove = FALSE)
+dfw$sl_day <- ifelse(dfw$Day=="DI", dfw$Day_Initial_Actual, dfw$day) #this is actual shelf-life day
 
 #add count_type based on greaterThanLessThan
 dfw$count_type <- dfw$greaterThanLessThan
@@ -58,36 +63,90 @@ dfw$count_type[dfw$greaterThanLessThan=="<"]<-"belowLOD"
 dfw$count_type[dfw$greaterThanLessThan==">"]<-"aboveLOD"
 dfw$count_type[is.na(dfw$greaterThanLessThan)==TRUE]<-"OK"
 
-##There are issues I found in the dataset that Tim sent me; emailed him to fix, START HERE next time. 
-
-##handle LOD and then prepare for expanding dataset and then can do the filtering stuff
-dfw2<-dfw[c(19,20,13,21)]%>%
-  spread(.,Test_Day,dataValue, drop=FALSE)
-
-dfw2 <- dfw[c(16,10,17)] %>%
-  spread(.,Test_Day,`Count Value`)
-dfw2[is.na(dfw2)==TRUE] <- "NotTested"
-
+#
+dfw2 <- dfw[c(23,16,24)] %>%
+  spread(.,Test_Day,dataValue)
 dfw$LODtemp <- "LOD"
 dfw$LOD_Test_Day <- paste(dfw$LODtemp,dfw$Test_Day,sep="_")
-dfw2b <- dfw[c(17,9,20)] %>%
-  spread(.,LOD_Test_Day,greaterThanLessThan)
+dfw2b <- dfw[c(27,29,24)] %>%
+  spread(.,LOD_Test_Day,count_type)
 dfw2b[is.na(dfw2b)==TRUE] <- "OK"
 dfw2_merged <- merge(dfw2,dfw2b,by="Plant_VSLNumber_SampleID")
-temp <- unique(dfw[c(17,18)])
+temp <- unique(dfw[c(24,25)])
 dfw2_merged2 <- merge(dfw2_merged,temp,by="Plant_VSLNumber_SampleID")
 dfw2_merged2<- separate(data=dfw2_merged2, Plant_VSLNumber_SampleID,c("Plant", "VSLNumber", "SampleID"),sep="_")
+dfw2_merged2$Day_Initial_Actual <- as.numeric(dfw2_merged2$Day_Initial_Actual)
 dfw2_merged2 <- dfw2_merged2[c(1:3,28,4:27)]
 
-
-#replace "NA" in "dataValue" column with "NT"
-vsl_2018bTo2018a$dataValue[is.na(vsl_2018bTo2018a$dataValue) == TRUE] <- "NT"
-
-#remove rows of data for samples that were not tested
-vsl_2018bTo2018a <- vsl_2018bTo2018a %>%
-  filter(dataValue!="NT") #remove rows where "NT" (i.e., not tested)
-
-#convert dataValue into log10
-vsl_2015aTo2017b$log10SPC <- log10(as.numeric(vsl_2015aTo2017b$dataValue))
+dfw2_merged2[is.na(dfw2_merged2)==TRUE] <- "NotTested"
+#rename dfw2_merged2 to sdf
+sdf<-dfw2_merged2
 ```
+
+```{r}
+sdf$SPC_DI<- as.numeric(sdf$SPC_DI)
+sdf$SPC_D7<- as.numeric(sdf$SPC_D7)
+sdf$SPC_D10<- as.numeric(sdf$SPC_D10)
+sdf$SPC_D14<- as.numeric(sdf$SPC_D14)
+sdf$SPC_D17<- as.numeric(sdf$SPC_D17)
+sdf$SPC_D21<- as.numeric(sdf$SPC_D21)
+
+sdf[c("SPC_DI", "SPC_D7","SPC_D10","SPC_D14","SPC_D17","SPC_D21")][is.na(sdf[c("SPC_DI", "SPC_D7","SPC_D10","SPC_D14","SPC_D17","SPC_D21")])] <- 0 #replace NA with 0 for select columns so can use for later steps
+
+sdf$CVTA_DI<- as.numeric(sdf$CVTA_DI)
+sdf$CVTA_D7<- as.numeric(sdf$CVTA_D7)
+sdf$CVTA_D10<- as.numeric(sdf$CVTA_D10)
+sdf$CVTA_D14<- as.numeric(sdf$CVTA_D14)
+sdf$CVTA_D17<- as.numeric(sdf$CVTA_D17)
+sdf$CVTA_D21<- as.numeric(sdf$CVTA_D21)
+
+sdf[c("CVTA_DI", "CVTA_D7","CVTA_D10","CVTA_D14","CVTA_D17","CVTA_D21")][is.na(sdf[c("CVTA_DI", "CVTA_D7","CVTA_D10","CVTA_D14","CVTA_D17","CVTA_D21")])] <- 0 #replace NA with 0 for select columns so can use for later steps
+
+
+# assign spoilage types: ppc, spore, or NotSpoiled; first, where >20,000 means spoilage, hashed out is alternative where >1,000,000 means spoiled
+sdf$Spoiled20000_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10>20000| sdf$SPC_D14>20000| sdf$SPC_D17>20000| sdf$SPC_D21>20000), "yes", "NotSpoiled") #same as "S" column, but for all
+# sdf$Spoiled1mill_yn <- ifelse((sdf$SPC_DI>1000000 | sdf$SPC_D7>1000000 | sdf$SPC_D10>1000000| sdf$SPC_D14>1000000| sdf$SPC_D17>1000000| sdf$SPC_D21>1000000), "yes", "no") #same as "S" column, but for all
+sdf$AnyGN_yn <- ifelse((sdf$CVTA_DI>1000 | sdf$CVTA_D7>1000 | sdf$CVTA_D10>1000| sdf$CVTA_D14>1000| sdf$CVTA_D17>1000| sdf$CVTA_D21>1000), "yes", "no") #same as "S" column, but for all
+sdf$exceed20000byD10_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10>20000), "yes", "no") #same as "S" column, but for all
+sdf$exceed100000postD10_yn <- ifelse(sdf$exceed20000byD10_yn == "no" & (sdf$SPC_D14>100000 | sdf$SPC_D17>100000 | sdf$SPC_D21>100000), "yes", "no") #same as "S" column, but for all
+
+sdf$temp1 <- ifelse(sdf$CVTA_DI>1000,1,0)
+sdf$temp2 <-ifelse(sdf$CVTA_D7>1000,1,0)
+sdf$temp3 <-ifelse(sdf$CVTA_D10>1000,1,0)
+sdf$temp4 <-ifelse(sdf$CVTA_D14>1000,1,0)
+sdf$temp5 <-ifelse(sdf$CVTA_D17>1000,1,0)
+sdf$temp6 <-ifelse(sdf$CVTA_D21>1000,1,0)
+# sdf[c("temp1", "temp2","temp3","temp4","temp5","temp6")][is.na(sdf[c("temp1", "temp2","temp3","temp4","temp5","temp6")])] <- 0 #replace NA with 0 for select columns so can use for next step
+sdf$tempadd <- sdf$temp1 + sdf$temp2 + sdf$temp3 + sdf$temp4 + sdf$temp5 + sdf$temp6
+sdf$GN_AtLeast2x <- ifelse(sdf$tempadd>1,"yes","no")
+
+sdf$spoilagetype2 <- paste(sdf$Spoiled20000_yn,sdf$exceed20000byD10_yn,sdf$AnyGN_yn,sep="_")
+sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_yes"]<-"ppc"
+sdf$spoilagetype[sdf$Spoiled20000_yn=="NotSpoiled"]<-"NotSpoiled"
+sdf$spoilagetype[sdf$spoilagetype2=="yes_no_no"]<-"spore"
+sdf$spoilagetype[sdf$spoilagetype2=="yes_no_yes"]<-"REVIEW"
+sdf$spoilagetype[sdf$GN_AtLeast2x=="no" &sdf$spoilagetype=="REVIEW"]<-"spore"
+sdf$spoilagetype[sdf$exceed100000postD10_yn=="yes" &sdf$spoilagetype=="REVIEW"]<-"spore"
+sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_no"]<-"REVIEW"
+
+
+##After this step, merge old dfw2_merged with the sdf with only the spoilage typing relevant columns
+sdf2<- sdf[c(1:4,29:32,40,42,17:28)]
+sdf2$temp <- paste(sdf2$Plant,sdf2$VSLNumber,sep="_")
+sdf2$Plant_VSLNumber_SampleID <- paste(sdf2$temp,sdf2$SampleID,sep="_")
+
+dfw2_merged3 <- dfw2_merged2[c(1:3,5:16)]
+dfw2_merged3$temp <- paste(dfw2_merged3$Plant,dfw2_merged3$VSLNumber,sep="_")
+dfw2_merged3$Plant_VSLNumber_SampleID <- paste(dfw2_merged3$temp,dfw2_merged3$SampleID,sep="_")
+
+sdf_full <- merge(sdf2,dfw2_merged3[c(4:15,17)],by="Plant_VSLNumber_SampleID")
+
+#reorder columns
+sdf_full <- sdf_full[c(2:11,36,35,31,32,33,34,30,29,25:28,23,22,18:21,17,16,12:15,1)]
+
+#Finally, need to go through the "REVIEW" samples; start here next time
+reviewdf <- sdf_full %>%
+  filter(spoilagetype=="REVIEW") 
+```
+
 
