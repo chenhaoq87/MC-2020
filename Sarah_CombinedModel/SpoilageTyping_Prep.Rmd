@@ -7,7 +7,8 @@ output: html_document
 1/28/21 - Sarah Murphy created RmD file for prepping data for spoilage typing
 4/29/21 - Sarah Murphy edited code since got updated VSL dataset from Tim Lott named "VSL_Jul18toMay19.xlsx"; there are still some issues with the dataset Tim sent me (e.g., dataset doesn't include CVTA data) so emailed to ask for updated dataset 
 5/5/21 - Sarah Murphy uploaded revised VSL dataset from Tim Lott named "Jul18-May19VSL_050321.xlsx". Wrote code here for spoilage typing, based in part by code from "SpoilageTypeAssignments" (old file). Next step is to go through the 8 samples that need to "REVIEW" in order to assign spoilage type and then ask others to review code.
-5/11/21 - Sarah Murphy reviewed this code with Al Trmcic, Tim Lott, and Sam Lau; for samples that still need to be reviewed, will send email with this code ("SpoilageTyping_Prep.Rmd") and data ("sdf_forReview_051121.csv") to be reviewed to come up with additional rules for spoilage typing
+5/11/21 AM - Sarah Murphy reviewed this code with Al Trmcic, Tim Lott, and Sam Lau; for samples that still need to be reviewed, will send email with this code ("SpoilageTyping_Prep.Rmd") and data ("sdf_forReview_051121.csv") to be reviewed to come up with additional rules for spoilage typing
+5/11/21 PM - Sarah Murphy wrote code for the rule Al suggested. Also wrote code such that for cases of below LOD, replaced with 25% LOD. Added summary at end of RMD w/ total number of each spoilage type from given dataset (for the dataset described above, 50 samples did not spoil by the end of shelf-life testing ("NotSpoiled"), 116 samples spoiled due to PPC ("ppc"), 103 samples spoiled due to sporeformers ("spore"). Also wrote code so users can have separate datasets for "ppc" samples only and "spore" samples only. Next step is to edit the combined model code.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -65,13 +66,18 @@ dfw$count_type[dfw$greaterThanLessThan=="<"]<-"belowLOD" ##replace with 25% dete
 dfw$count_type[dfw$greaterThanLessThan==">"]<-"aboveLOD" ##make a decision about this; check literature
 dfw$count_type[is.na(dfw$greaterThanLessThan)==TRUE]<-"OK"
 
+#replace counts marked below LOD, with 25% of detection limit (i.e., 25% of the recorded dataValue)
+dfw$count <- ifelse(dfw$count_type=="belowLOD", dfw$dataValue*0.25, dfw$dataValue) 
+
 #
-dfw2 <- dfw[c(23,16,24)] %>%
-  spread(.,Test_Day,dataValue)
+dfw2 <- dfw[c(23,28,24)] %>%
+  spread(.,Test_Day,count)
+# dfw2 <- dfw[c(23,16,24)] %>%
+#   spread(.,Test_Day,dataValue)
 
 dfw$LODtemp <- "LOD"
 dfw$LOD_Test_Day <- paste(dfw$LODtemp,dfw$Test_Day,sep="_")
-dfw2b <- dfw[c(27,29,24)] %>%
+dfw2b <- dfw[c(27,30,24)] %>%
   spread(.,LOD_Test_Day,count_type)
 dfw2b[is.na(dfw2b)==TRUE] <- "OK"
 
@@ -108,14 +114,18 @@ sdf[c("CVTA_DI", "CVTA_D7","CVTA_D10","CVTA_D14","CVTA_D17","CVTA_D21")][is.na(s
 
 
 # assign spoilage types: ppc, spore, or NotSpoiled; first, where >20,000 means spoilage, hashed out is alternative where >1,000,000 means spoiled
-sdf$Spoiled20000_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10>20000| sdf$SPC_D14>20000| sdf$SPC_D17>20000| sdf$SPC_D21>20000), "yes", "NotSpoiled") #same as "S" column, but for all
-# sdf$Spoiled1mill_yn <- ifelse((sdf$SPC_DI>1000000 | sdf$SPC_D7>1000000 | sdf$SPC_D10>1000000| sdf$SPC_D14>1000000| sdf$SPC_D17>1000000| sdf$SPC_D21>1000000), "yes", "no") #same as "S" column, but for all
+sdf$Spoiled20000_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10>20000| sdf$SPC_D14>20000| sdf$SPC_D17>20000| sdf$SPC_D21>20000), "yes", "NotSpoiled") 
+# sdf$Spoiled1mill_yn <- ifelse((sdf$SPC_DI>1000000 | sdf$SPC_D7>1000000 | sdf$SPC_D10>1000000| sdf$SPC_D14>1000000| sdf$SPC_D17>1000000| sdf$SPC_D21>1000000), "yes", "no") 
 
-sdf$AnyGN_yn <- ifelse((sdf$CVTA_DI>1000 | sdf$CVTA_D7>1000 | sdf$CVTA_D10>1000| sdf$CVTA_D14>1000| sdf$CVTA_D17>1000| sdf$CVTA_D21>1000), "yes", "no") #same as "S" column, but for all
+sdf$AnyGN_yn <- ifelse((sdf$CVTA_DI>1000 | sdf$CVTA_D7>1000 | sdf$CVTA_D10>1000| sdf$CVTA_D14>1000| sdf$CVTA_D17>1000| sdf$CVTA_D21>1000), "yes", "no") 
 
 sdf$exceed20000byD10_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10>20000), "yes", "no") #same as "S" column, but for all
 
-sdf$exceed100000postD10_yn <- ifelse(sdf$exceed20000byD10_yn == "no" & (sdf$SPC_D14>100000 | sdf$SPC_D17>100000 | sdf$SPC_D21>100000), "yes", "no") #same as "S" column, but for all
+sdf$exceed100000postD10_yn <- ifelse(sdf$exceed20000byD10_yn == "no" & (sdf$SPC_D14>100000 | sdf$SPC_D17>100000 | sdf$SPC_D21>100000), "yes", "no") 
+
+sdf$CVTA_max <- sdf[, "max"] <- apply(sdf[, 5:10], 1, max)
+sdf$SPC_max <- sdf[, "max"] <- apply(sdf[, 11:16], 1, max)
+sdf$HigherSPC_yn <- ifelse((sdf$CVTA_max*10 > sdf$SPC_max), "yes", "no") 
 
 sdf$temp1 <- ifelse(sdf$CVTA_DI>1000,1,0)
 sdf$temp2 <-ifelse(sdf$CVTA_D7>1000,1,0)
@@ -129,19 +139,18 @@ sdf$GN_AtLeast2x <- ifelse(sdf$tempadd>1,"yes","no")
 
 ##Implement rules for assigning spoilage types (i.e., spore, ppc, or NotSpoiled)
 sdf$spoilagetype2 <- paste(sdf$Spoiled20000_yn,sdf$exceed20000byD10_yn,sdf$AnyGN_yn,sep="_")
-sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_yes"]<-"ppc"
 sdf$spoilagetype[sdf$Spoiled20000_yn=="NotSpoiled"]<-"NotSpoiled"
+sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_yes"]<-"ppc"
+sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_no"]<-"spore" #likely ppc with a gram-positive (growth not delayed due to germination--vegetative cells), therefore call it "spore"
 sdf$spoilagetype[sdf$spoilagetype2=="yes_no_no"]<-"spore"
 sdf$spoilagetype[sdf$spoilagetype2=="yes_no_yes"]<-"REVIEW"
 sdf$spoilagetype[sdf$GN_AtLeast2x=="no" &sdf$spoilagetype=="REVIEW"]<-"spore"
 sdf$spoilagetype[sdf$exceed100000postD10_yn=="yes" &sdf$spoilagetype=="REVIEW"]<-"spore" #we looked at data and when jump happened, used that
-sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_no"]<-"spore" #likely ppc with a gram-positive (growth not delayed due to germination--vegetative cells), therefore call it "spore"
-
-#now there are still remaining samples that need to be reviewed to assign spoilage types; send .csv to others to come up with rules
-# sdf$spoilagetype[sdf$GN_AtLeast2x=="no" & sdf$Spoiled20000_yn == "yes"]<-"spore" ###proposed rule?
+sdf$spoilagetype[sdf$spoilagetype=="REVIEW" &sdf$HigherSPC_yn=="no"]<-"spore"
+sdf$spoilagetype[sdf$spoilagetype=="REVIEW" &sdf$HigherSPC_yn=="yes"]<-"ppc"
 
 ##After this step, merge old dfw2_merged with the sdf with only the spoilage typing relevant columns
-sdf2<- sdf[c(1:4,29:32,40,42,17:28)]
+sdf2<- sdf[c(1:4,29:32,36,44,46,17:28)]
 sdf2$temp <- paste(sdf2$Plant,sdf2$VSLNumber,sep="_")
 sdf2$Plant_VSLNumber_SampleID <- paste(sdf2$temp,sdf2$SampleID,sep="_")
 
@@ -151,13 +160,28 @@ dfw2_merged3$Plant_VSLNumber_SampleID <- paste(dfw2_merged3$temp,dfw2_merged3$Sa
 
 sdf_full <- merge(sdf2,dfw2_merged3[c(4:15,17)],by="Plant_VSLNumber_SampleID")
 
-#reorder columns
-sdf_full <- sdf_full[c(2:11,36,35,31,32,33,34,30,29,25:28,23,22,18:21,17,16,12:15,1)]
+#Check to see if any samples need to be REVIEWED to assign spoilage type still
+# reviewdf <- sdf_full %>%
+#   filter(spoilagetype=="REVIEW") 
 
-#Finally, need to go through the "REVIEW" samples; start here next time
-reviewdf <- sdf_full %>%
-  filter(spoilagetype=="REVIEW") 
-# write.csv(reviewdf,"sdf_forReview_051121.csv")
+#reorder columns
+sdf_full <- sdf_full[c(2:12,37,36,32:35,31,30,26:29,24,23,19:22,18,17,13:16,1)]
+```
+
+```{r}
+#how many samples of each spoilage type?
+sdf_full$spoilagetype <- as.factor(sdf_full$spoilagetype)
+summary(sdf_full$spoilagetype)
+```
+
+```{r}
+#prepare subsets with PPC samples only & with spore samples only
+sdf_ppc <- sdf_full %>%
+  filter(spoilagetype=="ppc")
+
+sdf_spore <- sdf_full %>%
+  filter(spoilagetype=="spore")
+# write.csv(sdf_ppc,"sdf_spore_051121.csv") #save this to use for Tim ESL model
 ```
 
 
