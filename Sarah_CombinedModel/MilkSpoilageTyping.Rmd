@@ -1,7 +1,7 @@
 ---
-title: "SpoilageTyping_Prep"
+title: "MilkSpoilageTyping"
 author: "Sarah I. Murphy"
-date: "5/11/2021"
+date: "5/13/2021"
 output: html_document
 ---
 1/28/21 - Sarah Murphy created RmD file for prepping data for spoilage typing
@@ -9,6 +9,7 @@ output: html_document
 5/5/21 - Sarah Murphy uploaded revised VSL dataset from Tim Lott named "Jul18-May19VSL_050321.xlsx". Wrote code here for spoilage typing, based in part by code from "SpoilageTypeAssignments" (old file). Next step is to go through the 8 samples that need to "REVIEW" in order to assign spoilage type and then ask others to review code.
 5/11/21 AM - Sarah Murphy reviewed this code with Al Trmcic, Tim Lott, and Sam Lau; for samples that still need to be reviewed, will send email with this code ("SpoilageTyping_Prep.Rmd") and data ("sdf_forReview_051121.csv") to be reviewed to come up with additional rules for spoilage typing
 5/11/21 PM - Sarah Murphy wrote code for the rule Al suggested. Also wrote code such that for cases of below LOD, replaced with 25% LOD. Added summary at end of RMD w/ total number of each spoilage type from given dataset (for the dataset described above, 50 samples did not spoil by the end of shelf-life testing ("NotSpoiled"), 116 samples spoiled due to PPC ("ppc"), 103 samples spoiled due to sporeformers ("spore"). Also wrote code so users can have separate datasets for "ppc" samples only and "spore" samples only. Next step is to edit the combined model code.
+5/12/21 & 5/13/21 - Sarah Murphy renamed document as "MilkSpoilageTyping.Rmd". Added some annotations to code & cleaned it up a bit. Removed the rule Al had suggested (discussed in modeling group meeting that these samples should still be reviewed). Note that also prepared an image depicting the spoilage typing rules as a decision diagram (PDF & PPT)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -95,7 +96,7 @@ dfw2_merged2[is.na(dfw2_merged2)==TRUE] <- "NotTested"
 sdf<-dfw2_merged2
 
 #clean-up environment
-rm(df,dfw2_merged,dfw2_merged2,temp,dfw2,dfw2b)
+rm(df,dfw2_merged,temp,dfw2,dfw2b)
 ```
 
 *Assign spoilage types
@@ -124,13 +125,13 @@ sdf$Spoiled20000_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10
 
 sdf$AnyGN_yn <- ifelse((sdf$CVTA_DI>1000 | sdf$CVTA_D7>1000 | sdf$CVTA_D10>1000| sdf$CVTA_D14>1000| sdf$CVTA_D17>1000| sdf$CVTA_D21>1000), "yes", "no") 
 
-sdf$exceed20000byD10_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10>20000), "yes", "no") #same as "S" column, but for all
+sdf$exceed20000byD10_yn <- ifelse((sdf$SPC_DI>20000 | sdf$SPC_D7>20000 | sdf$SPC_D10>20000), "yes", "no") 
 
 sdf$exceed100000postD10_yn <- ifelse(sdf$exceed20000byD10_yn == "no" & (sdf$SPC_D14>100000 | sdf$SPC_D17>100000 | sdf$SPC_D21>100000), "yes", "no") 
 
 sdf$CVTA_max <- sdf[, "max"] <- apply(sdf[, 5:10], 1, max)
 sdf$SPC_max <- sdf[, "max"] <- apply(sdf[, 11:16], 1, max)
-sdf$HigherSPC_yn <- ifelse((sdf$CVTA_max*10 > sdf$SPC_max), "yes", "no") 
+sdf$HigherSPC_yn <- ifelse((sdf$CVTA_max*10 > sdf$SPC_max), "yes", "no")
 
 sdf$temp1 <- ifelse(sdf$CVTA_DI>1000,1,0)
 sdf$temp2 <-ifelse(sdf$CVTA_D7>1000,1,0)
@@ -144,6 +145,7 @@ sdf$GN_AtLeast2x <- ifelse(sdf$tempadd>1,"yes","no")
 
 ##Implement rules for assigning spoilage types (i.e., spore, ppc, or NotSpoiled)
 sdf$spoilagetype2 <- paste(sdf$Spoiled20000_yn,sdf$exceed20000byD10_yn,sdf$AnyGN_yn,sep="_")
+
 sdf$spoilagetype[sdf$Spoiled20000_yn=="NotSpoiled"]<-"NotSpoiled"
 sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_yes"]<-"ppc"
 sdf$spoilagetype[sdf$spoilagetype2=="yes_yes_no"]<-"spore" #likely ppc with a gram-positive (growth not delayed due to germination--vegetative cells), therefore call it "spore"
@@ -151,8 +153,8 @@ sdf$spoilagetype[sdf$spoilagetype2=="yes_no_no"]<-"spore"
 sdf$spoilagetype[sdf$spoilagetype2=="yes_no_yes"]<-"REVIEW"
 sdf$spoilagetype[sdf$GN_AtLeast2x=="no" &sdf$spoilagetype=="REVIEW"]<-"spore"
 sdf$spoilagetype[sdf$exceed100000postD10_yn=="yes" &sdf$spoilagetype=="REVIEW"]<-"spore" #we looked at data and when jump happened, used that
-sdf$spoilagetype[sdf$spoilagetype=="REVIEW" &sdf$HigherSPC_yn=="no"]<-"spore"
-sdf$spoilagetype[sdf$spoilagetype=="REVIEW" &sdf$HigherSPC_yn=="yes"]<-"ppc"
+# sdf$spoilagetype[sdf$spoilagetype=="REVIEW" &sdf$HigherSPC_yn=="no"]<-"spore" #Don't do this anymore
+# sdf$spoilagetype[sdf$spoilagetype=="REVIEW" &sdf$HigherSPC_yn=="yes"]<-"ppc"
 
 ##After this step, merge old dfw2_merged with the sdf with only the spoilage typing relevant columns
 sdf2<- sdf[c(1:4,29:32,36,44,46,17:28)]
