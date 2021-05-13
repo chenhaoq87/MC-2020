@@ -9,7 +9,7 @@ output: html_document
 5/5/21 - Sarah Murphy uploaded revised VSL dataset from Tim Lott named "Jul18-May19VSL_050321.xlsx". Wrote code here for spoilage typing, based in part by code from "SpoilageTypeAssignments" (old file). Next step is to go through the 8 samples that need to "REVIEW" in order to assign spoilage type and then ask others to review code.
 5/11/21 AM - Sarah Murphy reviewed this code with Al Trmcic, Tim Lott, and Sam Lau; for samples that still need to be reviewed, will send email with this code ("SpoilageTyping_Prep.Rmd") and data ("sdf_forReview_051121.csv") to be reviewed to come up with additional rules for spoilage typing
 5/11/21 PM - Sarah Murphy wrote code for the rule Al suggested. Also wrote code such that for cases of below LOD, replaced with 25% LOD. Added summary at end of RMD w/ total number of each spoilage type from given dataset (for the dataset described above, 50 samples did not spoil by the end of shelf-life testing ("NotSpoiled"), 116 samples spoiled due to PPC ("ppc"), 103 samples spoiled due to sporeformers ("spore"). Also wrote code so users can have separate datasets for "ppc" samples only and "spore" samples only. Next step is to edit the combined model code.
-5/12/21 & 5/13/21 - Sarah Murphy renamed document as "MilkSpoilageTyping.Rmd". Added some annotations to code & cleaned it up a bit. Removed the rule Al had suggested (discussed in modeling group meeting that these samples should still be reviewed). Note that also prepared an image depicting the spoilage typing rules as a decision diagram (PDF & PPT)
+5/12/21 & 5/13/21 - Sarah Murphy renamed document as "MilkSpoilageTyping.Rmd". Added some annotations to code & cleaned it up a bit. Removed the rule Al had suggested (discussed in modeling group meeting that these samples should still be reviewed). Note that also prepared an image depicting the spoilage typing rules as a decision diagram (PDF & PPT); also, saved sdf_full to share with others for review and moved the spore only file to Archive since outdated.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -173,6 +173,7 @@ sdf_full <- merge(sdf2,dfw2_merged3[c(4:15,17)],by="Plant_VSLNumber_SampleID")
 
 #reorder columns
 sdf_full <- sdf_full[c(2:12,37,36,32:35,31,30,26:29,24,23,19:22,18,17,13:16,1)]
+# write.csv(sdf_full,"sdf_full_051321.csv")
 ```
 
 *Summarize spoilage typing results
@@ -190,7 +191,6 @@ sdf_ppc <- sdf_full %>%
 
 sdf_spore <- sdf_full %>%
   filter(spoilagetype=="spore")
-# write.csv(sdf_ppc,"sdf_spore_051121.csv") #save this to use for Tim ESL model
 ```
 
 
