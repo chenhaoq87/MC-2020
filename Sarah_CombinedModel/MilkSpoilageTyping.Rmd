@@ -167,13 +167,14 @@ dfw2_merged3$Plant_VSLNumber_SampleID <- paste(dfw2_merged3$temp,dfw2_merged3$Sa
 
 sdf_full <- merge(sdf2,dfw2_merged3[c(4:15,17)],by="Plant_VSLNumber_SampleID")
 
-#Check to see if any samples need to be REVIEWED to assign spoilage type still
-# reviewdf <- sdf_full %>%
-#   filter(spoilagetype=="REVIEW") 
-
 #reorder columns
 sdf_full <- sdf_full[c(2:12,37,36,32:35,31,30,26:29,24,23,19:22,18,17,13:16,1)]
 # write.csv(sdf_full,"sdf_full_051321.csv")
+
+#Check to see if any samples need to be REVIEWED to assign spoilage type still
+reviewdf <- sdf_full %>%
+  filter(spoilagetype=="REVIEW")
+# write.csv(reviewdf,"reviewdf_051321.csv")
 ```
 
 *Summarize spoilage typing results
