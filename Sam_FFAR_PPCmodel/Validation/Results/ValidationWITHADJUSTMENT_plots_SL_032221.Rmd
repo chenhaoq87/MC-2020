@@ -1,0 +1,369 @@
+---
+title: "PPC Model"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+##################################################
+#  Checking validation WITH ADJUSTMENT results
+##################################################
+## Project: Dairy Spoilage Model
+## Script purpose: Check to see how the simulation compares to VSL data
+##################################################
+#Edited by SL on 10-29-21
+##################################################
+```
+
+```{r knitr_options , include=FALSE}
+set.seed(42)
+```
+
+```{r}
+#set working directory + load RData
+#data3 in the RData is what you want
+setwd("Z:/sl2763_Samantha Lau/Projects/2019 FFAR project/Initial Microbial Count/Analysis/CheckingInitialDistribution/Validation with 1.11log initial count/Results")
+load("Z:/sl2763_Samantha Lau/Projects/2019 FFAR project/Initial Microbial Count/Analysis/CheckingInitialDistribution/Validation with 1.11log initial count/Results/ValidationWITHADJUSTMENT1.11log.RData")
+
+#libraries
+library(plyr)
+library(dplyr)
+```
+
+
++ Calculate the mean count by day
+```{r}
+data3 %>%
+  dplyr::group_by(day) %>%
+  dplyr::summarise(Mean = mean(count, na.rm=TRUE), SD = sd(count,na.rm=TRUE))-> mean_by_day
+```
++ Do check on data3 to make sure the data makes sense
+```{r}
+length(which(data3$AT == "36"))/1400000
+length(which(data3$AT == "9"))/1400000
+length(which(data3$AT == "13"))/1400000
+length(which(data3$AT == "12"))/1400000
+length(which(data3$AT == "49"))/1400000
+```
+
+
+
+
++ Plotting actual counts from day 7, 10, etc from VSL data
+  + The actual counts came from VSL data and is in a separate CSV file that gets called in
+  + Use this to create histograms to see what VSL data looks like
+```{r}
+#VSL Data for day 7 and day 10
+day7andday10<-read.csv("Log_microbial_count__VSL2018onwardsONLY_validation_MCinput_032520.csv")
+
+#create a histogram/distribution just for the VSL data 
+logday7<-day7andday10$LOG.D7
+newlogday7<-as.numeric(logday7) #use the log day 7 column from VSL data
+logday10<-day7andday10$LOG.D10
+newlogday10<-as.numeric(logday10) #use the log day 10 column from VSL data
+
+#histogram with proportions for day 7
+hist(newlogday7, 10, col="black", main="Day 7 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,8), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(newlogday7)))
+
+# plot density plot for day 7
+plot(density(na.omit(newlogday7)), main="Day 7 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,8), ylim=c(0,0.8))
+
+#histogram with proportions for day 10
+hist(newlogday10, 10, col="black", main="Day 10 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(newlogday10)))
+
+# plot density plot for day 10
+plot(density(na.omit(newlogday10)), main="Day 10 VSL histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim=c(0,0.8))
+
+#calculating the mean for day 7
+mean(day7andday10$LOG.D7, na.rm = TRUE)
+mean(newlogday7, na.rm = TRUE)
+#calculating the mean for day 10
+mean(day7andday10$LOG.D10, na.rm = TRUE)
+
+
+#percent of samples above 20,000 CFU/mL
+omitNAsday7 <- na.omit(newlogday7)
+count(as.data.frame(omitNAsday7))
+sum(omitNAsday7 > 4.30103)/127
+
+omitNAsday10 <- na.omit(newlogday10)
+count(as.data.frame(omitNAsday10))
+sum(omitNAsday10 > 4.30103)/145
+
+
+```
+
++ Simulating data for day 7
+```{r}
+#created a new table data2 just because I don't want to mess with original data
+data4<-data3
+
+#Make a df only including day and count 
+data2_counts <- data4[c(8,9)]
+
+#Make df of day 7 only 
+day7counts<- data2_counts[data2_counts$day=="7",] 
+
+#only using the count data
+day7counts_sim<-day7counts$count
+
+#making a numeric factor
+day7counts_sim<-as.numeric(day7counts_sim)
+
+#calculating the mean of the simulated data for day 7
+mean(day7counts_sim)
+
+#percent of samples above 20,000 CFU/mL
+sum(day7counts_sim > 4.30103)/100000
+
+#histogram with simulated day 7
+hist(day7counts_sim, 10, col="black", main="Day 7 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(0,10), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(day7counts_sim)))
+
+#density plot with day 7 simulated 
+plot(density(na.omit(day7counts_sim)), main="Day 7 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(1,10), ylim=c(0,0.8))
+```
+
++ Comparing simulated and VSL data for day 7
+```{r}
+#create a histogram with both the simulated and the VSL data
+plot(density(na.omit(day7counts_sim)), main="Day 7 simulated vs VSL", 
+     xlab=(expression("LOG"[10]~"CFU/mL")), xlim=c(-2,10), ylim=c(0,0.5))
+lines(density(na.omit(newlogday7)), lty=2)
+legend('topright',  legend = c("simulated", "VSL"), 
+       lty=c(1,2), bty='n', cex=.75)
+
+
+p=ecdf(day7counts_sim)
+p2=ecdf(newlogday7)
+plot(p, verticals = TRUE, do.points=FALSE,  xlab="LOG10 CFU/mL", main="Day 7 simulated vs VSL", ylab = "Density", xlim=c(-4,10))
+plot(p2, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+legend('bottomright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+mean(as.numeric(na.omit(day7counts_sim)))
+mean(as.numeric(na.omit(newlogday7)))
+
+```
+
++ Running Kolmogorov-Smirnov test for day 7
+  + Purpose: Want to compare the distributions of the VSL versus simulated
+```{r}
+#perform Kolmogorov-Smirnov test
+ks.test(day7counts_sim, newlogday7, alternative = c("two.sided"), exact = NULL)
+
+#x <- day7counts_sim[!is.na(day7counts_sim)]
+#n <- length(x)
+#ks.test.critical.value(n, 0.95, alternative = "two.sided")
+
+#install.packages("BoutrosLab.plotting.general")
+#library(BoutrosLab.plotting.general)
+#install.packages("KScorrect")
+
+#calculating critical value
+x <- day7counts_sim[!is.na(day7counts_sim)]
+n <- length(x)
+  y <- newlogday7[!is.na(newlogday7)]
+  n.y <- length(y)
+
+#5%level significance
+a=1.35810
+day7critvalue5<-1.35810*((n+n.y)/(n*n.y))^0.5
+day7critvalue5
+
+
+alternative <- "two.sided"
+x <- day7counts_sim[!is.na(day7counts_sim)]
+n <- length(x)
+  y <- newlogday7[!is.na(newlogday7)]
+  n.x <- as.double(n)
+  n.y <- length(y)
+  w <- c(x, y)
+  z <- cumsum(ifelse(order(w) <= n.x, 1/n.x, -1/n.y))
+  z <- z[c(which(diff(sort(w)) != 0), n.x + n.y)] #exclude ties
+  STATISTIC <- switch(alternative, two.sided = max(abs(z)), 
+                      greater = max(z), less = -min(z))
+  STATISTIC
+
+```
+
++ Simulating data for day 10
+```{r}
+#Make df of day 10 only 
+#Note: change this to day==4 when the initial mean and SD is set using the day 7 data instead of initial
+day10counts<- data2_counts[data2_counts$day=="10",] 
+
+#only using the count data
+day10counts_sim<-day10counts$count
+
+#making a numeric factor
+day10counts_sim<-as.numeric(day10counts_sim)
+
+#mean for day 10 of simulated data
+mean(day10counts_sim)
+
+#percent of samples above 20,000 CFU/mL
+sum(day10counts_sim > 4.30103)/100000
+
+#day10factor
+day10countfactor<-as.factor(day10counts_sim)
+```
+
++ Comparing simulated and VSL data for day 10
+```{r}
+#histogram with simulated day 10
+hist(day10counts_sim, 10, col="black", main="Day 10 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(-4,10), ylim = c(0,0.8), freq = FALSE)
+lines(density(na.omit(day10counts_sim)))
+
+#plot with day 10 simulated histogram
+plot(density(na.omit(day10counts_sim)), main="Day 10 simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(1,10), ylim=c(0,0.8))
+
+#create a histogram with both the simulated and the VSL data
+plot(density(na.omit(day10counts_sim)), main="Day 10 simulated vs VSL", 
+    xlab=(expression("LOG"[10]~"CFU/mL")), xlim=c(-2,10), ylim=c(0,0.5))
+lines(density(na.omit(newlogday10)), lty=2)
+legend('topright',  legend = c("simulated", "VSL"), 
+       lty=c(1,2), bty='n', cex=.75)
+
+
+#make ECDF for day 10
+q=ecdf(day10counts_sim)
+q2=ecdf(newlogday10)
+plot(q, verticals = TRUE, do.points=FALSE,  xlab="LOG10 CFU/mL", main="Day 10 simulated vs VSL", ylab = "Density", xlim=c(-2,10))
+plot(q2, verticals = TRUE, do.points=FALSE, add=TRUE, col="blue")
+legend('bottomright',  legend = c("simulated", "VSL"), 
+       lty=1, col=c('black', 'blue'), bty='n', cex=.75)
+
+mean(newlogday10)
+mean(day10counts_sim)
+
+```
+
++ Comparing day 7 and day 10 concentrations for VSL and simulated
+```{r}
+# plot density plot of day 10 and day 7
+plot(density(na.omit(newlogday10)), main="Day 7 vs 10 VSL/Simulated histogram", 
+     xlab="LOG CFU/mL", xlim=c(-4,10), ylim=c(0,1.0))
+lines(density(na.omit(newlogday7)), col="red", lty=1) #VSL day 7 data
+lines(density(na.omit(day10counts_sim)), col="black", lty=2) #simulated day 10 data
+lines(density(na.omit(day7counts_sim)), col="red", lty=2) #simulated day 10 data
+legend('topright',  legend = c("7 VSL", "10 VSL", "7 sim", "10 sim"), 
+       lty=c(1,1,2,2), col=c('red', 'black','red', 'black'), bty='n', cex=.55)
+```
+
++ Running Kolmogorov-Smirnov test for day 10
+  + Purpose: Want to compare the distributions of the VSL versus simulated
+```{r}
+ks.test(day10counts_sim, newlogday10, alternative = c("two.sided"), exact = NULL)
+
+
+#calculating critical value
+x <- day10counts_sim[!is.na(day10counts_sim)]
+n <- length(x)
+  y <- newlogday10[!is.na(newlogday10)]
+  n.y <- length(y)
+
+a=1.36
+day10critvalue<-1.36*((n+n.y)/(n*n.y))^0.5
+day10critvalue
+
+#5%level significance
+a=1.35810
+day10critvalue5<-1.35810*((n+n.y)/(n*n.y))^0.5
+day10critvalue5
+
+
+```
+
+DONT RUN THIS
+```{r}
+#this is with day 7 set as the initial to extrapolate day 10
+length(which(subset(day10counts_sim, day10counts_sim$day == 4)$count>6))/length(subset(day10counts_sim, day10counts_sim$day == 4)$count)
+#length(which(subset(data, data$day == 10)$count>6))/length(subset(data, data$day == 10)$count)
+
+```
+
+
++ Calculate proportion of samples that have spoiled
+  + Set count to desired log value
+  + Ex: If I want to see proportions of samples that reach 1,000,000 CFU/mL, set count>6
+  + Ex: If I wanted to see proportions of samples that reach 20,000 CFU/mL, set count>4.3
+  + Proportion= samples that reach X log for Y day/ total samples for Y day
+```{r}
+length(which(subset(data3, data3$day == 7)$count>4.3))/length(subset(data3, data3$day == 7)$count)
+length(which(subset(data3, data3$day == 10)$count>4.3))/length(subset(data3, data3$day == 10)$count)
+length(which(subset(data3, data3$day == 14)$count>4.3))/length(subset(data3, data3$day == 14)$count)
+```
+
++ Calculate the spoilage per day
+  + You can change the starting and end day by changing days
+  + Ex: If you want to look at spoilage from days 1 to 14, set days <- seq(1, 14, 1)
+  + Ex: If you want to look at spoilage from days 3 to 17, days <- seq(3, 17, 1)
+  + The third one is because you want the days to increase by 1
+```{r}
+#create a dataframe of day and a vector that will eventually hold the percentage of spoiled samples
+#mode=logical means you set it to false
+days <- seq(1, 14, 1)
+spoiled <- vector(mode = "logical", length(days))
+spoiled_by_day <- data.frame(days, spoiled)
+
+#now fill in the empty vector with the proper percentage
+#gives you percentage of days greater than 4.3 log
+for (d in days) {
+  numerator <-   length(which(subset(data, data$day == d)$count>4.3))
+  denominator <- length(subset(data, data$day == d)$count)
+  
+  spoiled_by_day[spoiled_by_day$days==d,]$spoiled <- numerator / denominator * 100
+}
+
+spoiled_by_day$days <- factor(spoiled_by_day$days)
+
+```
+
+
+
++ Creating plots when doing sensitivity analysis
+  + Purpose: This will print out the PDF version of the plot when you change a parameter
+```{r}
+pdf(file='plot_mu_high_best_summary.pdf')
+fig_SBD <- ggplot() + geom_bar(aes(y = spoiled_by_day$spoiled, x = spoiled_by_day$days), data = spoiled_by_day, 
+                               stat = "identity", color = "black", position = "dodge")+
+  geom_text(data = spoiled_by_day, 
+              aes(x = spoiled_by_day$days, y = spoiled_by_day$spoiled, label = round(spoiled_by_day$spoiled, 2)), 
+              position=position_dodge(width = 1), 
+              vjust=-0.25, size = 4)+
+  labs(y = "Percentage > 4.3log", x = "Day" )+
+  scale_x_discrete(breaks = seq(1, 14, 1), labels=seq(1, 14, 1)) +
+  scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+  ggtitle("Percent of samples spoiled by day") 
+
+#print to see what the plot looks like
+fig_SBD
+
+dev.off()
+
+  
+```
+
+
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
