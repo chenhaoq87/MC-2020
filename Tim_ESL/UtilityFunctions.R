@@ -123,7 +123,7 @@ adjustLag <- function (t, oldLag, newLag, restartExp = T, adjustmentConstant = 0
 #was determined using Ratkowsky's square root model and Paenibacillus ordorifer growth curves obtained at 4, 7, and 32C in BHI broth (N.H. Martin unpublished data)
 
 # Function:
-lagAtNewTemp <- function (t, newTemp, oldLag, oldTemp = 6, T0 = -3.62) {
+lagAtNewTemp <- function (newTemp, oldLag, oldTemp = 6, T0 = 1.2) {
   numerator <- oldTemp -T0
   denom <- newTemp - T0
   newLag <- ( (numerator / denom)^2) * oldLag
@@ -143,3 +143,16 @@ getPrevRow <- function(df, sim_run, milk_unit, day) {
 # (ii) sim_run:
 # (iii) milk_unit:
 # (iv) day:
+
+
+## (9) SampleAT
+SampleAT = function(len) {
+  AT <- vector()
+  for (i in 1:(length(len))){
+    AT_samp <- sample(AT_freq, 1,replace = T)
+    #while(AT_samp == "AT_23" || AT_samp == "AT_159"){
+      #AT_samp <- sample(AT_freq, 1,replace = T)}
+    AT<- c(AT,AT_samp)
+  }
+  return(AT)
+}
